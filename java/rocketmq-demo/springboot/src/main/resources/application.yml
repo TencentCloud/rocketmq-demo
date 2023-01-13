@@ -1,0 +1,34 @@
+server:
+  port: 8082
+
+#rocketmq配置信息
+rocketmq:
+  # tdmq-rocketmq服务接入地址
+  name-server: rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876
+  # 生产者配置
+  producer:
+    # 生产者组名
+    group: group111
+    # 角色密钥
+    access-key: eyJrZXlJZC....
+    # 已授权的角色名称
+    secret-key: admin
+  # 消费者公共配置
+  consumer:
+    # 角色密钥
+    access-key: eyJrZXlJZC....
+    # 已授权的角色名称
+    secret-key: admin
+
+  # 自定义配置，根据业务进行配置
+  namespace: rocketmq-xxx|namespace1
+  producer1:
+    topic: testdev1
+  consumer1:
+    group: group111
+    topic: testdev1
+    subExpression: TAG1
+  consumer2:
+    group: group222
+    topic: testdev1
+    subExpression: TAG2
