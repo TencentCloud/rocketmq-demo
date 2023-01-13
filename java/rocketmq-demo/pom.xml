@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>rocketmq</module>
+        <module>rocketmq4</module>
     </modules>
 
     <properties>
