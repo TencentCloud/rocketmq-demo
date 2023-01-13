@@ -11,6 +11,7 @@
     <modules>
         <module>rocketmq4</module>
         <module>springboot</module>
+        <module>springcloud_stream</module>
     </modules>
 
     <properties>
