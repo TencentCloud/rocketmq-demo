@@ -43,13 +43,6 @@ public class TransactionProducer {
                 new AclClientRPCHook(new SessionCredentials(ClientCreater.ACCESS_KEY, ClientCreater.SECRET_KEY)));
         // 设置NameServer的地址
         producer.setNamesrvAddr(ClientCreater.NAMESERVER);
-        ExecutorService executorService = new ThreadPoolExecutor(2, 5, 100,
-                TimeUnit.SECONDS, new ArrayBlockingQueue<>(2000), r -> {
-            Thread thread = new Thread(r);
-            thread.setName("client-transaction-msg-check-thread");
-            return thread;
-        });
-        producer.setExecutorService(executorService);
         producer.setTransactionListener(transactionListener);
         producer.start();
         for (int i = 0; i < 3; i++) {
