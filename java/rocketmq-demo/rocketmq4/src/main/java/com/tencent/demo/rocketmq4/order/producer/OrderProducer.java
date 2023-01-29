@@ -17,11 +17,14 @@
 package com.tencent.demo.rocketmq4.order.producer;
 
 import com.tencent.demo.rocketmq4.common.ClientCreater;
+import java.util.List;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.MessageQueueSelector;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 
 import java.nio.charset.StandardCharsets;
+import org.apache.rocketmq.common.message.MessageQueue;
 
 /**
  * Description: 顺序发送
@@ -42,15 +45,18 @@ public class OrderProducer {
     public static void main(String[] args) throws Exception {
         // 创建消息消费者
         DefaultMQProducer producer = ClientCreater.createProducer(GROUP_NAME);
-        for (int i = 0; i < 10; i++) {
-            int orderId = i % 10;
+        for (int i = 0; i < 3; i++) {
+            int orderId = i % 3;
             // 构造消息示例
             Message msg = new Message(TOPIC_NAME, "your tag", "KEY" + i,
                     ("Hello RocketMQ " + i).getBytes(StandardCharsets.UTF_8));
-            SendResult sendResult = producer.send(msg, (mqs, msg1, arg) -> {
-                Integer id = (Integer) arg;
-                int index = id % mqs.size();
-                return mqs.get(index);
+            SendResult sendResult = producer.send(msg, new MessageQueueSelector() {
+                @Override
+                public MessageQueue select(List<MessageQueue> mqs, Message msg1, Object arg) {
+                    Integer id = (Integer) arg;
+                    int index = id % mqs.size();
+                    return mqs.get(index);
+                }
             }, orderId);
 
             System.out.printf("%s%n", sendResult);
