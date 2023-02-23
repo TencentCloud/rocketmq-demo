@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.5.RELEASE</version>
+        <version>2.6.11</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -18,7 +18,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-cloud.version>Hoxton.SR3</spring-cloud.version>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
     </properties>
 
     <dependencies>
@@ -27,33 +27,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-client</artifactId>
-            <version>4.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-acl</artifactId>
-            <version>4.7.1</version>
-        </dependency>
-
-        <!--spring-cloud-starter-stream-rocketmq里面的RocketMQ版本太老了,这里排除掉,然后单独引用新的版本-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-rocketmq</artifactId>
-            <version>2.2.5-RocketMQ-RC1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.rocketmq</groupId>
-                    <artifactId>rocketmq-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.rocketmq</groupId>
-                    <artifactId>rocketmq-acl</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>2021.0.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

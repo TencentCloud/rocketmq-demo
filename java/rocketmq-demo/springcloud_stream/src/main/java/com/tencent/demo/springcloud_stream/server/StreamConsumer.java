@@ -34,7 +34,7 @@ public class StreamConsumer {
      *
      * @param messageBody 消息内容
      */
-    @StreamListener("Topic-test1")
+    @StreamListener("Topic-TAG1-Input")
     public void receive(String messageBody) {
         logger.info("Receive1: 通过stream收到消息，messageBody = {}", messageBody);
     }
@@ -44,7 +44,7 @@ public class StreamConsumer {
      *
      * @param messageBody 消息内容
      */
-    @StreamListener("Topic-test2")
+    @StreamListener("Topic-TAG2-Input")
     public void receive2(String messageBody) {
         logger.info("Receive2: 通过stream收到消息，messageBody = {}", messageBody);
     }

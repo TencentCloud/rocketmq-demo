@@ -29,7 +29,7 @@ public interface CustomChannelBinder {
      * 发送消息(消息生产者)
      * 绑定配置中的channel名称
      */
-    @Output("Topic-send")
+    @Output("Topic-send-Output")
     MessageChannel sendChannel();
 
 
@@ -37,13 +37,13 @@ public interface CustomChannelBinder {
      * 接收消息1(消费者1)
      * 绑定配置中的channel名称
      */
-    @Input("Topic-test1")
+    @Input("Topic-TAG1-Input")
     MessageChannel testInputChannel1();
 
     /**
      * 接收消息2(消费者2)
      * 绑定配置中的channel名称
      */
-    @Input("Topic-test2")
+    @Input("Topic-TAG2-Input")
     MessageChannel testInputChannel2();
 }
