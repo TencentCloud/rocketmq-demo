@@ -2,45 +2,40 @@ spring:
   cloud:
     stream:
       rocketmq:
-        bindings:
-          # channel名称, 与spring.cloud.stream.bindings下的channel名称对应
-          Topic-test1:
-            consumer:
-              # 订阅的tag类型， 默认订阅所有消息
-              subscription: TAG1
-          # channel名称
-          Topic-test2:
-            consumer:
-              subscription: TAG2
         binder:
           # 服务地址全称
           name-server: rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876
           # 角色名称
           secret-key: admin
           # 角色密钥
-          access-key: eyJrZXlJZC....
+          access-key: eyJrZXlJZ...
           # namespace全称
           namespace: rocketmq-xxx|namespace1
-          # 生产者group名称
-          group: group99
+          # producer group
+          group: producerGroup
+        bindings:
+          # channel名称, 与spring.cloud.stream.bindings下的channel名称对应
+          Topic-TAG1-Input:
+            consumer:
+              # 订阅的tag类型，根据消费者实际情况进行配置（默认是订阅所有消息）
+              subscription: TAG1
+          # channel名称
+          Topic-TAG2-Input:
+            consumer:
+              subscription: TAG2
       bindings:
         # channel名称
-        Topic-send:
+        Topic-send-Output:
           # 指定topic, 对应创建的topic名称
-          destination: topictest1
+          destination: TopicTest
           content-type: application/json
-          # 要使用group名称
-          group: group99
         # channel名称
-        Topic-test1:
-          destination: topictest1
+        Topic-TAG1-Input:
+          destination: TopicTest
           content-type: application/json
-          group: group99
+          group: consumer-group1
         # channel名称
-        Topic-test2:
-          destination: topictest1
+        Topic-TAG2-Input:
+          destination: TopicTest
           content-type: application/json
-          group: group88
-
-server:
-  port: 9999
+          group: consumer-group2
