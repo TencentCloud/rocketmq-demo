@@ -7,6 +7,8 @@ import (
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
 	"os"
+	"strconv"
+	"time"
 )
 
 func main() {
@@ -43,7 +45,12 @@ func main() {
 		// 等级与时间对应关系：
 		// 1s、 5s、 10s、 30s、  1m、 2m、 3m、 4m、 5m、 6m、 7m、 8m、 9m、 10m、 20m、 30m、 1h、 2h；
 		// 1    2    3     4     5    6   7    8   9   10   11   12  13   14    15    16   17   18
+		//如果想用延迟级别，那么设置下面这个方法
 		msg.WithDelayTimeLevel(3)
+
+		//如果想用任意延迟消息，那么设置下面这个方法，WithDelayTimeLevel 就不要设置了,单位为具体的毫秒，如下则是10s后投递
+		delayMills := int64(10 * 1000)
+		msg.WithProperty("__STARTDELIVERTIME", strconv.FormatInt(time.Now().Unix()+delayMills, 10))
 		// 发送消息
 		res, err := p.SendSync(context.Background(), msg)
 
