@@ -33,6 +33,8 @@ func main() {
 		consumer.WithConsumeFromWhere(consumer.ConsumeFromFirstOffset),
 		// 设置消费者广播模式
 		consumer.WithConsumerModel(consumer.BroadCasting),
+		//广播消费,设置一下实例名，设置为应用的系统名即可。如果不设置，会使用pid，这会导致重启消费重复
+		consumer.WithInstance("xxxx"),
 	)
 	if err != nil {
 		fmt.Println("init consumer2 error: " + err.Error())
