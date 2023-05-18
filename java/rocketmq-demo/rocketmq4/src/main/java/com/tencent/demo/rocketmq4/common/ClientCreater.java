@@ -32,26 +32,19 @@ import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 public class ClientCreater {
 
     /**
-     * namespace名称
-     */
-    public static final String NAMESPACE = "namespace";
-
-    /**
      * nameserver地址
      */
-    public static final String NAMESERVER = "endpoint";
+    public static final String NAMESERVER = "腾讯云页面提供的接入点";
 
     /**
      * accessKey  对应角色密钥
      */
     public static final String ACCESS_KEY = "ak";
 
-
     /**
      * secretKey  对应角色名称
      */
     public static final String SECRET_KEY = "sk";
-
 
     /**
      * 创建消息生产者
@@ -62,16 +55,15 @@ public class ClientCreater {
      */
     public static DefaultMQProducer createProducer(String groupName) throws MQClientException {
         // 实例化消息生产者Producer
-        DefaultMQProducer producer = new DefaultMQProducer(NAMESPACE, groupName,
-                // ACL权限
-                new AclClientRPCHook(new SessionCredentials(ACCESS_KEY, SECRET_KEY)), true, null);
+        DefaultMQProducer producer = new DefaultMQProducer(groupName,
+            // ACL权限
+            new AclClientRPCHook(new SessionCredentials(ACCESS_KEY, SECRET_KEY)), true, null);
         // 设置NameServer的地址
         producer.setNamesrvAddr(NAMESERVER);
         // 启动Producer实例
         producer.start();
         return producer;
     }
-
 
     /**
      * 创建消息消费(push)
@@ -81,16 +73,14 @@ public class ClientCreater {
      */
     public static DefaultMQPushConsumer createPushConsumer(String groupName) {
         // 实例化消费者
-        DefaultMQPushConsumer pushConsumer = new DefaultMQPushConsumer(NAMESPACE,
-                groupName,
-                new AclClientRPCHook(new SessionCredentials(ACCESS_KEY, SECRET_KEY)),
-                new AllocateMessageQueueAveragely(), true, null);
+        DefaultMQPushConsumer pushConsumer = new DefaultMQPushConsumer(groupName,
+            new AclClientRPCHook(new SessionCredentials(ACCESS_KEY, SECRET_KEY)),
+            new AllocateMessageQueueAveragely(), true, null);
         // 设置NameServer的地址
         pushConsumer.setNamesrvAddr(NAMESERVER);
         pushConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
         return pushConsumer;
     }
-
 
     /**
      * 创建消息消费(pull)
@@ -100,9 +90,8 @@ public class ClientCreater {
      */
     public static DefaultLitePullConsumer createPullConsumer(String groupName) {
         // 实例化消费者
-        DefaultLitePullConsumer pullConsumer = new DefaultLitePullConsumer(NAMESPACE,
-                groupName,
-                new AclClientRPCHook(new SessionCredentials(ACCESS_KEY, SECRET_KEY)));
+        DefaultLitePullConsumer pullConsumer = new DefaultLitePullConsumer(groupName,
+            new AclClientRPCHook(new SessionCredentials(ACCESS_KEY, SECRET_KEY)));
         // 设置NameServer的地址
         pullConsumer.setNamesrvAddr(NAMESERVER);
         pullConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
