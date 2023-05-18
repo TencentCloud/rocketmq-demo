@@ -17,6 +17,8 @@
 package com.tencent.demo.rocketmq4.transaction.producer;
 
 import com.tencent.demo.rocketmq4.common.ClientCreater;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import org.apache.rocketmq.acl.common.AclClientRPCHook;
 import org.apache.rocketmq.acl.common.SessionCredentials;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -25,20 +27,13 @@ import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.Message;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 public class TransactionProducer {
 
 
     public static void main(String[] args) throws MQClientException, InterruptedException, IOException {
         TransactionListener transactionListener = new TransactionListenerImpl();
         // 实例化事务消息生产者Producer
-        TransactionMQProducer producer = new TransactionMQProducer(ClientCreater.NAMESPACE, "transaction_group",
+        TransactionMQProducer producer = new TransactionMQProducer("transaction_group",
                 // ACL权限
                 new AclClientRPCHook(new SessionCredentials(ClientCreater.ACCESS_KEY, ClientCreater.SECRET_KEY)));
         // 设置NameServer的地址
