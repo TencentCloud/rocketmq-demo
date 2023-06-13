@@ -9,6 +9,9 @@
 *.iml
 *.iws
 
+# Vscode
+.vscode
+
 # NetBeans
 /**/nb-configuration.xml
 
@@ -44,3 +47,6 @@ package-lock.json
 # gradle
 build/
 .gradle/
+
+# clion
+cmake-build*
