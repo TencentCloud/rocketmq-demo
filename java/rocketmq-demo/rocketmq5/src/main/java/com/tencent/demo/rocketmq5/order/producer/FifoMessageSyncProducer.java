@@ -46,7 +46,7 @@ public class FifoMessageSyncProducer {
             new StaticSessionCredentialsProvider(accessKey, secretKey);
 
         // 填写腾讯云提供的接入地址
-        String endpoints = "rmq-xxx.rocketmq.xxxtencenttdmq.com:8081";
+        String endpoints = "rmq-xxx.rocketmq.xxxtencenttdmq.com:8080";
         ClientConfiguration clientConfiguration = ClientConfiguration.newBuilder()
             .setEndpoints(endpoints)
             .enableSsl(false)
