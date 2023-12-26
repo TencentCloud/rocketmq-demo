@@ -3,15 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/apache/rocketmq-client-go/v2"
-	"github.com/apache/rocketmq-client-go/v2/primitive"
-	"github.com/apache/rocketmq-client-go/v2/producer"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/apache/rocketmq-client-go/v2"
+	"github.com/apache/rocketmq-client-go/v2/primitive"
+	"github.com/apache/rocketmq-client-go/v2/producer"
+	"github.com/apache/rocketmq-client-go/v2/rlog"
 )
 
 func main() {
+	// 设置SDK日志输出路径，注意，是绝对路径
+	rlog.SetOutputPath("/logs/rocketmq-client-go.log")
 	// topic名称
 	var topicName = "topic1"
 	// 生产者组名称
@@ -42,7 +46,7 @@ func main() {
 	for i := 0; i < 1; i++ {
 		msg := primitive.NewMessage(topicName, []byte("Hello RocketMQ Go Client! This is a delay message."))
 		// 发送消息的时间（时间戳）
-		currentTime := time.Now().Unix() * 1000 + 10000
+		currentTime := time.Now().Unix()*1000 + 10000
 		msg.WithProperty("__STARTDELIVERTIME", strconv.FormatInt(currentTime, 10))
 		// 发送消息
 		res, err := p.SendSync(context.Background(), msg)
