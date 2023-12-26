@@ -10,9 +10,10 @@
     <packaging>pom</packaging>
     <modules>
         <module>rocketmq4</module>
-        <module>springboot</module>
-        <module>springcloud_stream</module>
         <module>rocketmq5</module>
+        <module>springboot</module>
+        <module>springboot5</module>
+        <module>springcloud_stream</module>
     </modules>
 
     <properties>
