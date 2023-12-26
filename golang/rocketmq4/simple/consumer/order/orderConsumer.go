@@ -9,12 +9,15 @@ import (
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/consumer"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
+	"github.com/apache/rocketmq-client-go/v2/rlog"
 )
 
 // 顺序消息的使用，可在控制台创建顺序类型的topic即可
 // 在简单的消息发送者和消费者中使用顺序类型的topic即可达到顺序消息的目的
 
 func main() {
+	// 设置SDK日志输出路径，注意，是绝对路径
+	rlog.SetOutputPath("/logs/rocketmq-client-go.log")
 	// topic名称
 	var topicName = "topic1"
 	// 消费组名称

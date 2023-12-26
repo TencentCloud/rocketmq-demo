@@ -9,9 +9,12 @@ import (
 	"github.com/apache/rocketmq-client-go/v2"
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
+	"github.com/apache/rocketmq-client-go/v2/rlog"
 )
 
 func main() {
+	// 设置SDK日志输出路径，注意，是绝对路径
+	rlog.SetOutputPath("/logs/rocketmq-client-go.log")
 	// topic名称
 	var topicName = "topic1"
 	// 生产者组名称
