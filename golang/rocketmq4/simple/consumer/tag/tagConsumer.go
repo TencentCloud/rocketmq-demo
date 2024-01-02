@@ -19,12 +19,18 @@ func main() {
 	var topicName = "topic1"
 	// 消费组名称
 	var groupName = "group11"
+	nameserverReslover := primitive.NewPassthroughResolver([]string{"https://rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876"})
+
+	traceCfg := &primitive.TraceConfig{
+		Access:   primitive.Local,
+		Resolver: nameserverReslover,
+	}
 	// 创建consumer
 	c, err := rocketmq.NewPushConsumer(
 		// 设置消费者组
 		consumer.WithGroupName(groupName),
 		// 设置服务地址
-		consumer.WithNsResolver(primitive.NewPassthroughResolver([]string{"https://rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876"})),
+		consumer.WithNsResolver(nameserverReslover),
 		// 设置acl权限
 		consumer.WithCredentials(primitive.Credentials{
 			SecretKey: "admin",
@@ -32,6 +38,9 @@ func main() {
 		}),
 		// 设置命名空间名称
 		consumer.WithNamespace("rocketmq-xxx|namespace_go"),
+
+		// 设置trace, 用于发送消息时记录消息轨迹,如果不需要，不设置即可
+		consumer.WithTrace(traceCfg),
 	)
 	if err != nil {
 		fmt.Println("init consumer error: " + err.Error())

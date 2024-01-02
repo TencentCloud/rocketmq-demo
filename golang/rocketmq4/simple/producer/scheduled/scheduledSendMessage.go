@@ -20,10 +20,16 @@ func main() {
 	var topicName = "topic1"
 	// 生产者组名称
 	var groupName = "group1"
-	// 创建消息生产者
+
+	nameserverReslover := primitive.NewPassthroughResolver([]string{"https://rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876"})
+
+	traceCfg := &primitive.TraceConfig{
+		Access:   primitive.Local,
+		Resolver: nameserverReslover,
+	} // 创建消息生产者
 	p, _ := rocketmq.NewProducer(
 		// 设置服务地址
-		producer.WithNsResolver(primitive.NewPassthroughResolver([]string{"https://rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876"})),
+		producer.WithNsResolver(nameserverReslover),
 		// 设置acl权限
 		producer.WithCredentials(primitive.Credentials{
 			SecretKey: "admin",
@@ -35,6 +41,9 @@ func main() {
 		producer.WithNamespace("rocketmq-xxx|namespace_go"),
 		// 设置发送失败重试次数
 		producer.WithRetry(2),
+
+		// 设置trace, 用于发送消息时记录消息轨迹,如果不需要，不设置即可
+		producer.WithTrace(traceCfg),
 	)
 	// 启动producer
 	err := p.Start()
