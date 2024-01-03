@@ -1,0 +1,1 @@
+该项目是为了在springboot rocketmq-starter的场景下，使用腾讯云rocketmq5实例。
