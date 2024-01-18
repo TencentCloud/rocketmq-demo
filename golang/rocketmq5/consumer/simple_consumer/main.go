@@ -22,6 +22,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 	"time"
 
 	rmq_client "github.com/apache/rocketmq-clients/golang/v5"
@@ -46,7 +49,8 @@ var (
 	maxMessageNum int32 = 16
 	// invisibleDuration should > 20s
 	invisibleDuration = time.Second * 20
-	// receive messages in a loop
+	// receive concurrency
+	receiveConcurrency = 6
 )
 
 func main() {
@@ -76,20 +80,49 @@ func main() {
 		log.Fatal(err)
 	}
 	// graceful stop simpleConsumer
-	defer simpleConsumer.GracefulStop()
-	for {
-		fmt.Println("start receive message")
-		mvs, err := simpleConsumer.Receive(context.TODO(), maxMessageNum, invisibleDuration)
-		if err != nil {
-			fmt.Println(err)
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
 		}
-		// ack message
-		for _, mv := range mvs {
-			simpleConsumer.Ack(context.TODO(), mv)
-			fmt.Println(mv)
-		}
-		fmt.Println("wait a moment")
-		fmt.Println()
-		time.Sleep(time.Second * 1)
+		_ = simpleConsumer.GracefulStop()
+	}()
+
+	fmt.Println("start receive message")
+
+	// Each Receive call will only select one broker queue to pop messages.
+	// Enable multiple consumption goroutines to reduce message end-to-end latency.
+	ch := make(chan struct{})
+	wg := &sync.WaitGroup{}
+	for i := 0; i < receiveConcurrency; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				select {
+				case <-ch:
+					return
+				default:
+					mvs, err := simpleConsumer.Receive(context.TODO(), maxMessageNum, invisibleDuration)
+					if err != nil {
+						fmt.Println("receive message error: " + err.Error())
+					}
+					// ack message
+					for _, mv := range mvs {
+						fmt.Println(mv)
+						if err := simpleConsumer.Ack(context.TODO(), mv); err != nil {
+							fmt.Println("ack message error: " + err.Error())
+						}
+					}
+				}
+			}
+		}()
 	}
+
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
+
+	// wait for exit
+	<-exit
+	close(ch)
+	wg.Wait()
 }
