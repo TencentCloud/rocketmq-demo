@@ -14,6 +14,7 @@
         <module>springboot</module>
         <module>springboot5</module>
         <module>springcloud_stream</module>
+        <module>mqtt</module>
     </modules>
 
     <properties>
