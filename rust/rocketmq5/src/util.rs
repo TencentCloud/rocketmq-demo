@@ -7,7 +7,7 @@ fn common_client_option() -> ClientOption {
     let mut client_option = ClientOption::default();
     // 填入接入点、AccessKey、SecretKey
     // TODO: 添加实例的信息
-    client_option.set_access_url("localhost:8081");
+    client_option.set_access_url("rmq-xxxx.....:8080");
     client_option.set_access_key("ak....");
     client_option.set_secret_key("sk....");
     client_option

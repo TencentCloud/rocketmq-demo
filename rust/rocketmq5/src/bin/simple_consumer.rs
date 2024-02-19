@@ -4,7 +4,7 @@ use tencent_rocketmq5_demo::util;
 
 #[tokio::main]
 async fn main() {
-    let topic = "test-transaction";
+    let topic = "test";
     let group = "test";
     let mut consumer = util::new_simple_consumer(topic, group).unwrap();
     let start_result = consumer.start().await;
