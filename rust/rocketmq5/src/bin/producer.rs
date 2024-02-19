@@ -1,11 +1,8 @@
 use rocketmq::model::message::MessageBuilder;
-
-mod util;
-
+use tencent_rocketmq5_demo::util;
 
 #[tokio::main]
 async fn main() {
-
     let topic = "test";
     let mut producer = util::new_producer(topic).unwrap();
     let start_result = producer.start().await;
@@ -26,8 +23,10 @@ async fn main() {
         eprintln!("send message error: {:?}", send_result.unwrap_err());
         return;
     }
-    println!("send message success, id = {}", send_result.unwrap().message_id());
+    println!(
+        "send message success, id = {}",
+        send_result.unwrap().message_id()
+    );
 
     _ = producer.shutdown().await;
-
 }
