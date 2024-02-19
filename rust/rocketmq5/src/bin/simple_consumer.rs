@@ -1,10 +1,10 @@
 use rocketmq::model::common::{FilterExpression, FilterType};
 
-mod util;
+use tencent_rocketmq5_demo::util;
 
 #[tokio::main]
 async fn main() {
-    let topic = "test";
+    let topic = "test-transaction";
     let group = "test";
     let mut consumer = util::new_simple_consumer(topic, group).unwrap();
     let start_result = consumer.start().await;
@@ -19,7 +19,7 @@ async fn main() {
         let receive_result = consumer.receive(topic, &filter_exp).await;
         if receive_result.is_err() {
             eprintln!("receive message failed: {:?}", receive_result.unwrap_err());
-            break
+            break;
         }
 
         let messages = receive_result.unwrap();
@@ -27,7 +27,7 @@ async fn main() {
         if messages.is_empty() {
             println!("no messages");
             i = i - 1;
-            continue
+            continue;
         }
 
         for message in messages {
@@ -41,6 +41,5 @@ async fn main() {
 
         i = i - 1;
     }
-
     _ = consumer.shutdown().await;
 }
