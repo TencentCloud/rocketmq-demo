@@ -5,7 +5,7 @@ use std::{
 
 use rocketmq::model::message::MessageBuilder;
 
-mod util;
+use tencent_rocketmq5_demo::util;
 
 #[tokio::main]
 async fn main() {
