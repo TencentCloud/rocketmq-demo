@@ -50,3 +50,7 @@ build/
 
 # clion
 cmake-build*
+
+#csharp
+bin/
+obj/
