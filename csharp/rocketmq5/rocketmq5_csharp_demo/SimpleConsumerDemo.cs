@@ -19,7 +19,7 @@ namespace examples
 
             // Credential provider is optional for client configuration.
             var credentialsProvider = new StaticSessionCredentialsProvider(accessKey, secretKey);
-            const string endpoints = "foobar.com:8080";
+            const string endpoints = "127.0.0.1:8080";
             var clientConfig = new ClientConfig.Builder()
                 .SetEndpoints(endpoints)
                 .SetCredentialsProvider(credentialsProvider)
@@ -27,7 +27,7 @@ namespace examples
 
             // Add your subscriptions.
             const string consumerGroup = "yourConsumerGroup";
-            const string topic = "yourTopic";
+            const string topic = "demo";
             var subscription = new Dictionary<string, FilterExpression>
                 { { topic, new FilterExpression("*") } };
             // In most case, you don't need to create too many consumers, single pattern is recommended.
