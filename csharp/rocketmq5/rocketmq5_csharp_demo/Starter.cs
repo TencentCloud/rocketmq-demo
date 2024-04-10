@@ -8,7 +8,7 @@ namespace examples
         public static void Main()
         {
            ProducerNormalMessageDemo.QuickStart().Wait();
-            //SimpleConsumerExample.QuickStart().Wait();
+           SimpleConsumerExample.QuickStart().Wait();
         }
     }
 }

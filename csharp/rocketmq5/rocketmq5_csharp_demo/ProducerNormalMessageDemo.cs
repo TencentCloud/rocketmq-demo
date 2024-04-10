@@ -17,13 +17,13 @@ namespace examples
 
             // Credential provider is optional for client configuration.
             var credentialsProvider = new StaticSessionCredentialsProvider(accessKey, secretKey);
-            const string endpoints = "腾讯云官网接入地址:8080";
+            const string endpoints = "127.0.0.1:8080";
             var clientConfig = new ClientConfig.Builder()
                 .SetEndpoints(endpoints)
                 .SetCredentialsProvider(credentialsProvider)
                 .Build();
 
-            const string topic = "topicName";
+            const string topic = "demo";
             // In most case, you don't need to create too many producers, single pattern is recommended.
             // Producer here will be closed automatically.
             var producer = await new Producer.Builder()
