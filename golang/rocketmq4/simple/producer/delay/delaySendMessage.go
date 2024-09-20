@@ -62,8 +62,9 @@ func main() {
 		msg.WithDelayTimeLevel(3)
 
 		//如果想用任意延迟消息，那么设置下面这个方法，WithDelayTimeLevel 就不要设置了,单位为具体的毫秒，如下则是10s后投递
+		currentTimeMills := time.Now().Unix() * 1000
 		delayMills := int64(10 * 1000)
-		msg.WithProperty("__STARTDELIVERTIME", strconv.FormatInt(time.Now().Unix()+delayMills, 10))
+		msg.WithProperty("__STARTDELIVERTIME", strconv.FormatInt(currentTimeMills+delayMills, 10))
 		// 发送消息
 		res, err := p.SendSync(context.Background(), msg)
 
