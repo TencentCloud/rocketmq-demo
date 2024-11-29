@@ -12,7 +12,7 @@ var mq = new Producer
     Log = XTrace.Log,
     AclOptions = new AclOptions
     {
-        AccessKey = "页面的ak",
+        AccessKey = "AKID**********************0123456789",
         SecretKey = "sk0123456789********************",
     },
 };
@@ -41,7 +41,7 @@ var consumer = new Consumer
     Log = XTrace.Log,
     AclOptions = new AclOptions
     {
-        AccessKey = "页面的ak",
+        AccessKey = "AKID**********************0123456789",
         SecretKey = "sk0123456789********************",
     },
 };
