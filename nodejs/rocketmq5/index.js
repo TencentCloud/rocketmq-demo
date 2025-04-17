@@ -4,7 +4,7 @@ const producer = new Producer({
   endpoints: 'rmq-xxx.rocketmq.gz.qcloud.tencenttdmq.com:8080',
   sessionCredentials: {
     accessKey: 'AKID**********************0123456789',
-    secretKey: 'sk0123456789********************',
+    accessSecret: 'sk0123456789********************',
   }
 });
 await producer.startup();
@@ -23,7 +23,7 @@ const simpleConsumer = new SimpleConsumer({
     endpoints: 'rmq-xxx.rocketmq.gz.qcloud.tencenttdmq.com:8080',
   sessionCredentials: {
     accessKey: 'AKID**********************0123456789',
-    secretKey: 'sk0123456789********************',
+    accessSecret: 'sk0123456789********************',
   },
   consumerGroup: 'nodejs-demo-group',
   subscriptions: new Map().set('TopicTest', '*'),
