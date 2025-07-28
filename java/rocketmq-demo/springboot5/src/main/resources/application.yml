@@ -13,6 +13,7 @@ rocketmq:
     access-key: eyJrZXlJZC....
     # 已授权的角色名称
     secret-key: admin
+    enable-msg-trace: true
   # 消费者公共配置
   consumer:
     # 角色密钥
