@@ -13,6 +13,7 @@ rocketmq:
     access-key: AKID**********************0123456789
     # 已授权的角色名称
     secret-key: sk0123456789********************
+    enable-msg-trace: true
   # 消费者公共配置
   consumer:
     # 角色密钥
