@@ -25,10 +25,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RocketMQMessageListener(
-        consumerGroup = "${rocketmq.consumer2.group}",  // 消费组，格式：group名称
-        // topic名称，格式：topic名称
-        topic = "${rocketmq.consumer2.topic}",
-        selectorExpression = "${rocketmq.consumer2.subExpression}" // 订阅表达式, 不配置表示订阅所有消息
+    consumerGroup = "${rocketmq.consumer2.group}",  // 消费组，格式：group名称
+    // topic名称，格式：topic名称
+    topic = "${rocketmq.consumer2.topic}",
+    selectorExpression = "${rocketmq.consumer2.subExpression}", // 订阅表达式, 不配置表示订阅所有消息
+    enableMsgTrace = true //打开轨迹
 )
 public class Tag2Consumer implements RocketMQListener<String> {
 
