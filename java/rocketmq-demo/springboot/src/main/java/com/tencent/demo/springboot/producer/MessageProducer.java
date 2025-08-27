@@ -139,4 +139,21 @@ public class MessageProducer {
         System.out.printf("DelaySend to topic %s sendResult=%s %n", topic, sendResult);
     }
 
+    /**
+     * 同步顺序发送
+     *
+     * @param message 消息内容
+     * @param tags    订阅tags
+     * @param hashKey 同一个 hashKey 消息会被发送到同一个队列，从而保证顺序性
+     */
+    public void syncSendOrderly(String message, String tags,String hashKey) {
+        // springboot不支持使用header传递tags，根据要求，需要在topic后进行拼接 formats: `topicName:tags`，不拼接标识无tag
+        String destination = StringUtils.isBlank(tags) ? topic : topic + ":" + tags;
+        // object消息类型
+        SendResult sendResult = rocketMQTemplate.syncSendOrderly(destination,
+            MessageBuilder.withPayload(message)
+                .setHeader(MessageConst.PROPERTY_KEYS, "yourKey")   // 指定业务key
+                .build(),hashKey);
+        System.out.printf("syncSend1 to topic %s sendResult=%s %n", topic, sendResult);
+    }
 }

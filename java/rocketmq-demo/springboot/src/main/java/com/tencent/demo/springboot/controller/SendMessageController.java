@@ -88,4 +88,16 @@ public class SendMessageController {
         sendMessage.batchSend("This is a batchSend message.", "TAG2");
         return "success";
     }
+
+    /**
+     * 发送同步顺序消息
+     */
+    @GetMapping("/syncSendOrderly")
+    public String syncSendOrderly() {
+        sendMessage.syncSendOrderly("This is a new message1.", "TAG1", "orderId-001");
+        sendMessage.syncSendOrderly("This is a new message2.", "TAG1", "orderId-001");
+        sendMessage.syncSendOrderly("This is a new message3.", "TAG2", "orderId-001");
+        sendMessage.syncSendOrderly("This is a new message4.", "TAG2", "orderId-001");
+        return "success";
+    }
 }
