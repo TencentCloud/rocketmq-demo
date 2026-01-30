@@ -176,7 +176,7 @@ public class ClusterService {
     }
     
     public void deleteCluster(String clusterId) throws Exception {
-        log.info("Deleting cluster: {}", clusterId);
-        log.info("Cluster deleted successfully: {}", clusterId);
+        log.warn("Cluster deletion is not allowed via dashboard: {}", clusterId);
+        throw new UnsupportedOperationException("集群删除操作不被允许,请通过腾讯云控制台删除集群");
     }
 }
