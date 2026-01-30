@@ -6,13 +6,19 @@ import com.rocketmq.dashboard.dto.request.UpdateGroupRequest;
 import com.rocketmq.dashboard.dto.response.ConsumerClientInfo;
 import com.rocketmq.dashboard.dto.response.ConsumerLagInfo;
 import com.rocketmq.dashboard.dto.response.GroupInfo;
+import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
+import com.tencentcloudapi.trocket.v20230308.models.ConsumeGroupItem;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerGroupListRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerGroupListResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,28 +30,48 @@ public class GroupService {
         this.trocketClient = trocketClient;
     }
     
-    public List<GroupInfo> listGroups(String clusterId) throws Exception {
+    public List<GroupInfo> listGroups(String clusterId) throws TencentCloudSDKException {
         log.info("Listing consumer groups for cluster: {}", clusterId);
-        
-        List<GroupInfo> groups = new ArrayList<>();
-        groups.add(GroupInfo.builder()
-                .groupName("demo-consumer-group")
-                .clusterId(clusterId)
-                .description("Demo consumer group")
+
+        try {
+            DescribeConsumerGroupListRequest request = new DescribeConsumerGroupListRequest();
+            request.setInstanceId(clusterId);
+            request.setOffset(0L);
+            request.setLimit(100L);
+
+            DescribeConsumerGroupListResponse response = trocketClient.DescribeConsumerGroupList(request);
+
+            List<GroupInfo> groups = new ArrayList<>();
+            if (response.getData() != null) {
+                groups = Arrays.stream(response.getData())
+                        .map(this::mapToGroupInfo)
+                        .collect(Collectors.toList());
+            }
+
+            log.info("Found {} consumer groups", groups.size());
+            return groups;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to list consumer groups from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private GroupInfo mapToGroupInfo(ConsumeGroupItem item) {
+        return GroupInfo.builder()
+                .groupName(item.getConsumerGroup())
+                .clusterId(item.getInstanceId())
+                .description(item.getRemark())
                 .consumeFrom("CONSUME_FROM_LAST_OFFSET")
-                .broadcast(false)
-                .retryEnabled(true)
-                .maxRetryTimes(16)
-                .subscribedTopics(3)
-                .onlineConsumers(5)
-                .totalLag(1000L)
-                .consumeTps(50.5)
-                .createTime(LocalDateTime.now().minusDays(15))
-                .lastConsumeTime(LocalDateTime.now().minusMinutes(2))
-                .build());
-        
-        log.info("Found {} consumer groups", groups.size());
-        return groups;
+                .broadcast(Boolean.FALSE.equals(item.getConsumeMessageOrderly()))
+                .retryEnabled(Boolean.TRUE.equals(item.getConsumeEnable()))
+                .maxRetryTimes(item.getMaxRetryTimes() != null ? item.getMaxRetryTimes().intValue() : 16)
+                .subscribedTopics(null)
+                .onlineConsumers(null)
+                .totalLag(null)
+                .consumeTps(null)
+                .createTime(LocalDateTime.now())
+                .lastConsumeTime(null)
+                .build();
     }
     
     public GroupInfo getGroup(String clusterId, String groupName) throws Exception {
