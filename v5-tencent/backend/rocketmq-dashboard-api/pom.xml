@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.tencentcloudapi</groupId>
             <artifactId>tencentcloud-sdk-java-trocket</artifactId>
-            <version>3.1.1046</version>
+            <version>3.1.1292</version>
         </dependency>
         
         <!-- Jackson for JSON processing -->
