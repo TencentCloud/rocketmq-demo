@@ -8,6 +8,8 @@ import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListResponse;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicResponse;
 import com.tencentcloudapi.trocket.v20230308.models.TopicItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,9 +59,6 @@ public class TopicService {
         }
     }
 
-    /**
-     * Map Tencent Cloud TopicItem to TopicInfo
-     */
     private TopicInfo mapToTopicInfo(TopicItem topicItem) {
         return TopicInfo.builder()
                 .topicName(topicItem.getTopic())
@@ -68,20 +67,43 @@ public class TopicService {
                 .description(topicItem.getRemark())
                 .queueNum(topicItem.getQueueNum() != null ? topicItem.getQueueNum().intValue() : null)
                 .retentionHours(topicItem.getMsgTTL() != null ? topicItem.getMsgTTL().intValue() : null)
-                .maxMessageSize(4194304L) // Default max message size
-                .totalMessages(null) // Not available in API response
-                .todayMessages(null) // Not available in API response
-                .tps(null) // Not available in API response
-                .producerCount(null) // Not available in API response
-                .consumerCount(null) // Not available in API response
-                .createTime(LocalDateTime.now()) // Not available in API response
+                .maxMessageSize(4194304L)
+                .totalMessages(null)
+                .todayMessages(null)
+                .tps(null)
+                .producerCount(null)
+                .consumerCount(null)
+                .createTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build();
     }
 
-    /**
-     * Map Tencent Cloud topic type to internal topic type
-     */
+    private TopicInfo mapDescribeTopicToTopicInfo(DescribeTopicResponse response) {
+        return TopicInfo.builder()
+                .topicName(response.getTopic())
+                .clusterId(response.getInstanceId())
+                .topicType(mapTopicType(response.getTopicType()))
+                .description(response.getRemark())
+                .queueNum(null)
+                .retentionHours(response.getMsgTTL() != null ? response.getMsgTTL().intValue() : null)
+                .maxMessageSize(4194304L)
+                .totalMessages(null)
+                .todayMessages(null)
+                .tps(null)
+                .producerCount(null)
+                .consumerCount(response.getSubscriptionCount() != null ? response.getSubscriptionCount().intValue() : null)
+                .createTime(timestampToLocalDateTime(response.getCreatedTime()))
+                .updateTime(timestampToLocalDateTime(response.getLastUpdateTime()))
+                .build();
+    }
+
+    private LocalDateTime timestampToLocalDateTime(Long timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(timestamp), java.time.ZoneId.systemDefault());
+    }
+
     private String mapTopicType(String tencentType) {
         if (tencentType == null) {
             return "Normal";
@@ -104,25 +126,29 @@ public class TopicService {
         }
     }
 
-    public TopicInfo getTopic(String clusterId, String topicName) throws Exception {
+    public TopicInfo getTopic(String clusterId, String topicName) throws TencentCloudSDKException {
         log.info("Getting topic: {} in cluster: {}", topicName, clusterId);
 
-        return TopicInfo.builder()
-                .topicName(topicName)
-                .clusterId(clusterId)
-                .topicType("Normal")
-                .description("Demo topic")
-                .queueNum(8)
-                .retentionHours(72)
-                .maxMessageSize(4194304L)
-                .totalMessages(100000L)
-                .todayMessages(5000L)
-                .tps(100.5)
-                .producerCount(2)
-                .consumerCount(3)
-                .createTime(LocalDateTime.now().minusDays(10))
-                .updateTime(LocalDateTime.now())
-                .build();
+        try {
+            DescribeTopicRequest request = new DescribeTopicRequest();
+            request.setInstanceId(clusterId);
+            request.setTopic(topicName);
+
+            DescribeTopicResponse response = trocketClient.DescribeTopic(request);
+
+            if (response == null || response.getInstanceId() == null || response.getTopic() == null) {
+                log.warn("Topic not found: {} in cluster: {}", topicName, clusterId);
+                throw new TencentCloudSDKException("TopicNotFound", "Topic '" + topicName + "' not found in cluster '" + clusterId + "'");
+            }
+
+            TopicInfo topicInfo = mapDescribeTopicToTopicInfo(response);
+
+            log.info("Successfully retrieved topic: {}", topicName);
+            return topicInfo;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to get topic from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public TopicInfo createTopic(CreateTopicRequest request) throws Exception {
