@@ -61,6 +61,8 @@ public class ClusterController {
             log.info("Creating cluster: {}", request.getClusterName());
             ClusterInfo cluster = clusterService.createCluster(request);
             return Result.success("Cluster created successfully", cluster);
+        } catch (UnsupportedOperationException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to create cluster", e);
             throw new RuntimeException("Failed to create cluster: " + e.getMessage(), e);

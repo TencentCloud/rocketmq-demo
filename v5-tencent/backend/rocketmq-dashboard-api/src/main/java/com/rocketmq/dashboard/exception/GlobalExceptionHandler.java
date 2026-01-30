@@ -81,6 +81,13 @@ public class GlobalExceptionHandler {
         return Result.error(ResponseCode.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(UnsupportedOperationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Result<Void> handleUnsupportedOperationException(UnsupportedOperationException e) {
+        log.warn("Unsupported operation: {}", e.getMessage());
+        return Result.error(ResponseCode.FORBIDDEN, e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Void> handleException(Exception e) {

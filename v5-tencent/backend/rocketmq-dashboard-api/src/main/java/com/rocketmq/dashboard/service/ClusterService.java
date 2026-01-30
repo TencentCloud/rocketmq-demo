@@ -195,21 +195,8 @@ public class ClusterService {
     }
     
     public ClusterInfo createCluster(CreateClusterRequest request) throws Exception {
-        log.info("Creating cluster: {}", request.getClusterName());
-        
-        return ClusterInfo.builder()
-                .clusterId("rmq-cn-new001")
-                .clusterName(request.getClusterName())
-                .description(request.getDescription())
-                .region(request.getRegion())
-                .clusterType(request.getClusterType())
-                .status("CREATING")
-                .maxTps(request.getMaxTps() != null ? request.getMaxTps() : 10000)
-                .maxBandwidth(request.getMaxBandwidth() != null ? request.getMaxBandwidth() : 100)
-                .storageCapacity(request.getStorageCapacity() != null ? request.getStorageCapacity() : 500)
-                .createTime(LocalDateTime.now())
-                .updateTime(LocalDateTime.now())
-                .build();
+        log.warn("Cluster creation is not allowed via dashboard");
+        throw new UnsupportedOperationException("集群创建操作不被允许，请通过腾讯云控制台创建集群");
     }
     
     public ClusterInfo updateCluster(String clusterId, UpdateClusterRequest request) throws Exception {

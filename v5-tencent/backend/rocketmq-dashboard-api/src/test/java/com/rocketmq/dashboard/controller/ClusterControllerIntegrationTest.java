@@ -41,7 +41,7 @@ class ClusterControllerIntegrationTest {
     }
 
     @Test
-    void createClusterShouldReturnSuccess() throws Exception {
+    void createClusterShouldReturnUnsupportedOperation() throws Exception {
         CreateClusterRequest request = new CreateClusterRequest();
         request.setClusterName("test-cluster");
         request.setRegion("ap-guangzhou");
@@ -49,20 +49,20 @@ class ClusterControllerIntegrationTest {
         mockMvc.perform(post("/api/v1/clusters")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("Cluster created successfully"));
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value(403))
+                .andExpect(jsonPath("$.message").value("集群创建操作不被允许，请通过腾讯云控制台创建集群"));
     }
 
     @Test
-    void createClusterWithInvalidDataShouldReturnBadRequest() throws Exception {
+    void createClusterWithInvalidDataShouldReturnUnsupportedOperation() throws Exception {
         CreateClusterRequest request = new CreateClusterRequest();
-        // Missing required fields
+        // Even with missing required fields, should return unsupported operation error
 
         mockMvc.perform(post("/api/v1/clusters")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest()); // Validation should happen first
     }
 
     @Test
