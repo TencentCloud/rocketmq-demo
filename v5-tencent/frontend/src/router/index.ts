@@ -7,6 +7,15 @@ const routes: RouteRecordRaw[] = [
     redirect: '/dashboard'
   },
   {
+    path: '/config',
+    name: 'Config',
+    component: () => import('@/views/config/Index.vue'),
+    meta: {
+      title: 'Configuration',
+      icon: 'setting'
+    }
+  },
+  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/views/Dashboard.vue'),
