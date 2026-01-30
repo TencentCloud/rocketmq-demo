@@ -11,6 +11,7 @@ import com.tencentcloudapi.trocket.v20230308.TrocketClient;
 import com.tencentcloudapi.trocket.v20230308.models.ConsumeGroupItem;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerGroupListRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerGroupListResponse;
+import com.tencentcloudapi.trocket.v20230308.models.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -74,23 +75,63 @@ public class GroupService {
                 .build();
     }
     
-    public GroupInfo getGroup(String clusterId, String groupName) throws Exception {
+    public GroupInfo getGroup(String clusterId, String groupName) throws TencentCloudSDKException {
         log.info("Getting consumer group: {} in cluster: {}", groupName, clusterId);
-        
+
+        try {
+            // Create request for DescribeConsumerGroupList API with filter
+            DescribeConsumerGroupListRequest request = new DescribeConsumerGroupListRequest();
+            request.setInstanceId(clusterId);
+            request.setOffset(0L);
+            request.setLimit(100L);
+
+            // Filter by specific consumer group name
+            Filter[] filters = new Filter[1];
+            filters[0] = new Filter();
+            filters[0].setName("ConsumerGroup");
+            filters[0].setValues(new String[]{groupName});
+            request.setFilters(filters);
+
+            // Call Tencent Cloud API
+            DescribeConsumerGroupListResponse response = trocketClient.DescribeConsumerGroupList(request);
+
+            // Check if consumer group exists
+            if (response.getData() == null || response.getData().length == 0) {
+                log.error("Consumer group not found: {} in cluster: {}", groupName, clusterId);
+                throw new TencentCloudSDKException("ConsumerGroupNotFound: " + groupName);
+            }
+
+            // Get first (and should be only) group
+            ConsumeGroupItem groupItem = response.getData()[0];
+
+            // Map to GroupInfo with detailed information
+            log.info("Successfully retrieved consumer group: {}", groupName);
+            return mapToGroupInfoDetailed(groupItem);
+
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to get consumer group {} from cluster {}: {}", groupName, clusterId, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * Map Tencent Cloud ConsumeGroupItem to GroupInfo with detailed fields
+     */
+    private GroupInfo mapToGroupInfoDetailed(ConsumeGroupItem item) {
         return GroupInfo.builder()
-                .groupName(groupName)
-                .clusterId(clusterId)
-                .description("Demo consumer group")
+                .groupName(item.getConsumerGroup())
+                .clusterId(item.getInstanceId())
+                .description(item.getRemark())
                 .consumeFrom("CONSUME_FROM_LAST_OFFSET")
-                .broadcast(false)
-                .retryEnabled(true)
-                .maxRetryTimes(16)
-                .subscribedTopics(3)
-                .onlineConsumers(5)
-                .totalLag(1000L)
-                .consumeTps(50.5)
-                .createTime(LocalDateTime.now().minusDays(15))
-                .lastConsumeTime(LocalDateTime.now().minusMinutes(2))
+                .broadcast(Boolean.FALSE.equals(item.getConsumeMessageOrderly()))
+                .retryEnabled(Boolean.TRUE.equals(item.getConsumeEnable()))
+                .maxRetryTimes(item.getMaxRetryTimes() != null ? item.getMaxRetryTimes().intValue() : 16)
+                .subscribedTopics(null)
+                .onlineConsumers(null)
+                .totalLag(null)
+                .consumeTps(null)
+                .createTime(LocalDateTime.now())
+                .lastConsumeTime(null)
                 .build();
     }
     
