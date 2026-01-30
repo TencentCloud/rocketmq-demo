@@ -1,0 +1,1 @@
+import{i as e}from"./request-B51SnmWP.js";const a={saveCredentials(t){return e.post("/v1/config/credentials",t).then(n=>n.data)},getCredentials(){return e.get("/v1/config/credentials").then(t=>t.data)},listRegions(){return e.get("/v1/config/regions").then(t=>t.data)},testConnection(t){return e.post("/v1/config/test",t).then(n=>n.data)}};export{a as c};

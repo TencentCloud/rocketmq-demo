@@ -49,6 +49,11 @@ instance.interceptors.response.use(
   (response: AxiosResponse) => {
     const { data } = response
 
+    // Add success field based on code for compatibility
+    if (data && typeof data.code === 'number') {
+      data.success = data.code === 200
+    }
+
     // Handle business logic errors
     if (data.success === false) {
       const message = data.message || 'Request failed'

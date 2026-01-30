@@ -39,8 +39,8 @@
           >
             <t-option
               v-for="region in regions"
-              :key="region.region"
-              :value="region.region"
+              :key="region.regionId"
+              :value="region.regionId"
               :label="region.regionName"
             />
           </t-select>

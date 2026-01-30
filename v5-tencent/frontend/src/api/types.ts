@@ -12,8 +12,9 @@ export interface CredentialsRequest {
 }
 
 export interface RegionInfo {
-  region: string
+  regionId: string
   regionName: string
+  available?: boolean
 }
 
 export interface ClusterInfo {

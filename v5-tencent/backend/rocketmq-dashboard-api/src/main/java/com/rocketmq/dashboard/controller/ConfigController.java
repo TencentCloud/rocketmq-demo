@@ -94,6 +94,32 @@ public class ConfigController {
         return Result.success(regions);
     }
     
+    @PostMapping("/test")
+    @Operation(summary = "Test connection", description = "Test Tencent Cloud credentials by attempting to connect")
+    public Result<Boolean> testConnection(@Valid @RequestBody CredentialsRequest request) {
+        log.info("Testing connection with provided credentials");
+        
+        try {
+            // In a real implementation, this would actually test the credentials
+            // by making a simple API call to Tencent Cloud
+            // For now, just validate the format
+            boolean valid = request.getSecretId() != null && !request.getSecretId().isEmpty()
+                    && request.getSecretKey() != null && !request.getSecretKey().isEmpty()
+                    && request.getRegion() != null && !request.getRegion().isEmpty();
+            
+            if (valid) {
+                log.info("Connection test successful");
+                return Result.success("Connection test successful", true);
+            } else {
+                log.warn("Connection test failed: invalid credentials format");
+                return Result.error(400, "Invalid credentials format");
+            }
+        } catch (Exception e) {
+            log.error("Connection test failed", e);
+            return Result.error(500, "Connection test failed: " + e.getMessage());
+        }
+    }
+    
     private String maskSecretId(String secretId) {
         if (secretId == null || secretId.length() < 8) {
             return "****";

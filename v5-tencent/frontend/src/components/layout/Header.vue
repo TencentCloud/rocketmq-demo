@@ -16,16 +16,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 
 const title = computed(() => {
   return (route.meta.title as string) || 'Dashboard'
 })
 
 const handleSettings = () => {
-  console.log('Open settings')
+  router.push('/config')
 }
 </script>
 
