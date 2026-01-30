@@ -113,27 +113,85 @@ public class ClusterService {
         );
     }
     
-    public ClusterInfo getCluster(String clusterId) throws Exception {
+    public ClusterInfo getCluster(String clusterId) throws TencentCloudSDKException {
         log.info("Getting cluster details for: {}", clusterId);
         
+        try {
+            // Create request for DescribeInstanceList API with filter
+            DescribeInstanceListRequest request = new DescribeInstanceListRequest();
+            
+            // Filter by specific instance ID
+            Filter[] filters = new Filter[1];
+            filters[0] = new Filter();
+            filters[0].setName("InstanceId");
+            filters[0].setValues(new String[]{clusterId});
+            request.setFilters(filters);
+            
+            // Call Tencent Cloud API
+            DescribeInstanceListResponse response = trocketClient.DescribeInstanceList(request);
+            
+            // Check if instance exists
+            if (response.getData() == null || response.getData().length == 0) {
+                log.error("Cluster not found: {}", clusterId);
+                throw new TencentCloudSDKException("Cluster not found: " + clusterId);
+            }
+            
+            // Get the first (and should be only) instance
+            InstanceItem instance = response.getData()[0];
+            
+            // Map to ClusterInfo with detailed information
+            ClusterInfo clusterInfo = mapToClusterInfoDetailed(instance);
+            
+            log.info("Successfully retrieved cluster details: {}", clusterId);
+            return clusterInfo;
+            
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to get cluster {} from Tencent Cloud API: {}", clusterId, e.getMessage(), e);
+            throw e;
+        }
+    }
+    
+    /**
+     * Map Tencent Cloud InstanceItem to ClusterInfo with detailed fields
+     */
+    private ClusterInfo mapToClusterInfoDetailed(InstanceItem instance) {
         return ClusterInfo.builder()
-                .clusterId(clusterId)
-                .clusterName("demo-cluster")
-                .description("Demo cluster for development")
-                .region("ap-guangzhou")
-                .clusterType("5.x")
-                .status("RUNNING")
-                .maxTps(10000)
-                .maxBandwidth(100)
-                .storageCapacity(500)
-                .usedStorage(50)
-                .publicEndpoint("rmq-cn-demo001.rocketmq.tencentcloudapi.com")
-                .privateEndpoint("10.0.0.1:8080")
-                .topicCount(5)
-                .groupCount(3)
-                .createTime(LocalDateTime.now().minusDays(30))
+                .clusterId(instance.getInstanceId())
+                .clusterName(instance.getInstanceName())
+                .description(instance.getRemark())
+                .region(region)
+                .clusterType(instance.getVersion() != null ? instance.getVersion() : "5.x")
+                .status(mapInstanceStatus(instance.getInstanceStatus()))
+                .vpcId(null)  // Not available in InstanceItem
+                .subnetId(null)  // Not available in InstanceItem
+                .maxTps(instance.getTpsLimit() != null ? instance.getTpsLimit().intValue() : null)
+                .maxBandwidth(null)  // Not available in InstanceItem
+                .storageCapacity(null)  // Not available in InstanceItem
+                .usedStorage(null)  // Not available in InstanceItem
+                .publicEndpoint(buildEndpoint(instance.getInstanceId(), "public"))
+                .privateEndpoint(buildEndpoint(instance.getInstanceId(), "private"))
+                .topicCount(instance.getTopicNum() != null ? instance.getTopicNum().intValue() : 0)
+                .groupCount(instance.getGroupNum() != null ? instance.getGroupNum().intValue() : 0)
+                .createTime(convertTimestamp(instance.getExpiryTime()))
                 .updateTime(LocalDateTime.now())
                 .build();
+    }
+    
+    /**
+     * Build endpoint URL for instance
+     */
+    private String buildEndpoint(String instanceId, String type) {
+        if (instanceId == null) {
+            return null;
+        }
+        // Construct endpoint based on Tencent Cloud format
+        // Format: {instanceId}.{type}.rocketmq.{region}.tencentcloudapi.com
+        if ("public".equals(type)) {
+            return String.format("%s.rocketmq.%s.tencentcloudapi.com", instanceId, region);
+        } else {
+            // Private endpoint format (VPC internal)
+            return String.format("%s.internal.rocketmq.%s.tencentcloudapi.com", instanceId, region);
+        }
     }
     
     public ClusterInfo createCluster(CreateClusterRequest request) throws Exception {
