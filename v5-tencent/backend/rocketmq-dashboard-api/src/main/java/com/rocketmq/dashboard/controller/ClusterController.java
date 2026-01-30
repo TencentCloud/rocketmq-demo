@@ -72,15 +72,10 @@ public class ClusterController {
     public Result<ClusterInfo> updateCluster(
             @Parameter(description = "Cluster ID", required = true, example = "rmq-cn-xxxxx")
             @PathVariable String id,
-            @Valid @RequestBody UpdateClusterRequest request) {
-        try {
-            log.info("Updating cluster: {}", id);
-            ClusterInfo cluster = clusterService.updateCluster(id, request);
-            return Result.success("Cluster updated successfully", cluster);
-        } catch (Exception e) {
-            log.error("Failed to update cluster: {}", id, e);
-            throw new RuntimeException("Failed to update cluster: " + e.getMessage(), e);
-        }
+            @Valid @RequestBody UpdateClusterRequest request) throws Exception {
+        log.info("Updating cluster: {}", id);
+        ClusterInfo cluster = clusterService.updateCluster(id, request);
+        return Result.success("Cluster updated successfully", cluster);
     }
     
     @DeleteMapping("/{id}")

@@ -213,24 +213,11 @@ public class ClusterService {
     }
     
     public ClusterInfo updateCluster(String clusterId, UpdateClusterRequest request) throws Exception {
-        log.info("Updating cluster: {}", clusterId);
-        
-        ClusterInfo existing = getCluster(clusterId);
-        if (request.getDescription() != null) {
-            existing.setDescription(request.getDescription());
-        }
-        if (request.getMaxTps() != null) {
-            existing.setMaxTps(request.getMaxTps());
-        }
-        if (request.getMaxBandwidth() != null) {
-            existing.setMaxBandwidth(request.getMaxBandwidth());
-        }
-        if (request.getStorageCapacity() != null) {
-            existing.setStorageCapacity(request.getStorageCapacity());
-        }
-        existing.setUpdateTime(LocalDateTime.now());
-        
-        return existing;
+        log.warn("Cluster update is not allowed via dashboard: {}", clusterId);
+        throw new com.rocketmq.dashboard.exception.BusinessException(
+            com.rocketmq.dashboard.common.ResponseCode.BUSINESS_ERROR,
+            "集群更新操作不被允许，请通过腾讯云控制台修改集群配置"
+        );
     }
     
     public void deleteCluster(String clusterId) throws Exception {

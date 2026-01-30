@@ -66,7 +66,7 @@ class ClusterControllerIntegrationTest {
     }
 
     @Test
-    void updateClusterShouldReturnSuccess() throws Exception {
+    void updateClusterShouldReturnBusinessError() throws Exception {
         String clusterId = "rmq-cn-test12345";
         UpdateClusterRequest request = new UpdateClusterRequest();
         request.setDescription("Updated description");
@@ -75,12 +75,12 @@ class ClusterControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("Cluster updated successfully"));
+                .andExpect(jsonPath("$.code").value(1004))
+                .andExpect(jsonPath("$.message").value("集群更新操作不被允许，请通过腾讯云控制台修改集群配置"));
     }
 
     @Test
-    void updateClusterWithInvalidIdShouldHandleGracefully() throws Exception {
+    void updateClusterWithInvalidIdShouldReturnBusinessError() throws Exception {
         String clusterId = "non-existent-cluster";
         UpdateClusterRequest request = new UpdateClusterRequest();
         request.setDescription("test description");
@@ -88,7 +88,9 @@ class ClusterControllerIntegrationTest {
         mockMvc.perform(put("/api/v1/clusters/{id}", clusterId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(1004))
+                .andExpect(jsonPath("$.message").value("集群更新操作不被允许，请通过腾讯云控制台修改集群配置"));
     }
 
     @Test
