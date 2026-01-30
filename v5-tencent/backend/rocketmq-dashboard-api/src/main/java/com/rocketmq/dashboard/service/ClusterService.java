@@ -3,13 +3,20 @@ package com.rocketmq.dashboard.service;
 import com.rocketmq.dashboard.dto.request.CreateClusterRequest;
 import com.rocketmq.dashboard.dto.request.UpdateClusterRequest;
 import com.rocketmq.dashboard.dto.response.ClusterInfo;
+import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
+import com.tencentcloudapi.trocket.v20230308.models.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -17,35 +24,93 @@ public class ClusterService {
     
     private final TrocketClient trocketClient;
     
+    @Value("${tencent.cloud.region:ap-guangzhou}")
+    private String region;
+    
     public ClusterService(TrocketClient trocketClient) {
         this.trocketClient = trocketClient;
     }
     
-    public List<ClusterInfo> listClusters() throws Exception {
-        log.info("Listing all RocketMQ clusters");
+    public List<ClusterInfo> listClusters() throws TencentCloudSDKException {
+        log.info("Listing all RocketMQ clusters from Tencent Cloud API");
         
-        List<ClusterInfo> clusters = new ArrayList<>();
-        clusters.add(ClusterInfo.builder()
-                .clusterId("rmq-cn-demo001")
-                .clusterName("demo-cluster")
-                .description("Demo cluster for development")
-                .region("ap-guangzhou")
-                .clusterType("5.x")
-                .status("RUNNING")
-                .maxTps(10000)
-                .maxBandwidth(100)
-                .storageCapacity(500)
-                .usedStorage(50)
-                .publicEndpoint("rmq-cn-demo001.rocketmq.tencentcloudapi.com")
-                .privateEndpoint("10.0.0.1:8080")
-                .topicCount(5)
-                .groupCount(3)
-                .createTime(LocalDateTime.now().minusDays(30))
+        try {
+            // Create request for DescribeInstanceList API
+            DescribeInstanceListRequest request = new DescribeInstanceListRequest();
+            
+            // Call Tencent Cloud API
+            DescribeInstanceListResponse response = trocketClient.DescribeInstanceList(request);
+            
+            // Map response to ClusterInfo list
+            List<ClusterInfo> clusters = new ArrayList<>();
+            if (response.getData() != null) {
+                clusters = Arrays.stream(response.getData())
+                        .map(this::mapToClusterInfo)
+                        .collect(Collectors.toList());
+            }
+            
+            log.info("Found {} clusters", clusters.size());
+            return clusters;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to list clusters from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+    
+    /**
+     * Map Tencent Cloud InstanceItem to ClusterInfo
+     */
+    private ClusterInfo mapToClusterInfo(InstanceItem instance) {
+        return ClusterInfo.builder()
+                .clusterId(instance.getInstanceId())
+                .clusterName(instance.getInstanceName())
+                .description(instance.getRemark())
+                .region(region)
+                .clusterType(instance.getVersion() != null ? instance.getVersion() : "5.x")
+                .status(mapInstanceStatus(instance.getInstanceStatus()))
+                .maxTps(instance.getTpsLimit() != null ? instance.getTpsLimit().intValue() : null)
+                .topicCount(instance.getTopicNum() != null ? instance.getTopicNum().intValue() : 0)
+                .groupCount(instance.getGroupNum() != null ? instance.getGroupNum().intValue() : 0)
+                .createTime(convertTimestamp(instance.getExpiryTime()))
                 .updateTime(LocalDateTime.now())
-                .build());
+                .build();
+    }
+    
+    /**
+     * Map Tencent Cloud instance status to internal status
+     */
+    private String mapInstanceStatus(String tencentStatus) {
+        if (tencentStatus == null) {
+            return "UNKNOWN";
+        }
         
-        log.info("Found {} clusters", clusters.size());
-        return clusters;
+        // Tencent Cloud status mapping
+        switch (tencentStatus.toUpperCase()) {
+            case "RUNNING":
+                return "RUNNING";
+            case "CREATING":
+                return "CREATING";
+            case "DELETING":
+                return "DELETING";
+            case "UPGRADING":
+                return "UPGRADING";
+            default:
+                log.warn("Unknown instance status: {}", tencentStatus);
+                return tencentStatus;
+        }
+    }
+    
+    /**
+     * Convert Unix timestamp (seconds) to LocalDateTime
+     */
+    private LocalDateTime convertTimestamp(Long timestamp) {
+        if (timestamp == null || timestamp == 0) {
+            return null;
+        }
+        return LocalDateTime.ofInstant(
+                Instant.ofEpochSecond(timestamp),
+                ZoneId.systemDefault()
+        );
     }
     
     public ClusterInfo getCluster(String clusterId) throws Exception {
