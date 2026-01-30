@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { useAppStore } from './stores/app'
+import MainLayout from './layouts/MainLayout.vue'
+import LoadingOverlay from './components/common/LoadingOverlay.vue'
 
 const appStore = useAppStore()
 </script>
 
 <template>
-  <router-view />
+  <MainLayout>
+    <router-view />
+  </MainLayout>
+  <LoadingOverlay :visible="appStore.loading" />
 </template>
 
 <style>

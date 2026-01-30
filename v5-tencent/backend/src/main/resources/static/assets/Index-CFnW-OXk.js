@@ -1,0 +1,1 @@
+import{P as a,E as s}from"./EmptyState-aF5rfPdN.js";import{d as o,o as t,c,a as e,_ as n}from"./index-BSFjECzw.js";const r={class:"roles-page"},_=o({__name:"Index",setup(d){return(p,m)=>(t(),c("div",r,[e(a,{title:"Role Management",description:"Manage access roles"}),e(s,{message:"No roles configured"})]))}}),f=n(_,[["__scopeId","data-v-56707128"]]);export{f as default};
