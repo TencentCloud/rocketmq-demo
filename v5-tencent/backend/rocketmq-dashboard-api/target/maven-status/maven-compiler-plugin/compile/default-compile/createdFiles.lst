@@ -1,2 +1,10 @@
+com/rocketmq/dashboard/util/ResponseUtil.class
+com/rocketmq/dashboard/common/ResponseCode.class
+com/rocketmq/dashboard/exception/GlobalExceptionHandler.class
+com/rocketmq/dashboard/config/OpenApiConfig.class
+com/rocketmq/dashboard/config/ConfigManager.class
 com/rocketmq/dashboard/controller/HealthController.class
+com/rocketmq/dashboard/config/TencentCloudConfig.class
+com/rocketmq/dashboard/exception/BusinessException.class
+com/rocketmq/dashboard/common/Result.class
 com/rocketmq/dashboard/DashboardApplication.class
