@@ -20,7 +20,17 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: '../backend/src/main/resources/static',
-    emptyOutDir: true
+    outDir: '../backend/rocketmq-dashboard-api/src/main/resources/static',
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'ui-vendor': ['tdesign-vue-next'],
+          'utils-vendor': ['axios', 'dayjs']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000
   }
 })

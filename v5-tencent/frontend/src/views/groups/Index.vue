@@ -120,7 +120,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
-import type { FormInstanceFunctions, FormRule, TableColumnData } from 'tdesign-vue-next'
+import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
@@ -187,7 +187,7 @@ const resetFormRules: Record<string, FormRule[]> = {
   timestamp: [{ required: true, message: 'Timestamp is required', type: 'error' }]
 }
 
-const columns: TableColumnData[] = [
+const columns: PrimaryTableCol[] = [
   { colKey: 'groupId', title: 'Group ID', width: 200 },
   { colKey: 'groupName', title: 'Group Name', width: 200 },
   { colKey: 'consumeType', title: 'Type', width: 100 },
@@ -198,7 +198,7 @@ const columns: TableColumnData[] = [
   { colKey: 'action', title: 'Actions', cell: 'action', width: 250, fixed: 'right' }
 ]
 
-const clientColumns: TableColumnData[] = [
+const clientColumns: PrimaryTableCol[] = [
   { colKey: 'clientId', title: 'Client ID' },
   { colKey: 'clientAddress', title: 'Address' },
   { colKey: 'language', title: 'Language' },
@@ -206,7 +206,7 @@ const clientColumns: TableColumnData[] = [
   { colKey: 'connectionTime', title: 'Connected At' }
 ]
 
-const lagColumns: TableColumnData[] = [
+const lagColumns: PrimaryTableCol[] = [
   { colKey: 'topicName', title: 'Topic' },
   { colKey: 'partitionId', title: 'Partition' },
   { colKey: 'lag', title: 'Lag', cell: 'lag' }
@@ -225,7 +225,7 @@ const loadClusters = async () => {
     if (response.success) {
       clusters.value = response.data
       if (clusters.value.length > 0 && !selectedClusterId.value) {
-        selectedClusterId.value = clusters.value[0].clusterId
+        selectedClusterId.value = clusters.value[0]?.clusterId || ''
       }
     }
   } catch (error) {

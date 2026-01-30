@@ -164,7 +164,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
-import type { FormInstanceFunctions, FormRule, TableColumnData } from 'tdesign-vue-next'
+import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
@@ -233,7 +233,7 @@ const sendFormRules: Record<string, FormRule[]> = {
   body: [{ required: true, message: 'Message body is required', type: 'error' }]
 }
 
-const columns: TableColumnData[] = [
+const columns: PrimaryTableCol[] = [
   { colKey: 'topicId', title: 'Topic ID', width: 180 },
   { colKey: 'topicName', title: 'Topic Name', width: 200 },
   { colKey: 'messageType', title: 'Type', width: 120 },
@@ -243,7 +243,7 @@ const columns: TableColumnData[] = [
   { colKey: 'action', title: 'Actions', cell: 'action', width: 250, fixed: 'right' }
 ]
 
-const producerColumns: TableColumnData[] = [
+const producerColumns: PrimaryTableCol[] = [
   { colKey: 'clientId', title: 'Client ID' },
   { colKey: 'clientAddress', title: 'Address' },
   { colKey: 'language', title: 'Language' },
@@ -256,7 +256,7 @@ const loadClusters = async () => {
     if (response.success) {
       clusters.value = response.data
       if (clusters.value.length > 0 && !selectedClusterId.value) {
-        selectedClusterId.value = clusters.value[0].clusterId
+        selectedClusterId.value = clusters.value[0]?.clusterId || ''
       }
     }
   } catch (error) {

@@ -96,17 +96,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { MessagePlugin } from 'tdesign-vue-next'
-import type { TableColumnData } from 'tdesign-vue-next'
+import type { PrimaryTableCol } from 'tdesign-vue-next'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
 import { dashboardApi } from '@/api/dashboard'
 import type { DashboardOverview, TopLagGroup } from '@/api/types'
 import { formatNumber } from '@/utils/format'
-
-const router = useRouter()
 
 const loading = ref(true)
 const refreshing = ref(false)
@@ -123,7 +120,7 @@ const topLagGroups = ref<TopLagGroup[]>([])
 
 let refreshTimer: number | null = null
 
-const columns: TableColumnData[] = [
+const columns: PrimaryTableCol[] = [
   {
     colKey: 'groupName',
     title: 'Consumer Group',

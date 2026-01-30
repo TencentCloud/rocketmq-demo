@@ -106,7 +106,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
-import type { FormInstanceFunctions, TableColumnData } from 'tdesign-vue-next'
+import type { FormInstanceFunctions, PrimaryTableCol } from 'tdesign-vue-next'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
@@ -140,7 +140,7 @@ const queryForm = ref<QueryMessagesRequest>({
   endTime: ''
 })
 
-const columns: TableColumnData[] = [
+const columns: PrimaryTableCol[] = [
   { colKey: 'messageId', title: 'Message ID', width: 200 },
   { colKey: 'topicName', title: 'Topic', width: 150 },
   { colKey: 'tags', title: 'Tags', width: 120 },
@@ -156,7 +156,7 @@ const loadClusters = async () => {
     if (response.success) {
       clusters.value = response.data
       if (clusters.value.length > 0) {
-        queryForm.value.clusterId = clusters.value[0].clusterId
+        queryForm.value.clusterId = clusters.value[0]?.clusterId || ''
       }
     }
   } catch (error) {

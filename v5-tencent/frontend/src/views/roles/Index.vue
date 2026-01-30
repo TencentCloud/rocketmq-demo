@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
-import type { FormInstanceFunctions, FormRule, TableColumnData } from 'tdesign-vue-next'
+import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
@@ -124,7 +124,7 @@ const editFormRules: Record<string, FormRule[]> = {
   permissionType: [{ required: true, message: 'Permission type is required', type: 'error' }]
 }
 
-const columns: TableColumnData[] = [
+const columns: PrimaryTableCol[] = [
   { colKey: 'roleName', title: 'Role Name', width: 200 },
   { colKey: 'permissionType', title: 'Permission Type', cell: 'permissionType', width: 180 },
   { colKey: 'createTime', title: 'Create Time', cell: 'createTime', width: 180 },
@@ -148,7 +148,7 @@ const loadClusters = async () => {
     if (response.success) {
       clusters.value = response.data
       if (clusters.value.length > 0 && !selectedClusterId.value) {
-        selectedClusterId.value = clusters.value[0].clusterId
+        selectedClusterId.value = clusters.value[0]?.clusterId || ''
       }
     }
   } catch (error) {

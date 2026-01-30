@@ -153,7 +153,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
-import type { FormInstanceFunctions, FormRule, TableColumnData } from 'tdesign-vue-next'
+import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
@@ -206,7 +206,7 @@ const editFormRules: Record<string, FormRule[]> = {
   ]
 }
 
-const columns: TableColumnData[] = [
+const columns: PrimaryTableCol[] = [
   {
     colKey: 'clusterId',
     title: 'Cluster ID',
