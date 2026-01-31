@@ -196,18 +196,7 @@ public class TopicService {
     public List<ProducerInfo> getProducers(String clusterId, String topicName) throws Exception {
         log.info("Getting producers for topic: {} in cluster: {}", topicName, clusterId);
 
-        List<ProducerInfo> producers = new ArrayList<>();
-        producers.add(ProducerInfo.builder()
-                .producerId("producer-001")
-                .clientId("client-192.168.1.100@12345")
-                .clientAddress("192.168.1.100:12345")
-                .status("ONLINE")
-                .version("5.1.0")
-                .lastSendTime(LocalDateTime.now().minusMinutes(5))
-                .totalMessagesSent(10000L)
-                .connectionTime(LocalDateTime.now().minusHours(2))
-                .build());
-
-        return producers;
+        log.warn("Producer list API not available in Tencent Cloud SDK. Returning empty list.");
+        return new ArrayList<>();
     }
 }
