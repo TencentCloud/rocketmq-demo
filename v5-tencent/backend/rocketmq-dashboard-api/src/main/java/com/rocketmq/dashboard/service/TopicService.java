@@ -6,6 +6,8 @@ import com.rocketmq.dashboard.dto.response.ProducerInfo;
 import com.rocketmq.dashboard.dto.response.TopicInfo;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
+import com.tencentcloudapi.trocket.v20230308.models.ModifyTopicRequest;
+import com.tencentcloudapi.trocket.v20230308.models.ModifyTopicResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DeleteTopicRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DeleteTopicResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListRequest;
@@ -169,25 +171,31 @@ public class TopicService {
                 .build();
     }
 
-    public TopicInfo updateTopic(String clusterId, String topicName, UpdateTopicRequest request) throws Exception {
+    public TopicInfo updateTopic(String clusterId, String topicName, UpdateTopicRequest request) throws TencentCloudSDKException {
         log.info("Updating topic: {} in cluster: {}", topicName, clusterId);
 
-        TopicInfo existing = getTopic(clusterId, topicName);
-        if (request.getDescription() != null) {
-            existing.setDescription(request.getDescription());
-        }
-        if (request.getQueueNum() != null) {
-            existing.setQueueNum(request.getQueueNum());
-        }
-        if (request.getRetentionHours() != null) {
-            existing.setRetentionHours(request.getRetentionHours());
-        }
-        if (request.getMaxMessageSize() != null) {
-            existing.setMaxMessageSize(request.getMaxMessageSize());
-        }
-        existing.setUpdateTime(LocalDateTime.now());
+        try {
+            ModifyTopicRequest sdkRequest = new ModifyTopicRequest();
+            sdkRequest.setInstanceId(clusterId);
+            sdkRequest.setTopic(topicName);
 
-        return existing;
+            if (request.getQueueNum() != null) {
+                sdkRequest.setQueueNum(Long.valueOf(request.getQueueNum()));
+            }
+            if (request.getDescription() != null) {
+                sdkRequest.setRemark(request.getDescription());
+            }
+            if (request.getRetentionHours() != null) {
+                sdkRequest.setMsgTTL(Long.valueOf(request.getRetentionHours()));
+            }
+
+            ModifyTopicResponse response = trocketClient.ModifyTopic(sdkRequest);
+
+            return getTopic(clusterId, topicName);
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to update topic from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public void deleteTopic(String clusterId, String topicName) throws TencentCloudSDKException {
