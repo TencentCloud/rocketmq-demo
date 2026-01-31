@@ -231,6 +231,9 @@ onMounted(async () => {
 <style scoped>
 .messages-page {
   height: 100%;
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .filter-card, .result-card {
@@ -265,5 +268,20 @@ h3 {
   margin: 16px 0;
   font-size: 16px;
   font-weight: 600;
+}
+
+/* 响应式适配 */
+@media (min-width: 1920px) {
+  .messages-page {
+    padding: 32px;
+    max-width: 1800px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .messages-page {
+    padding: 40px;
+    max-width: 2000px;
+  }
 }
 </style>

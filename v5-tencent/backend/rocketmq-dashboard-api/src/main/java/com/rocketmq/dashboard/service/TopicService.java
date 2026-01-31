@@ -6,11 +6,12 @@ import com.rocketmq.dashboard.dto.response.ProducerInfo;
 import com.rocketmq.dashboard.dto.response.TopicInfo;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
-import com.tencentcloudapi.trocket.v20230308.models.ModifyTopicRequest;
-import com.tencentcloudapi.trocket.v20230308.models.ModifyTopicResponse;
+import com.tencentcloudapi.trocket.v20230308.models.CreateTopicResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DeleteTopicRequest;
+import com.tencentcloudapi.trocket.v20230308.models.ModifyTopicResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DeleteTopicResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicResponse;
@@ -155,27 +156,34 @@ public class TopicService {
         }
     }
 
-    public TopicInfo createTopic(CreateTopicRequest request) throws Exception {
+    public TopicInfo createTopic(CreateTopicRequest request) throws TencentCloudSDKException {
         log.info("Creating topic: {} in cluster: {}", request.getTopicName(), request.getClusterId());
 
-        return TopicInfo.builder()
-                .topicName(request.getTopicName())
-                .clusterId(request.getClusterId())
-                .topicType(request.getTopicType() != null ? request.getTopicType() : "Normal")
-                .description(request.getDescription())
-                .queueNum(request.getQueueNum() != null ? request.getQueueNum() : 8)
-                .retentionHours(request.getRetentionHours() != null ? request.getRetentionHours() : 72)
-                .maxMessageSize(request.getMaxMessageSize() != null ? request.getMaxMessageSize() : 4194304L)
-                .createTime(LocalDateTime.now())
-                .updateTime(LocalDateTime.now())
-                .build();
+        try {
+            com.tencentcloudapi.trocket.v20230308.models.CreateTopicRequest sdkRequest =
+                    new com.tencentcloudapi.trocket.v20230308.models.CreateTopicRequest();
+            sdkRequest.setInstanceId(request.getClusterId());
+            sdkRequest.setTopic(request.getTopicName());
+            sdkRequest.setQueueNum(request.getQueueNum() != null ? Long.valueOf(request.getQueueNum()) : 8L);
+            sdkRequest.setRemark(request.getDescription());
+            sdkRequest.setTopicType(request.getTopicType() != null ? request.getTopicType() : "NORMAL");
+            sdkRequest.setMsgTTL(request.getRetentionHours() != null ? Long.valueOf(request.getRetentionHours()) : 72L);
+
+            CreateTopicResponse response = trocketClient.CreateTopic(sdkRequest);
+
+            return getTopic(request.getClusterId(), request.getTopicName());
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to create topic from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public TopicInfo updateTopic(String clusterId, String topicName, UpdateTopicRequest request) throws TencentCloudSDKException {
         log.info("Updating topic: {} in cluster: {}", topicName, clusterId);
 
         try {
-            ModifyTopicRequest sdkRequest = new ModifyTopicRequest();
+            com.tencentcloudapi.trocket.v20230308.models.ModifyTopicRequest sdkRequest =
+                    new com.tencentcloudapi.trocket.v20230308.models.ModifyTopicRequest();
             sdkRequest.setInstanceId(clusterId);
             sdkRequest.setTopic(topicName);
 

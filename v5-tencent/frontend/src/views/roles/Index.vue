@@ -243,9 +243,27 @@ onMounted(async () => {
 <style scoped>
 .roles-page {
   height: 100%;
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .table-card {
   margin-top: 16px;
+}
+
+/* 响应式适配 */
+@media (min-width: 1920px) {
+  .roles-page {
+    padding: 32px;
+    max-width: 1800px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .roles-page {
+    padding: 40px;
+    max-width: 2000px;
+  }
 }
 </style>

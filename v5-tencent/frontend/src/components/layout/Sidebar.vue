@@ -72,38 +72,96 @@ const navigateTo = (path: string) => {
 
 <style scoped>
 .sidebar {
-  width: 240px;
+  width: 260px;
   height: 100vh;
-  background-color: #fff;
-  border-right: 1px solid #e7e7e7;
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  border-right: 1px solid rgba(0, 82, 217, 0.08);
   display: flex;
   flex-direction: column;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
 }
 
 .sidebar-header {
-  padding: 24px 16px;
-  border-bottom: 1px solid #e7e7e7;
+  padding: 28px 20px;
+  border-bottom: 1px solid rgba(0, 82, 217, 0.08);
+  background: linear-gradient(135deg, rgba(0, 82, 217, 0.02) 0%, rgba(0, 102, 255, 0.02) 100%);
 }
 
 .sidebar-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #000;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  background: linear-gradient(135deg, #0052d9 0%, #0066ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 :deep(.t-menu) {
   border: none;
   flex: 1;
+  padding: 8px 0;
 }
 
 :deep(.t-menu-item) {
-  margin: 4px 8px;
-  border-radius: 4px;
+  margin: 4px 12px;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+:deep(.t-menu-item::before) {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: linear-gradient(180deg, #0052d9 0%, #0066ff 100%);
+  border-radius: 0 2px 2px 0;
+  transition: height 0.2s ease;
+}
+
+:deep(.t-menu-item:hover) {
+  background: rgba(0, 82, 217, 0.06);
+  transform: translateX(2px);
+}
+
+:deep(.t-menu-item:hover::before) {
+  height: 60%;
 }
 
 :deep(.t-menu-item.t-is-active) {
-  background-color: var(--td-brand-color-1);
-  color: var(--td-brand-color);
+  background: linear-gradient(90deg, rgba(0, 82, 217, 0.08) 0%, rgba(0, 82, 217, 0.02) 100%);
+  color: #0052d9;
+  font-weight: 600;
+}
+
+:deep(.t-menu-item.t-is-active::before) {
+  height: 80%;
+}
+
+:deep(.t-icon) {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+:deep(.t-menu-item .t-icon) {
+  transition: all 0.2s ease;
+}
+
+:deep(.t-menu-item:hover .t-icon) {
+  transform: scale(1.1);
+}
+
+:deep(.t-menu-item.t-is-active .t-icon) {
+  color: #0052d9;
 }
 </style>

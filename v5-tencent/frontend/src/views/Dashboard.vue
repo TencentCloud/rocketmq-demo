@@ -221,6 +221,9 @@ onUnmounted(() => {
 <style scoped>
 .dashboard-page {
   height: 100%;
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .dashboard-content {
@@ -235,53 +238,132 @@ onUnmounted(() => {
 
 .stat-card {
   height: 120px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid rgba(0, 82, 217, 0.08);
 }
 
 .stat-content {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   height: 100%;
 }
 
 .stat-icon {
   font-size: 48px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0, 82, 217, 0.06);
 }
 
 .cluster-icon {
   color: #0052d9;
+  background: linear-gradient(135deg, rgba(0, 82, 217, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%);
 }
 
 .topic-icon {
   color: #29cc85;
+  background: linear-gradient(135deg, rgba(41, 204, 133, 0.1) 0%, rgba(41, 204, 133, 0.08) 100%);
 }
 
 .group-icon {
   color: #e37318;
+  background: linear-gradient(135deg, rgba(227, 115, 24, 0.1) 0%, rgba(227, 115, 24, 0.08) 100%);
 }
 
 .message-icon {
   color: #eb2f96;
+  background: linear-gradient(135deg, rgba(235, 47, 150, 0.1) 0%, rgba(235, 47, 150, 0.08) 100%);
 }
 
 .stat-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .stat-value {
-  font-size: 28px;
-  font-weight: 600;
-  color: #000;
+  font-size: 32px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  background: linear-gradient(135deg, #000000 0%, #333333 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .stat-label {
-  font-size: 14px;
+  font-size: 13px;
   color: #666;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .lag-table-card {
   flex: 1;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+}
+
+/* 表格增强 */
+:deep(.t-table__th) {
+  background: linear-gradient(135deg, rgba(0, 82, 217, 0.04) 0%, rgba(0, 102, 255, 0.04) 100%);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+:deep(.t-table__body tr) {
+  transition: all 0.15s ease;
+}
+
+:deep(.t-table__body tr:hover) {
+  background: linear-gradient(90deg, rgba(0, 82, 217, 0.03) 0%, rgba(0, 102, 255, 0.02) 100%);
+  transform: translateX(4px);
+}
+
+/* 响应式适配 */
+@media (min-width: 1920px) {
+  .dashboard-page {
+    padding: 32px;
+    max-width: 1800px;
+  }
+
+  .stat-card {
+    height: 140px;
+  }
+
+  .stat-icon {
+    font-size: 56px;
+    padding: 14px;
+  }
+
+  .stat-value {
+    font-size: 36px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .dashboard-page {
+    padding: 40px;
+    max-width: 2000px;
+  }
+
+  .stat-card {
+    height: 160px;
+  }
+
+  .stat-icon {
+    font-size: 64px;
+    padding: 16px;
+  }
+
+  .stat-value {
+    font-size: 42px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+  }
 }
 </style>
