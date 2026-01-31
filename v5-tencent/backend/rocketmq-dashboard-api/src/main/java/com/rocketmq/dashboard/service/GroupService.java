@@ -168,21 +168,31 @@ public class GroupService {
                 .build();
     }
     
-    public GroupInfo updateGroup(String clusterId, String groupName, UpdateGroupRequest request) throws Exception {
+    public GroupInfo updateGroup(String clusterId, String groupName, UpdateGroupRequest request) throws TencentCloudSDKException {
         log.info("Updating consumer group: {} in cluster: {}", groupName, clusterId);
-        
-        GroupInfo existing = getGroup(clusterId, groupName);
-        if (request.getDescription() != null) {
-            existing.setDescription(request.getDescription());
+
+        try {
+            ModifyConsumerGroupRequest sdkRequest = new ModifyConsumerGroupRequest();
+            sdkRequest.setInstanceId(clusterId);
+            sdkRequest.setConsumerGroup(groupName);
+
+            if (request.getDescription() != null) {
+                sdkRequest.setRemark(request.getDescription());
+            }
+            if (request.getRetryEnabled() != null) {
+                sdkRequest.setConsumeEnable(request.getRetryEnabled());
+            }
+            if (request.getMaxRetryTimes() != null) {
+                sdkRequest.setMaxRetryTimes(Long.valueOf(request.getMaxRetryTimes()));
+            }
+
+            ModifyConsumerGroupResponse response = trocketClient.ModifyConsumerGroup(sdkRequest);
+
+            return getGroup(clusterId, groupName);
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to update consumer group from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
         }
-        if (request.getRetryEnabled() != null) {
-            existing.setRetryEnabled(request.getRetryEnabled());
-        }
-        if (request.getMaxRetryTimes() != null) {
-            existing.setMaxRetryTimes(request.getMaxRetryTimes());
-        }
-        
-        return existing;
     }
     
     public void deleteGroup(String clusterId, String groupName) throws TencentCloudSDKException {
