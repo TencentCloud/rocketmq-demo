@@ -231,10 +231,40 @@ public class GroupService {
                 .build();
     }
     
-    public void resetOffset(String groupName, ResetOffsetRequest request) throws Exception {
-        log.info("Resetting offset for group: {} topic: {} to: {}", 
+    public void resetOffset(String clusterId, String groupName, ResetOffsetRequest request) throws TencentCloudSDKException {
+        log.info("Resetting offset for group: {} topic: {} to: {}",
                 groupName, request.getTopicName(), request.getResetType());
-        log.info("Offset reset successfully for group: {}", groupName);
+
+        try {
+            ResetConsumerGroupOffsetRequest sdkRequest = new ResetConsumerGroupOffsetRequest();
+            sdkRequest.setInstanceId(clusterId);
+            sdkRequest.setTopic(request.getTopicName());
+            sdkRequest.setConsumerGroup(groupName);
+
+            long resetTimestamp;
+            switch (request.getResetType()) {
+                case "LATEST":
+                    resetTimestamp = System.currentTimeMillis();
+                    break;
+                case "EARLIEST":
+                    resetTimestamp = 0L;
+                    break;
+                case "TIMESTAMP":
+                    resetTimestamp = request.getTimestamp() != null ? request.getTimestamp() : System.currentTimeMillis();
+                    break;
+                default:
+                    throw new TencentCloudSDKException("Invalid reset type: " + request.getResetType());
+            }
+
+            sdkRequest.setResetTimestamp(resetTimestamp);
+
+            ResetConsumerGroupOffsetResponse response = trocketClient.ResetConsumerGroupOffset(sdkRequest);
+
+            log.info("Offset reset successfully for group: {}", groupName);
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to reset offset from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
     
     public List<ConsumerLagInfo> getLag(String clusterId, String groupName) throws TencentCloudSDKException {

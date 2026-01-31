@@ -33,6 +33,6 @@ import Header from '@/components/layout/Header.vue'
   flex: 1;
   overflow-y: auto;
   background-color: #f5f5f5;
-  padding: 24px;
+  padding: 0;
 }
 </style>

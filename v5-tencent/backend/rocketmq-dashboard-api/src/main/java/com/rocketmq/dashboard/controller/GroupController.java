@@ -131,10 +131,12 @@ public class GroupController {
     public Result<String> resetOffset(
             @Parameter(description = "Group name", required = true)
             @PathVariable String name,
+            @Parameter(description = "Cluster ID", required = true, example = "rmq-cn-xxxxx")
+            @RequestParam String clusterId,
             @Valid @RequestBody ResetOffsetRequest request) {
         try {
             log.info("Resetting offset for group: {}", name);
-            groupService.resetOffset(name, request);
+            groupService.resetOffset(clusterId, name, request);
             return Result.success("Offset reset successfully", "OK");
         } catch (Exception e) {
             log.error("Failed to reset offset for group: {}", name, e);
