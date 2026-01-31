@@ -148,24 +148,25 @@ public class GroupService {
                 .build();
     }
     
-    public GroupInfo createGroup(CreateGroupRequest request) throws Exception {
+    public GroupInfo createGroup(CreateGroupRequest request) throws TencentCloudSDKException {
         log.info("Creating consumer group: {} in cluster: {}", request.getGroupName(), request.getClusterId());
-        
-        return GroupInfo.builder()
-                .groupName(request.getGroupName())
-                .clusterId(request.getClusterId())
-                .description(request.getDescription())
-                .consumeFrom(request.getConsumeFrom() != null ? request.getConsumeFrom() : "CONSUME_FROM_LAST_OFFSET")
-                .broadcast(request.getBroadcast() != null ? request.getBroadcast() : false)
-                .retryEnabled(request.getRetryEnabled() != null ? request.getRetryEnabled() : true)
-                .maxRetryTimes(request.getMaxRetryTimes() != null ? request.getMaxRetryTimes() : 16)
-                .subscribedTopics(0)
-                .onlineConsumers(0)
-                .totalLag(0L)
-                .consumeTps(0.0)
-                .createTime(LocalDateTime.now())
-                .lastConsumeTime(null)
-                .build();
+
+        try {
+            CreateConsumerGroupRequest sdkRequest = new CreateConsumerGroupRequest();
+            sdkRequest.setInstanceId(request.getClusterId());
+            sdkRequest.setConsumerGroup(request.getGroupName());
+            sdkRequest.setConsumeEnable(request.getRetryEnabled() != null ? request.getRetryEnabled() : true);
+            sdkRequest.setConsumeMessageOrderly(request.getBroadcast() != null ? request.getBroadcast() : false);
+            sdkRequest.setMaxRetryTimes(request.getMaxRetryTimes() != null ? Long.valueOf(request.getMaxRetryTimes()) : 16L);
+            sdkRequest.setRemark(request.getDescription());
+
+            CreateConsumerGroupResponse response = trocketClient.CreateConsumerGroup(sdkRequest);
+
+            return getGroup(request.getClusterId(), request.getGroupName());
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to create consumer group from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
     
     public GroupInfo updateGroup(String clusterId, String groupName, UpdateGroupRequest request) throws TencentCloudSDKException {
