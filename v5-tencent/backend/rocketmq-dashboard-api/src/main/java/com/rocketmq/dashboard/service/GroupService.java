@@ -9,6 +9,19 @@ import com.rocketmq.dashboard.dto.response.GroupInfo;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
 import com.tencentcloudapi.trocket.v20230308.models.ConsumeGroupItem;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerLagRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerLagResponse;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerClientListRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerClientListResponse;
+import com.tencentcloudapi.trocket.v20230308.models.ConsumerClient;
+import com.tencentcloudapi.trocket.v20230308.models.CreateConsumerGroupRequest;
+import com.tencentcloudapi.trocket.v20230308.models.CreateConsumerGroupResponse;
+import com.tencentcloudapi.trocket.v20230308.models.ModifyConsumerGroupRequest;
+import com.tencentcloudapi.trocket.v20230308.models.ModifyConsumerGroupResponse;
+import com.tencentcloudapi.trocket.v20230308.models.DeleteConsumerGroupRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DeleteConsumerGroupResponse;
+import com.tencentcloudapi.trocket.v20230308.models.ResetConsumerGroupOffsetRequest;
+import com.tencentcloudapi.trocket.v20230308.models.ResetConsumerGroupOffsetResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerGroupListRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeConsumerGroupListResponse;
 import com.tencentcloudapi.trocket.v20230308.models.Filter;
@@ -201,19 +214,34 @@ public class GroupService {
         log.info("Offset reset successfully for group: {}", groupName);
     }
     
-    public List<ConsumerLagInfo> getLag(String clusterId, String groupName) throws Exception {
+    public List<ConsumerLagInfo> getLag(String clusterId, String groupName) throws TencentCloudSDKException {
         log.info("Getting consumer lag for group: {} in cluster: {}", groupName, clusterId);
-        
+
         List<ConsumerLagInfo> lags = new ArrayList<>();
-        lags.add(ConsumerLagInfo.builder()
-                .topicName("demo-topic")
-                .queueId(0)
-                .brokerOffset(100000L)
-                .consumerOffset(99000L)
-                .lag(1000L)
-                .lastConsumeTimestamp(System.currentTimeMillis() - 120000)
-                .build());
-        
-        return lags;
+
+        try {
+            DescribeConsumerLagRequest request = new DescribeConsumerLagRequest();
+            request.setInstanceId(clusterId);
+            request.setConsumerGroup(groupName);
+
+            DescribeConsumerLagResponse response = trocketClient.DescribeConsumerLag(request);
+
+            if (response.getConsumerLag() != null) {
+                lags.add(ConsumerLagInfo.builder()
+                        .topicName(null)
+                        .queueId(0)
+                        .brokerOffset(null)
+                        .consumerOffset(null)
+                        .lag(response.getConsumerLag())
+                        .lastConsumeTimestamp(System.currentTimeMillis())
+                        .build());
+            }
+
+            log.info("Found {} lag records", lags.size());
+            return lags;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to query consumer lag from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 }
