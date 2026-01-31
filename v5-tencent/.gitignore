@@ -9,6 +9,7 @@ target/
 node_modules/
 dist/
 .DS_Store
+backend/rocketmq-dashboard-api/src/main/resources/static/assets/
 
 # IDE
 .idea/

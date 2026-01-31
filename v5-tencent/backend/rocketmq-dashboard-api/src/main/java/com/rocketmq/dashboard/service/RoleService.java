@@ -3,11 +3,17 @@ package com.rocketmq.dashboard.service;
 import com.rocketmq.dashboard.dto.request.CreateRoleRequest;
 import com.rocketmq.dashboard.dto.request.UpdateRoleRequest;
 import com.rocketmq.dashboard.dto.response.RoleInfo;
+import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeRoleListRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeRoleListResponse;
+import com.tencentcloudapi.trocket.v20230308.models.RoleItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,61 +28,93 @@ public class RoleService {
         this.trocketClient = trocketClient;
     }
     
-    public List<RoleInfo> listRoles(String clusterId) throws Exception {
+    public List<RoleInfo> listRoles(String clusterId) throws TencentCloudSDKException {
         log.info("Listing all roles for cluster: {}", clusterId);
-        
+
         List<RoleInfo> roles = new ArrayList<>();
-        
-        roles.add(RoleInfo.builder()
-                .roleName("admin-role")
-                .description("Administrator role with full permissions")
-                .accessKey("AKID-****-0001")
-                .permissions(Arrays.asList("PUB", "SUB"))
-                .ipWhitelist(Arrays.asList("0.0.0.0/0"))
-                .enabled(true)
-                .createTime(LocalDateTime.now().minusDays(30))
-                .updateTime(LocalDateTime.now())
-                .build());
-        
-        roles.add(RoleInfo.builder()
-                .roleName("producer-role")
-                .description("Producer role with publish permission only")
-                .accessKey("AKID-****-0002")
-                .permissions(Arrays.asList("PUB"))
-                .ipWhitelist(Arrays.asList("192.168.1.0/24", "2.9.252.0/16"))
-                .enabled(true)
-                .createTime(LocalDateTime.now().minusDays(15))
-                .updateTime(LocalDateTime.now().minusDays(5))
-                .build());
-        
-        roles.add(RoleInfo.builder()
-                .roleName("consumer-role")
-                .description("Consumer role with subscribe permission only")
-                .accessKey("AKID-****-0003")
-                .permissions(Arrays.asList("SUB"))
-                .ipWhitelist(Arrays.asList("114.193.206.0/24"))
-                .enabled(true)
-                .createTime(LocalDateTime.now().minusDays(10))
-                .updateTime(LocalDateTime.now().minusDays(2))
-                .build());
-        
-        log.info("Found {} roles", roles.size());
-        return roles;
+
+        try {
+            DescribeRoleListRequest request = new DescribeRoleListRequest();
+            request.setInstanceId(clusterId);
+            request.setLimit(100L);
+            request.setOffset(0L);
+
+            DescribeRoleListResponse response = trocketClient.DescribeRoleList(request);
+
+            if (response.getData() != null && response.getData().length > 0) {
+                for (RoleItem item : response.getData()) {
+                    roles.add(mapToRoleInfo(item));
+                }
+            }
+
+            log.info("Found {} roles", roles.size());
+            return roles;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to query roles from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
     
-    public RoleInfo getRole(String clusterId, String roleName) throws Exception {
+    public RoleInfo getRole(String clusterId, String roleName) throws TencentCloudSDKException {
         log.info("Getting role details for: {}", roleName);
-        
+
+        try {
+            DescribeRoleListRequest request = new DescribeRoleListRequest();
+            request.setInstanceId(clusterId);
+            request.setLimit(100L);
+            request.setOffset(0L);
+
+            DescribeRoleListResponse response = trocketClient.DescribeRoleList(request);
+
+            if (response.getData() != null) {
+                for (RoleItem item : response.getData()) {
+                    if (item.getRoleName() != null && item.getRoleName().equals(roleName)) {
+                        return mapToRoleInfo(item);
+                    }
+                }
+            }
+
+            log.warn("Role not found: {}", roleName);
+            return null;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to query role from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private RoleInfo mapToRoleInfo(RoleItem item) {
+        List<String> permissions = new ArrayList<>();
+        if (item.getPermRead() != null && item.getPermRead()) {
+            permissions.add("SUB");
+        }
+        if (item.getPermWrite() != null && item.getPermWrite()) {
+            permissions.add("PUB");
+        }
+
         return RoleInfo.builder()
-                .roleName(roleName)
-                .description("Administrator role with full permissions")
-                .accessKey("AKID-****-0001")
-                .permissions(Arrays.asList("PUB", "SUB"))
-                .ipWhitelist(Arrays.asList("0.0.0.0/0"))
+                .roleName(item.getRoleName())
+                .description(item.getRemark())
+                .accessKey(maskAccessKey(item.getAccessKey()))
+                .permissions(permissions)
+                .ipWhitelist(null)
                 .enabled(true)
-                .createTime(LocalDateTime.now().minusDays(30))
-                .updateTime(LocalDateTime.now())
+                .createTime(convertToLocalDateTime(item.getCreatedTime()))
+                .updateTime(convertToLocalDateTime(item.getModifiedTime()))
                 .build();
+    }
+
+    private String maskAccessKey(String accessKey) {
+        if (accessKey == null || accessKey.isEmpty()) {
+            return "";
+        }
+        return "AKID-****-" + accessKey.substring(Math.max(0, accessKey.length() - 4));
+    }
+
+    private LocalDateTime convertToLocalDateTime(Long timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault());
     }
     
     public RoleInfo createRole(String clusterId, CreateRoleRequest request) throws Exception {
