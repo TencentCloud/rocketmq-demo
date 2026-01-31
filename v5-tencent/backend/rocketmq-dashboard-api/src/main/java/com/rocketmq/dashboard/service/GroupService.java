@@ -185,9 +185,21 @@ public class GroupService {
         return existing;
     }
     
-    public void deleteGroup(String clusterId, String groupName) throws Exception {
+    public void deleteGroup(String clusterId, String groupName) throws TencentCloudSDKException {
         log.info("Deleting consumer group: {} from cluster: {}", groupName, clusterId);
-        log.info("Consumer group deleted successfully: {}", groupName);
+
+        try {
+            DeleteConsumerGroupRequest request = new DeleteConsumerGroupRequest();
+            request.setInstanceId(clusterId);
+            request.setConsumerGroup(groupName);
+
+            DeleteConsumerGroupResponse response = trocketClient.DeleteConsumerGroup(request);
+
+            log.info("Consumer group deleted successfully: {}", groupName);
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to delete consumer group from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
     
     public List<ConsumerClientInfo> getClients(String clusterId, String groupName) throws TencentCloudSDKException {
