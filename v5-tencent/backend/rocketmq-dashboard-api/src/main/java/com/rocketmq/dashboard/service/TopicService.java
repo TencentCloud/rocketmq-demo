@@ -6,6 +6,8 @@ import com.rocketmq.dashboard.dto.response.ProducerInfo;
 import com.rocketmq.dashboard.dto.response.TopicInfo;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
+import com.tencentcloudapi.trocket.v20230308.models.DeleteTopicRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DeleteTopicResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicRequest;
@@ -188,9 +190,21 @@ public class TopicService {
         return existing;
     }
 
-    public void deleteTopic(String clusterId, String topicName) throws Exception {
+    public void deleteTopic(String clusterId, String topicName) throws TencentCloudSDKException {
         log.info("Deleting topic: {} from cluster: {}", topicName, clusterId);
-        log.info("Topic deleted successfully: {}", topicName);
+
+        try {
+            DeleteTopicRequest request = new DeleteTopicRequest();
+            request.setInstanceId(clusterId);
+            request.setTopic(topicName);
+
+            DeleteTopicResponse response = trocketClient.DeleteTopic(request);
+
+            log.info("Topic deleted successfully: {}", topicName);
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to delete topic from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public List<ProducerInfo> getProducers(String clusterId, String topicName) throws Exception {
