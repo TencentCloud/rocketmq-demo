@@ -417,9 +417,7 @@ onMounted(async () => {
 .topics-page {
   height: 100%;
   padding: 24px;
-  width: 92%;
-  max-width: 2400px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .table-card {
@@ -438,16 +436,12 @@ h3 {
 @media (min-width: 1920px) {
   .topics-page {
     padding: 32px;
-    width: 90%;
-    max-width: 2400px;
   }
 }
 
 @media (min-width: 2560px) {
   .topics-page {
     padding: 40px;
-    width: 88%;
-    max-width: 2800px;
   }
 }
 </style>
