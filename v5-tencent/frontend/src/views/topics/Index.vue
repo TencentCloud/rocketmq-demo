@@ -38,15 +38,27 @@
         </template>
 
         <template #action="{ row }">
-          <t-space>
-            <t-link theme="primary" @click="handleView(row)">View</t-link>
-            <t-link theme="primary" @click="handleSendMessage(row)">Send</t-link>
-            <t-link theme="primary" @click="handleEdit(row)">Edit</t-link>
+          <t-space :size="8">
+            <t-button theme="default" variant="outline" size="small" @click="handleView(row)">
+              <template #icon><t-icon name="view-module" /></template>
+              View
+            </t-button>
+            <t-button theme="default" variant="outline" size="small" @click="handleSendMessage(row)">
+              <template #icon><t-icon name="send" /></template>
+              Send
+            </t-button>
+            <t-button theme="default" variant="outline" size="small" @click="handleEdit(row)">
+              <template #icon><t-icon name="edit" /></template>
+              Edit
+            </t-button>
             <t-popconfirm
               content="Are you sure you want to delete this topic?"
               @confirm="handleDelete(row.topicName)"
             >
-              <t-link theme="danger">Delete</t-link>
+              <t-button theme="danger" variant="outline" size="small">
+                <template #icon><t-icon name="delete" /></template>
+                Delete
+              </t-button>
             </t-popconfirm>
           </t-space>
         </template>
@@ -405,12 +417,15 @@ onMounted(async () => {
 .topics-page {
   height: 100%;
   padding: 24px;
-  max-width: 1600px;
+  width: 92%;
+  max-width: 2400px;
   margin: 0 auto;
 }
 
 .table-card {
   margin-top: 16px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 h3 {
@@ -423,14 +438,16 @@ h3 {
 @media (min-width: 1920px) {
   .topics-page {
     padding: 32px;
-    max-width: 1800px;
+    width: 90%;
+    max-width: 2400px;
   }
 }
 
 @media (min-width: 2560px) {
   .topics-page {
     padding: 40px;
-    max-width: 2000px;
+    width: 88%;
+    max-width: 2800px;
   }
 }
 </style>

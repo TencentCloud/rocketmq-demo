@@ -222,7 +222,8 @@ onUnmounted(() => {
 .dashboard-page {
   height: 100%;
   padding: 24px;
-  max-width: 1600px;
+  width: 92%;
+  max-width: 2400px;
   margin: 0 auto;
 }
 
@@ -240,6 +241,13 @@ onUnmounted(() => {
   height: 120px;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border: 1px solid rgba(0, 82, 217, 0.08);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 82, 217, 0.1);
 }
 
 .stat-content {
@@ -303,6 +311,8 @@ onUnmounted(() => {
 .lag-table-card {
   flex: 1;
   background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 /* 表格增强 */
@@ -326,7 +336,8 @@ onUnmounted(() => {
 @media (min-width: 1920px) {
   .dashboard-page {
     padding: 32px;
-    max-width: 1800px;
+    width: 90%;
+    max-width: 2400px;
   }
 
   .stat-card {
@@ -346,7 +357,8 @@ onUnmounted(() => {
 @media (min-width: 2560px) {
   .dashboard-page {
     padding: 40px;
-    max-width: 2000px;
+    width: 88%;
+    max-width: 2800px;
   }
 
   .stat-card {

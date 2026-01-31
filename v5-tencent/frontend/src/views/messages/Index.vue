@@ -50,10 +50,19 @@
         <template #bornTime="{ row }">{{ formatTime(row.bornTime) }}</template>
         <template #storeTime="{ row }">{{ formatTime(row.storeTime) }}</template>
         <template #action="{ row }">
-          <t-space>
-            <t-link theme="primary" @click="handleViewDetail(row)">Detail</t-link>
-            <t-link theme="primary" @click="handleViewTrace(row)">Trace</t-link>
-            <t-link theme="primary" @click="handleResend(row)">Resend</t-link>
+          <t-space :size="8">
+            <t-button theme="default" variant="outline" size="small" @click="handleViewDetail(row)">
+              <template #icon><t-icon name="view-module" /></template>
+              Detail
+            </t-button>
+            <t-button theme="default" variant="outline" size="small" @click="handleViewTrace(row)">
+              <template #icon><t-icon name="chart-scatter" /></template>
+              Trace
+            </t-button>
+            <t-button theme="default" variant="outline" size="small" @click="handleResend(row)">
+              <template #icon><t-icon name="send" /></template>
+              Resend
+            </t-button>
           </t-space>
         </template>
       </t-table>
