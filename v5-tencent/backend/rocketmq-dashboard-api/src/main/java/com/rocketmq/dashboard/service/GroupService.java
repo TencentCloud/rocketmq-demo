@@ -190,22 +190,45 @@ public class GroupService {
         log.info("Consumer group deleted successfully: {}", groupName);
     }
     
-    public List<ConsumerClientInfo> getClients(String clusterId, String groupName) throws Exception {
+    public List<ConsumerClientInfo> getClients(String clusterId, String groupName) throws TencentCloudSDKException {
         log.info("Getting consumer clients for group: {} in cluster: {}", groupName, clusterId);
-        
+
         List<ConsumerClientInfo> clients = new ArrayList<>();
-        clients.add(ConsumerClientInfo.builder()
-                .clientId("consumer-client-001")
-                .clientAddress("192.168.1.101:12345")
-                .language("JAVA")
-                .version("5.1.0")
+
+        try {
+            DescribeConsumerClientListRequest request = new DescribeConsumerClientListRequest();
+            request.setInstanceId(clusterId);
+            request.setConsumerGroup(groupName);
+            request.setLimit(100L);
+            request.setOffset(0L);
+
+            DescribeConsumerClientListResponse response = trocketClient.DescribeConsumerClientList(request);
+
+            if (response.getData() != null) {
+                for (ConsumerClient item : response.getData()) {
+                    clients.add(mapToConsumerClientInfo(item));
+                }
+            }
+
+            log.info("Found {} consumer clients", clients.size());
+            return clients;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to query consumer clients from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private ConsumerClientInfo mapToConsumerClientInfo(ConsumerClient item) {
+        return ConsumerClientInfo.builder()
+                .clientId(item.getClientId())
+                .clientAddress(item.getClientAddr())
+                .language(item.getLanguage())
+                .version(item.getVersion())
                 .status("ONLINE")
-                .subscribedTopics("demo-topic")
-                .lastHeartbeat(LocalDateTime.now().minusSeconds(30))
-                .connectionTime(LocalDateTime.now().minusHours(3))
-                .build());
-        
-        return clients;
+                .subscribedTopics(null)
+                .lastHeartbeat(LocalDateTime.now())
+                .connectionTime(LocalDateTime.now())
+                .build();
     }
     
     public void resetOffset(String groupName, ResetOffsetRequest request) throws Exception {
