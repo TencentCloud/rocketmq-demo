@@ -4,7 +4,12 @@
       <template #actions>
         <t-space>
           <t-select v-model="selectedClusterId" placeholder="Select cluster" style="width: 200px" @change="loadRoles">
-            <t-option v-for="cluster in clusters" :key="cluster.clusterId" :value="cluster.clusterId" :label="cluster.clusterName" />
+            <t-option 
+              v-for="cluster in clusters" 
+              :key="cluster.clusterId" 
+              :value="cluster.clusterId" 
+              :label="`${cluster.clusterId}${cluster.clusterName ? ' (' + cluster.clusterName + ')' : ''}`" 
+            />
           </t-select>
           <t-button theme="primary" :disabled="!selectedClusterId" @click="showCreateDialog = true">
             <template #icon><t-icon name="add" /></template>

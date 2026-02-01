@@ -4,7 +4,12 @@
       <template #actions>
         <t-space>
           <t-select v-model="selectedClusterId" placeholder="Select cluster" style="width: 200px" @change="loadGroups">
-            <t-option v-for="cluster in clusters" :key="cluster.clusterId" :value="cluster.clusterId" :label="cluster.clusterName" />
+            <t-option 
+              v-for="cluster in clusters" 
+              :key="cluster.clusterId" 
+              :value="cluster.clusterId" 
+              :label="`${cluster.clusterId}${cluster.clusterName ? ' (' + cluster.clusterName + ')' : ''}`" 
+            />
           </t-select>
           <t-button theme="primary" :disabled="!selectedClusterId" @click="showCreateDialog = true">
             <template #icon><t-icon name="add" /></template>
@@ -99,7 +104,6 @@
     <t-drawer v-model:visible="showDetailDrawer" header="Consumer Group Details" size="large" :footer="false">
       <div v-if="selectedGroup">
         <t-descriptions bordered title="Basic Information">
-          <t-descriptions-item label="Group ID">{{ selectedGroup.groupId }}</t-descriptions-item>
           <t-descriptions-item label="Group Name">{{ selectedGroup.groupName }}</t-descriptions-item>
           <t-descriptions-item label="Consume Type">{{ selectedGroup.consumeType }}</t-descriptions-item>
           <t-descriptions-item label="Consume Enable">
@@ -200,7 +204,6 @@ const resetFormRules: Record<string, FormRule[]> = {
 }
 
 const columns: PrimaryTableCol[] = [
-  { colKey: 'groupId', title: 'Group ID', width: 200 },
   { colKey: 'groupName', title: 'Group Name', width: 200 },
   { colKey: 'consumeType', title: 'Type', width: 100 },
   { colKey: 'consumeEnable', title: 'Status', cell: 'consumeEnable', width: 120 },

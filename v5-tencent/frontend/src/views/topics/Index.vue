@@ -13,7 +13,7 @@
               v-for="cluster in clusters"
               :key="cluster.clusterId"
               :value="cluster.clusterId"
-              :label="cluster.clusterName"
+              :label="`${cluster.clusterId}${cluster.clusterName ? ' (' + cluster.clusterName + ')' : ''}`"
             />
           </t-select>
           <t-button theme="primary" :disabled="!selectedClusterId" @click="showCreateDialog = true">
@@ -149,7 +149,6 @@
     >
       <div v-if="selectedTopic">
         <t-descriptions bordered title="Basic Information">
-          <t-descriptions-item label="Topic ID">{{ selectedTopic.topicId }}</t-descriptions-item>
           <t-descriptions-item label="Topic Name">{{ selectedTopic.topicName }}</t-descriptions-item>
           <t-descriptions-item label="Message Type">{{ selectedTopic.messageType }}</t-descriptions-item>
           <t-descriptions-item label="Partition Num">{{ selectedTopic.partitionNum }}</t-descriptions-item>
@@ -246,7 +245,6 @@ const sendFormRules: Record<string, FormRule[]> = {
 }
 
 const columns: PrimaryTableCol[] = [
-  { colKey: 'topicId', title: 'Topic ID', width: 180 },
   { colKey: 'topicName', title: 'Topic Name', width: 200 },
   { colKey: 'messageType', title: 'Type', width: 120 },
   { colKey: 'partitionNum', title: 'Partitions', width: 100 },

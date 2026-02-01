@@ -1,221 +1,183 @@
 <template>
   <div class="dashboard-page">
-    <PageHeader title="Dashboard" description="RocketMQ Cluster Overview">
-      <template #actions>
-        <t-button 
-          theme="default" 
-          :loading="refreshing"
-          @click="refreshData"
-        >
-          <template #icon><t-icon name="refresh" /></template>
-          Refresh
-        </t-button>
-      </template>
-    </PageHeader>
+    <PageHeader title="RocketMQ Dashboard" description="Tencent Cloud RocketMQ 5.x Management Console" />
 
-    <LoadingOverlay :visible="loading && !refreshing" />
+    <div class="dashboard-content">
+      <!-- Welcome Card -->
+      <t-card class="welcome-card" hover-shadow>
+        <template #header>
+          <div class="card-header">
+            <t-icon name="check-circle" class="header-icon" />
+            <span class="header-title">Welcome to RocketMQ Dashboard</span>
+          </div>
+        </template>
+        <div class="welcome-content">
+          <p>This is a modern web-based management console for Tencent Cloud RocketMQ 5.x.</p>
+          <p>You can manage clusters, topics, consumer groups, messages, and more through this dashboard.</p>
+        </div>
+      </t-card>
 
-    <div v-if="!loading" class="dashboard-content">
-      <!-- Statistics Cards -->
-      <t-row :gutter="16" class="stats-row">
+      <!-- Quick Start Guide -->
+      <t-card class="guide-card" hover-shadow>
+        <template #header>
+          <div class="card-header">
+            <t-icon name="book" class="header-icon" />
+            <span class="header-title">Quick Start Guide</span>
+          </div>
+        </template>
+        <div class="guide-content">
+          <t-steps :current="0" layout="vertical">
+            <t-step-item title="Configure Cluster" content="Go to 'Config' page to add your Tencent Cloud RocketMQ cluster information." />
+            <t-step-item title="Manage Topics" content="Navigate to 'Topics' page to create, view, and manage topics." />
+            <t-step-item title="Manage Consumer Groups" content="Go to 'Groups' page to manage consumer groups and monitor consumption lag." />
+            <t-step-item title="Query Messages" content="Use 'Messages' page to query message details by message ID." />
+          </t-steps>
+        </div>
+      </t-card>
+
+      <!-- Feature Cards -->
+      <t-row :gutter="16" class="feature-row">
         <t-col :span="6">
-          <t-card class="stat-card" hover-shadow>
-            <div class="stat-content">
-              <t-icon name="server" class="stat-icon cluster-icon" />
-              <div class="stat-info">
-                <div class="stat-value">{{ overview.totalClusters }}</div>
-                <div class="stat-label">Total Clusters</div>
+          <t-card class="feature-card" hover-shadow @click="navigateTo('/clusters')">
+            <div class="feature-content">
+              <t-icon name="server" class="feature-icon cluster-icon" />
+              <div class="feature-info">
+                <div class="feature-title">Clusters</div>
+                <div class="feature-desc">View and manage RocketMQ clusters</div>
               </div>
             </div>
           </t-card>
         </t-col>
-        
+
         <t-col :span="6">
-          <t-card class="stat-card" hover-shadow>
-            <div class="stat-content">
-              <t-icon name="layers" class="stat-icon topic-icon" />
-              <div class="stat-info">
-                <div class="stat-value">{{ overview.totalTopics }}</div>
-                <div class="stat-label">Total Topics</div>
+          <t-card class="feature-card" hover-shadow @click="navigateTo('/topics')">
+            <div class="feature-content">
+              <t-icon name="layers" class="feature-icon topic-icon" />
+              <div class="feature-info">
+                <div class="feature-title">Topics</div>
+                <div class="feature-desc">Create and manage message topics</div>
               </div>
             </div>
           </t-card>
         </t-col>
-        
+
         <t-col :span="6">
-          <t-card class="stat-card" hover-shadow>
-            <div class="stat-content">
-              <t-icon name="usergroup" class="stat-icon group-icon" />
-              <div class="stat-info">
-                <div class="stat-value">{{ overview.totalGroups }}</div>
-                <div class="stat-label">Consumer Groups</div>
+          <t-card class="feature-card" hover-shadow @click="navigateTo('/groups')">
+            <div class="feature-content">
+              <t-icon name="usergroup" class="feature-icon group-icon" />
+              <div class="feature-info">
+                <div class="feature-title">Consumer Groups</div>
+                <div class="feature-desc">Manage consumer groups and monitor lag</div>
               </div>
             </div>
           </t-card>
         </t-col>
-        
+
         <t-col :span="6">
-          <t-card class="stat-card" hover-shadow>
-            <div class="stat-content">
-              <t-icon name="mail" class="stat-icon message-icon" />
-              <div class="stat-info">
-                <div class="stat-value">{{ formatNumber(overview.totalMessages) }}</div>
-                <div class="stat-label">Total Messages</div>
+          <t-card class="feature-card" hover-shadow @click="navigateTo('/messages')">
+            <div class="feature-content">
+              <t-icon name="mail" class="feature-icon message-icon" />
+              <div class="feature-info">
+                <div class="feature-title">Messages</div>
+                <div class="feature-desc">Query and trace message details</div>
               </div>
             </div>
           </t-card>
         </t-col>
       </t-row>
 
-      <!-- Top 10 Lag Groups Table -->
-      <t-card class="lag-table-card" title="Top 10 Consumer Groups by Lag" hover-shadow>
-        <t-table
-          :data="topLagGroups"
-          :columns="columns"
-          :loading="loadingLag"
-          row-key="groupName"
-          :empty="'No consumer groups with lag'"
-        >
-          <template #lag="{ row }">
-            <t-tag :theme="getLagTheme(row.lag)" variant="light">
-              {{ formatNumber(row.lag) }}
-            </t-tag>
-          </template>
-        </t-table>
+      <!-- API Limitations -->
+      <t-card class="limitations-card" hover-shadow>
+        <template #header>
+          <div class="card-header">
+            <t-icon name="info-circle" class="header-icon" />
+            <span class="header-title">API Limitations</span>
+          </div>
+        </template>
+        <div class="limitations-content">
+          <t-alert theme="warning" message="Important Notes" style="margin-bottom: 16px;">
+            <template #default>
+              <ul class="limitation-list">
+                <li><strong>Message Query:</strong> Currently only supports querying by message ID. Time-based queries require using Tencent Cloud Console.</li>
+                <li><strong>Cluster Management:</strong> Cluster creation and deletion should be done through Tencent Cloud Console.</li>
+                <li><strong>Message Sending:</strong> For production use, please use official RocketMQ client SDKs instead of dashboard.</li>
+              </ul>
+            </template>
+          </t-alert>
+        </div>
+      </t-card>
+
+      <!-- Documentation Links -->
+      <t-card class="docs-card" hover-shadow>
+        <template #header>
+          <div class="card-header">
+            <t-icon name="link" class="header-icon" />
+            <span class="header-title">Documentation & Resources</span>
+          </div>
+        </template>
+        <div class="docs-content">
+          <t-list :split="true">
+            <t-list-item>
+              <t-list-item-meta 
+                title="Tencent Cloud RocketMQ Documentation" 
+                description="Official documentation for Tencent Cloud RocketMQ 5.x"
+              >
+                <template #image>
+                  <t-icon name="file-text" size="24px" />
+                </template>
+              </t-list-item-meta>
+              <template #action>
+                <t-link theme="primary" href="https://cloud.tencent.com/document/product/1493" target="_blank">
+                  View Docs
+                </t-link>
+              </template>
+            </t-list-item>
+            <t-list-item>
+              <t-list-item-meta 
+                title="RocketMQ Official Website" 
+                description="Apache RocketMQ official documentation and guides"
+              >
+                <template #image>
+                  <t-icon name="internet" size="24px" />
+                </template>
+              </t-list-item-meta>
+              <template #action>
+                <t-link theme="primary" href="https://rocketmq.apache.org/" target="_blank">
+                  Visit Site
+                </t-link>
+              </template>
+            </t-list-item>
+            <t-list-item>
+              <t-list-item-meta 
+                title="API Reference" 
+                description="Tencent Cloud RocketMQ API documentation"
+              >
+                <template #image>
+                  <t-icon name="code" size="24px" />
+                </template>
+              </t-list-item-meta>
+              <template #action>
+                <t-link theme="primary" href="https://cloud.tencent.com/document/api/1493" target="_blank">
+                  API Docs
+                </t-link>
+              </template>
+            </t-list-item>
+          </t-list>
+        </div>
       </t-card>
     </div>
-
-    <EmptyState 
-      v-else-if="!loading && !overview.totalClusters"
-      message="No clusters configured yet"
-      action-text="Configure Now"
-      @action="$router.push('/config')"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { MessagePlugin } from 'tdesign-vue-next'
-import type { PrimaryTableCol } from 'tdesign-vue-next'
+import { useRouter } from 'vue-router'
 import PageHeader from '@/components/common/PageHeader.vue'
-import EmptyState from '@/components/common/EmptyState.vue'
-import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
-import { dashboardApi } from '@/api/dashboard'
-import type { DashboardOverview, TopLagGroup } from '@/api/types'
-import { formatNumber } from '@/utils/format'
 
-const loading = ref(true)
-const refreshing = ref(false)
-const loadingLag = ref(false)
+const router = useRouter()
 
-const overview = ref<DashboardOverview>({
-  totalClusters: 0,
-  totalTopics: 0,
-  totalGroups: 0,
-  totalMessages: 0
-})
-
-const topLagGroups = ref<TopLagGroup[]>([])
-
-let refreshTimer: number | null = null
-
-const columns: PrimaryTableCol[] = [
-  {
-    colKey: 'groupName',
-    title: 'Consumer Group',
-    width: 200
-  },
-  {
-    colKey: 'topicName',
-    title: 'Topic',
-    width: 200
-  },
-  {
-    colKey: 'lag',
-    title: 'Message Lag',
-    cell: 'lag',
-    width: 150
-  }
-]
-
-const getLagTheme = (lag: number): string => {
-  if (lag > 10000) return 'danger'
-  if (lag > 1000) return 'warning'
-  return 'success'
+const navigateTo = (path: string) => {
+  router.push(path)
 }
-
-const loadOverview = async () => {
-  try {
-    const response = await dashboardApi.getOverview()
-    if (response.success) {
-      overview.value = response.data
-    }
-  } catch (error) {
-    MessagePlugin.error('Failed to load dashboard overview')
-  }
-}
-
-const loadTopLagGroups = async () => {
-  loadingLag.value = true
-  try {
-    const response = await dashboardApi.getTopLagGroups(10)
-    if (response.success) {
-      topLagGroups.value = response.data
-    }
-  } catch (error) {
-    MessagePlugin.error('Failed to load top lag groups')
-  } finally {
-    loadingLag.value = false
-  }
-}
-
-const loadData = async () => {
-  loading.value = true
-  try {
-    await Promise.all([
-      loadOverview(),
-      loadTopLagGroups()
-    ])
-  } finally {
-    loading.value = false
-  }
-}
-
-const refreshData = async () => {
-  refreshing.value = true
-  try {
-    await Promise.all([
-      loadOverview(),
-      loadTopLagGroups()
-    ])
-    MessagePlugin.success('Dashboard data refreshed')
-  } finally {
-    refreshing.value = false
-  }
-}
-
-const startAutoRefresh = () => {
-  refreshTimer = window.setInterval(() => {
-    refreshData()
-  }, 30000) // 30 seconds
-}
-
-const stopAutoRefresh = () => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
-  }
-}
-
-onMounted(() => {
-  loadData()
-  startAutoRefresh()
-})
-
-onUnmounted(() => {
-  stopAutoRefresh()
-})
 </script>
 
 <style scoped>
@@ -223,43 +185,94 @@ onUnmounted(() => {
   height: 100%;
   padding: 24px;
   width: 100%;
+  overflow-y: auto;
 }
 
 .dashboard-content {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  margin-top: 16px;
 }
 
-.stats-row {
-  margin-bottom: 24px;
+/* Card Headers */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.stat-card {
-  height: 120px;
+.header-icon {
+  font-size: 20px;
+  color: #0052d9;
+}
+
+.header-title {
+  color: #000;
+}
+
+/* Welcome Card */
+.welcome-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+}
+
+.welcome-content {
+  padding: 8px 0;
+}
+
+.welcome-content p {
+  margin: 8px 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Guide Card */
+.guide-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border-radius: 12px;
+}
+
+.guide-content {
+  padding: 16px 0;
+}
+
+/* Feature Cards */
+.feature-row {
+  margin: 0;
+}
+
+.feature-card {
+  height: 140px;
+  cursor: pointer;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border: 1px solid rgba(0, 82, 217, 0.08);
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.stat-card:hover {
+.feature-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 82, 217, 0.1);
+  box-shadow: 0 12px 24px rgba(0, 82, 217, 0.15);
+  border-color: rgba(0, 82, 217, 0.2);
 }
 
-.stat-content {
+.feature-content {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  gap: 16px;
   height: 100%;
+  text-align: center;
 }
 
-.stat-icon {
+.feature-icon {
   font-size: 48px;
   padding: 12px;
   border-radius: 12px;
-  background: rgba(0, 82, 217, 0.06);
 }
 
 .cluster-icon {
@@ -282,71 +295,75 @@ onUnmounted(() => {
   background: linear-gradient(135deg, rgba(235, 47, 150, 0.1) 0%, rgba(235, 47, 150, 0.08) 100%);
 }
 
-.stat-info {
+.feature-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  background: linear-gradient(135deg, #000000 0%, #333333 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.feature-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
 }
 
-.stat-label {
+.feature-desc {
   font-size: 13px;
   color: #666;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
 }
 
-.lag-table-card {
-  flex: 1;
-  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+/* Limitations Card */
+.limitations-card {
+  background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
   border-radius: 12px;
-  overflow: hidden;
 }
 
-/* 表格增强 */
-:deep(.t-table__th) {
-  background: linear-gradient(135deg, rgba(0, 82, 217, 0.04) 0%, rgba(0, 102, 255, 0.04) 100%);
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+.limitations-content {
+  padding: 8px 0;
 }
 
-:deep(.t-table__body tr) {
-  transition: all 0.15s ease;
+.limitation-list {
+  margin: 0;
+  padding-left: 20px;
+  list-style: disc;
 }
 
-:deep(.t-table__body tr:hover) {
-  background: linear-gradient(90deg, rgba(0, 82, 217, 0.03) 0%, rgba(0, 102, 255, 0.02) 100%);
-  transform: translateX(4px);
+.limitation-list li {
+  margin: 8px 0;
+  color: #666;
+  line-height: 1.6;
 }
 
-/* 响应式适配 */
+.limitation-list strong {
+  color: #333;
+}
+
+/* Documentation Card */
+.docs-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+}
+
+.docs-content {
+  padding: 8px 0;
+}
+
+/* Responsive */
 @media (min-width: 1920px) {
   .dashboard-page {
     padding: 32px;
   }
 
-  .stat-card {
-    height: 140px;
+  .feature-card {
+    height: 160px;
   }
 
-  .stat-icon {
+  .feature-icon {
     font-size: 56px;
-    padding: 14px;
   }
 
-  .stat-value {
-    font-size: 36px;
+  .feature-title {
+    font-size: 18px;
   }
 }
 
@@ -355,20 +372,19 @@ onUnmounted(() => {
     padding: 40px;
   }
 
-  .stat-card {
-    height: 160px;
+  .feature-card {
+    height: 180px;
   }
 
-  .stat-icon {
+  .feature-icon {
     font-size: 64px;
-    padding: 16px;
   }
 
-  .stat-value {
-    font-size: 42px;
+  .feature-title {
+    font-size: 20px;
   }
 
-  .stat-label {
+  .feature-desc {
     font-size: 14px;
   }
 }

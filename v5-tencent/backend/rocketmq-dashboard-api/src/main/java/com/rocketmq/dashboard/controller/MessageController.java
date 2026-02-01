@@ -48,11 +48,13 @@ public class MessageController {
     public Result<MessageInfo> getMessageById(
             @Parameter(description = "Cluster ID", required = true, example = "rmq-cn-xxxxx")
             @RequestParam String clusterId,
+            @Parameter(description = "Topic name", required = true, example = "test-topic")
+            @RequestParam String topicName,
             @Parameter(description = "Message ID", required = true, example = "01000000000000000000000000000000")
             @PathVariable String id) {
         try {
             log.info("Getting message details for id: {}", id);
-            MessageInfo message = messageService.getMessageById(clusterId, id);
+            MessageInfo message = messageService.getMessageById(clusterId, topicName, id);
             return Result.success(message);
         } catch (Exception e) {
             log.error("Failed to get message: {}", id, e);

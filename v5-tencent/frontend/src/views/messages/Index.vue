@@ -1,51 +1,67 @@
 <template>
   <div class="messages-page">
-    <PageHeader title="Message Management" description="Query and manage messages">
-      <template #actions>
-        <t-button theme="primary" @click="collapsed = !collapsed">
-          <template #icon><t-icon :name="collapsed ? 'chevron-down' : 'chevron-up'" /></template>
-          {{ collapsed ? 'Show' : 'Hide' }} Filter
-        </t-button>
-      </template>
-    </PageHeader>
+    <PageHeader title="Message Management" description="Query message details by message ID" />
 
-    <t-card v-show="!collapsed" class="filter-card">
-      <t-form ref="queryFormRef" :data="queryForm" label-width="120px" layout="inline">
-        <t-form-item label="Cluster">
-          <t-select v-model="queryForm.clusterId" placeholder="Select cluster" style="width: 200px">
-            <t-option v-for="cluster in clusters" :key="cluster.clusterId" :value="cluster.clusterId" :label="cluster.clusterName" />
-          </t-select>
-        </t-form-item>
-        <t-form-item label="Topic">
-          <t-input v-model="queryForm.topicName" placeholder="Topic name" style="width: 200px" />
-        </t-form-item>
-        <t-form-item label="Message ID">
-          <t-input v-model="queryForm.messageId" placeholder="Message ID" style="width: 200px" />
-        </t-form-item>
-        <t-form-item label="Keys">
-          <t-input v-model="queryForm.keys" placeholder="Message keys" style="width: 200px" />
-        </t-form-item>
-        <t-form-item label="Tags">
-          <t-input v-model="queryForm.tags" placeholder="Message tags" style="width: 200px" />
-        </t-form-item>
-        <t-form-item label="Start Time">
-          <t-date-picker v-model="queryForm.startTime" mode="date-time" placeholder="Start time" style="width: 200px" />
-        </t-form-item>
-        <t-form-item label="End Time">
-          <t-date-picker v-model="queryForm.endTime" mode="date-time" placeholder="End time" style="width: 200px" />
-        </t-form-item>
-        <t-form-item>
-          <t-space>
-            <t-button theme="primary" @click="handleQuery" :loading="querying">Query</t-button>
-            <t-button theme="default" @click="handleReset">Reset</t-button>
-          </t-space>
-        </t-form-item>
+    <t-card class="filter-card">
+      <t-form ref="queryFormRef" :data="queryForm" :rules="formRules" label-width="120px">
+        <t-row :gutter="16">
+          <t-col :span="6">
+            <t-form-item label="Cluster" name="clusterId">
+              <t-select v-model="queryForm.clusterId" placeholder="Select cluster" @change="handleClusterChange">
+                <t-option 
+                  v-for="cluster in clusters" 
+                  :key="cluster.clusterId" 
+                  :value="cluster.clusterId" 
+                  :label="`${cluster.clusterId}${cluster.clusterName ? ' (' + cluster.clusterName + ')' : ''}`" 
+                />
+              </t-select>
+            </t-form-item>
+          </t-col>
+          <t-col :span="6">
+            <t-form-item label="Topic" name="topicName">
+              <t-select
+                v-model="queryForm.topicName"
+                placeholder="Select or enter topic"
+                filterable
+                creatable
+                :loading="loadingTopics"
+                :disabled="!queryForm.clusterId"
+              >
+                <t-option v-for="topic in topics" :key="topic.topicName" :value="topic.topicName" :label="topic.topicName" />
+              </t-select>
+            </t-form-item>
+          </t-col>
+          <t-col :span="8">
+            <t-form-item label="Message ID" name="messageId">
+              <t-input v-model="queryForm.messageId" placeholder="Enter message ID" clearable />
+            </t-form-item>
+          </t-col>
+          <t-col :span="4">
+            <t-form-item label=" " label-width="0">
+              <t-space>
+                <t-button theme="primary" @click="handleQuery" :loading="querying">
+                  <template #icon><t-icon name="search" /></template>
+                  Query
+                </t-button>
+                <t-button theme="default" @click="handleReset">
+                  <template #icon><t-icon name="refresh" /></template>
+                  Reset
+                </t-button>
+              </t-space>
+            </t-form-item>
+          </t-col>
+        </t-row>
       </t-form>
     </t-card>
 
     <LoadingOverlay :visible="loading" />
 
     <t-card v-if="!loading && messages.length > 0" class="result-card">
+      <template #header>
+        <div class="result-header">
+          <span>Query Results ({{ messages.length }} message{{ messages.length > 1 ? 's' : '' }})</span>
+        </div>
+      </template>
       <t-table :data="messages" :columns="columns" row-key="messageId" :loading="querying">
         <template #bornTime="{ row }">{{ formatTime(row.bornTime) }}</template>
         <template #storeTime="{ row }">{{ formatTime(row.storeTime) }}</template>
@@ -68,7 +84,7 @@
       </t-table>
     </t-card>
 
-    <EmptyState v-else-if="!loading && messages.length === 0" message="No messages found" />
+    <EmptyState v-else-if="!loading && messages.length === 0 && hasQueried" message="No messages found. Please check the message ID and try again." />
 
     <t-drawer v-model:visible="showDetailDrawer" header="Message Details" size="large" :footer="false">
       <div v-if="selectedMessage">
@@ -79,17 +95,19 @@
           <t-descriptions-item label="Store Time">{{ formatTime(selectedMessage.storeTime) }}</t-descriptions-item>
           <t-descriptions-item label="Tags">{{ selectedMessage.tags || '-' }}</t-descriptions-item>
           <t-descriptions-item label="Keys">{{ selectedMessage.keys || '-' }}</t-descriptions-item>
+          <t-descriptions-item label="Born Host">{{ selectedMessage.bornHost || '-' }}</t-descriptions-item>
         </t-descriptions>
 
         <t-divider />
         <h3>Message Body</h3>
-        <pre class="message-body">{{ selectedMessage.body }}</pre>
+        <pre class="message-body">{{ selectedMessage.body || 'No body content' }}</pre>
 
         <t-divider />
         <h3>Properties</h3>
-        <t-descriptions bordered>
+        <t-descriptions v-if="selectedMessage.properties && Object.keys(selectedMessage.properties).length > 0" bordered>
           <t-descriptions-item v-for="(value, key) in selectedMessage.properties" :key="key" :label="key">{{ value }}</t-descriptions-item>
         </t-descriptions>
+        <t-empty v-else description="No properties" />
       </div>
     </t-drawer>
 
@@ -100,8 +118,8 @@
             <t-icon :name="trace.status === 'SUCCESS' ? 'check-circle' : 'close-circle'" :style="{ color: trace.status === 'SUCCESS' ? '#00a870' : '#e34d59' }" />
           </template>
           <div class="trace-item">
-            <div class="trace-action">{{ trace.action }}</div>
-            <div class="trace-time">{{ formatTime(trace.timestamp) }}</div>
+            <div class="trace-action">{{ trace.traceType }}</div>
+            <div class="trace-time">{{ formatTime(trace.time) }}</div>
             <div class="trace-host">{{ trace.clientHost }}</div>
             <t-tag :theme="trace.status === 'SUCCESS' ? 'success' : 'danger'" variant="light">{{ trace.status }}</t-tag>
           </div>
@@ -115,21 +133,24 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
-import type { FormInstanceFunctions, PrimaryTableCol } from 'tdesign-vue-next'
+import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
 import { messageApi } from '@/api/message'
 import { clusterApi } from '@/api/cluster'
-import type { MessageInfo, MessageTraceInfo, QueryMessagesRequest, ClusterInfo } from '@/api/types'
+import { topicApi } from '@/api/topic'
+import type { MessageInfo, MessageTraceInfo, QueryMessagesRequest, ClusterInfo, TopicInfo } from '@/api/types'
 import { formatTime } from '@/utils/format'
 
 const loading = ref(false)
 const querying = ref(false)
 const loadingTrace = ref(false)
-const collapsed = ref(false)
+const loadingTopics = ref(false)
+const hasQueried = ref(false)
 
 const clusters = ref<ClusterInfo[]>([])
+const topics = ref<TopicInfo[]>([])
 const messages = ref<MessageInfo[]>([])
 const selectedMessage = ref<MessageInfo | null>(null)
 const traceInfo = ref<MessageTraceInfo[]>([])
@@ -139,24 +160,32 @@ const showTraceDrawer = ref(false)
 
 const queryFormRef = ref<FormInstanceFunctions>()
 
-const queryForm = ref<QueryMessagesRequest>({
+interface QueryForm {
+  clusterId: string
+  topicName: string
+  messageId: string
+}
+
+const queryForm = ref<QueryForm>({
   clusterId: '',
   topicName: '',
-  messageId: '',
-  keys: '',
-  tags: '',
-  startTime: '',
-  endTime: ''
+  messageId: ''
 })
 
+const formRules: Record<string, FormRule[]> = {
+  clusterId: [{ required: true, message: 'Cluster is required', type: 'error' }],
+  topicName: [{ required: true, message: 'Topic is required', type: 'error' }],
+  messageId: [{ required: true, message: 'Message ID is required', type: 'error' }]
+}
+
 const columns: PrimaryTableCol[] = [
-  { colKey: 'messageId', title: 'Message ID', width: 200 },
-  { colKey: 'topicName', title: 'Topic', width: 150 },
+  { colKey: 'messageId', title: 'Message ID', width: 250, ellipsis: true },
+  { colKey: 'topicName', title: 'Topic', width: 180 },
   { colKey: 'tags', title: 'Tags', width: 120 },
   { colKey: 'keys', title: 'Keys', width: 120 },
   { colKey: 'bornTime', title: 'Born Time', cell: 'bornTime', width: 180 },
   { colKey: 'storeTime', title: 'Store Time', cell: 'storeTime', width: 180 },
-  { colKey: 'action', title: 'Actions', cell: 'action', width: 200, fixed: 'right' }
+  { colKey: 'action', title: 'Actions', cell: 'action', width: 220, fixed: 'right' }
 ]
 
 const loadClusters = async () => {
@@ -166,6 +195,7 @@ const loadClusters = async () => {
       clusters.value = response.data
       if (clusters.value.length > 0) {
         queryForm.value.clusterId = clusters.value[0]?.clusterId || ''
+        await loadTopics()
       }
     }
   } catch (error) {
@@ -173,21 +203,57 @@ const loadClusters = async () => {
   }
 }
 
+const loadTopics = async () => {
+  if (!queryForm.value.clusterId) return
+  
+  loadingTopics.value = true
+  try {
+    const response = await topicApi.listTopics(queryForm.value.clusterId)
+    if (response.success) {
+      topics.value = response.data
+    }
+  } catch (error) {
+    MessagePlugin.error('Failed to load topics')
+  } finally {
+    loadingTopics.value = false
+  }
+}
+
+const handleClusterChange = () => {
+  queryForm.value.topicName = ''
+  topics.value = []
+  loadTopics()
+}
+
 const handleQuery = async () => {
-  if (!queryForm.value.clusterId || !queryForm.value.topicName) {
-    MessagePlugin.warning('Please select cluster and enter topic name')
+  const valid = await queryFormRef.value?.validate()
+  if (!valid) return
+
+  if (!queryForm.value.messageId || queryForm.value.messageId.trim() === '') {
+    MessagePlugin.warning('Please enter message ID')
     return
   }
 
   querying.value = true
+  hasQueried.value = true
   try {
-    const response = await messageApi.queryMessages(queryForm.value)
+    const params: QueryMessagesRequest = {
+      clusterId: queryForm.value.clusterId,
+      topicName: queryForm.value.topicName,
+      messageId: queryForm.value.messageId.trim()
+    }
+
+    const response = await messageApi.queryMessages(params)
     if (response.success) {
       messages.value = response.data
-      MessagePlugin.success(`Found ${response.data.length} messages`)
+      if (response.data.length === 0) {
+        MessagePlugin.warning('Message not found. Please check the message ID.')
+      } else {
+        MessagePlugin.success(`Found ${response.data.length} message(s)`)
+      }
     }
-  } catch (error) {
-    MessagePlugin.error('Failed to query messages')
+  } catch (error: any) {
+    MessagePlugin.error(error.message || 'Failed to query messages')
   } finally {
     querying.value = false
   }
@@ -196,6 +262,15 @@ const handleQuery = async () => {
 const handleReset = () => {
   queryFormRef.value?.reset()
   messages.value = []
+  hasQueried.value = false
+  queryForm.value = {
+    clusterId: clusters.value[0]?.clusterId || '',
+    topicName: '',
+    messageId: ''
+  }
+  if (queryForm.value.clusterId) {
+    loadTopics()
+  }
 }
 
 const handleViewDetail = (message: MessageInfo) => {
@@ -244,8 +319,14 @@ onMounted(async () => {
   width: 100%;
 }
 
-.filter-card, .result-card {
+.filter-card,
+.result-card {
   margin-top: 16px;
+}
+
+.result-header {
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .message-body {
@@ -254,6 +335,11 @@ onMounted(async () => {
   border-radius: 4px;
   overflow: auto;
   max-height: 400px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .trace-item {
@@ -267,7 +353,8 @@ onMounted(async () => {
   font-size: 14px;
 }
 
-.trace-time, .trace-host {
+.trace-time,
+.trace-host {
   font-size: 12px;
   color: #666;
 }
