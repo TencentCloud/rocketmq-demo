@@ -17,7 +17,7 @@
           </t-input>
           <t-select
             v-model="selectedClusterId"
-            placeholder="Select cluster"
+            :placeholder="t('consumer.selectCluster')"
             style="width: 200px"
             @change="loadGroups"
           >
@@ -30,7 +30,7 @@
           </t-select>
           <t-button theme="primary" :disabled="!selectedClusterId" @click="showCreateDialog = true">
             <template #icon><t-icon name="add" /></template>
-            Create Group
+            {{ t('consumer.createGroup') }}
           </t-button>
         </t-space>
       </template>
@@ -42,7 +42,7 @@
       <t-table :data="groups" :columns="columns" row-key="groupId" :loading="tableLoading">
         <template #consumeEnable="{ row }">
           <t-tag :theme="row.consumeEnable ? 'success' : 'default'" variant="light">
-            {{ row.consumeEnable ? 'Enabled' : 'Disabled' }}
+            {{ row.consumeEnable ? t('consumer.enabled') : t('consumer.disabled') }}
           </t-tag>
         </template>
         <template #createTime="{ row }">{{ formatTime(row.createTime) }}</template>
@@ -50,7 +50,7 @@
           <t-space :size="8">
             <t-button theme="default" variant="outline" size="small" @click="handleView(row)">
               <template #icon><t-icon name="view-module" /></template>
-              View
+              {{ t('consumer.view') }}
             </t-button>
             <t-button
               theme="default"
@@ -59,19 +59,19 @@
               @click="handleResetOffset(row)"
             >
               <template #icon><t-icon name="refresh" /></template>
-              Reset
+              {{ t('consumer.reset') }}
             </t-button>
             <t-button theme="default" variant="outline" size="small" @click="handleEdit(row)">
               <template #icon><t-icon name="edit" /></template>
-              Edit
+              {{ t('common.edit') }}
             </t-button>
             <t-popconfirm
-              content="Are you sure you want to delete this group?"
+              :content="t('consumer.deleteConfirm')"
               @confirm="handleDelete(row.groupName)"
             >
               <t-button theme="danger" variant="outline" size="small">
                 <template #icon><t-icon name="delete" /></template>
-                Delete
+                {{ t('common.delete') }}
               </t-button>
             </t-popconfirm>
           </t-space>
@@ -81,8 +81,10 @@
 
     <EmptyState
       v-else-if="!loading && (!selectedClusterId || groups.length === 0)"
-      :message="!selectedClusterId ? 'Please select a cluster' : 'No consumer groups found'"
-      :action-text="selectedClusterId ? 'Create Group' : undefined"
+      :message="
+        !selectedClusterId ? t('consumer.pleaseSelectCluster') : t('consumer.noGroupsFound')
+      "
+      :action-text="selectedClusterId ? t('consumer.createGroup') : undefined"
       @action="showCreateDialog = true"
     />
 
@@ -300,27 +302,27 @@ const resetFormRules: Record<string, FormRule[]> = {
 }
 
 const columns: PrimaryTableCol[] = [
-  { colKey: 'groupName', title: 'Group Name', width: 200 },
-  { colKey: 'consumeType', title: 'Type', width: 100 },
-  { colKey: 'consumeEnable', title: 'Status', cell: 'consumeEnable', width: 120 },
-  { colKey: 'retryMaxTimes', title: 'Retry Max', width: 100 },
-  { colKey: 'createTime', title: 'Create Time', cell: 'createTime', width: 180 },
-  { colKey: 'remark', title: 'Remark', ellipsis: true },
-  { colKey: 'action', title: 'Actions', cell: 'action', width: 250, fixed: 'right' }
+  { colKey: 'groupName', title: t('consumer.groupName'), width: 200 },
+  { colKey: 'consumeType', title: t('consumer.type'), width: 100 },
+  { colKey: 'consumeEnable', title: t('consumer.status'), cell: 'consumeEnable', width: 120 },
+  { colKey: 'retryMaxTimes', title: t('consumer.retryMax'), width: 100 },
+  { colKey: 'createTime', title: t('common.createTime'), cell: 'createTime', width: 180 },
+  { colKey: 'remark', title: t('consumer.remark'), ellipsis: true },
+  { colKey: 'action', title: t('consumer.actions'), cell: 'action', width: 250, fixed: 'right' }
 ]
 
 const clientColumns: PrimaryTableCol[] = [
-  { colKey: 'clientId', title: 'Client ID' },
-  { colKey: 'clientAddress', title: 'Address' },
-  { colKey: 'language', title: 'Language' },
-  { colKey: 'version', title: 'Version' },
-  { colKey: 'connectionTime', title: 'Connected At' }
+  { colKey: 'clientId', title: t('consumer.clientId') },
+  { colKey: 'clientAddress', title: t('consumer.clientAddress') },
+  { colKey: 'language', title: t('consumer.language') },
+  { colKey: 'version', title: t('consumer.version') },
+  { colKey: 'connectionTime', title: t('consumer.connectionTime') }
 ]
 
 const lagColumns: PrimaryTableCol[] = [
-  { colKey: 'topicName', title: 'Topic' },
-  { colKey: 'partitionId', title: 'Partition' },
-  { colKey: 'lag', title: 'Lag', cell: 'lag' }
+  { colKey: 'topicName', title: t('consumer.topic') },
+  { colKey: 'partitionId', title: t('consumer.partition') },
+  { colKey: 'lag', title: t('consumer.lag'), cell: 'lag' }
 ]
 
 const getLagPercentage = (lag: number) => Math.min(100, (lag / 10000) * 100)
@@ -340,7 +342,7 @@ const loadClusters = async () => {
       }
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load clusters')
+    MessagePlugin.error(t('cluster.failedToLoadClusters'))
   }
 }
 
@@ -356,7 +358,7 @@ const loadGroups = async () => {
       groups.value = response.data
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load groups')
+    MessagePlugin.error(t('consumer.failedToLoadGroups'))
   } finally {
     tableLoading.value = false
   }
@@ -379,7 +381,7 @@ const loadClients = async (groupName: string) => {
       clients.value = response.data
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load clients')
+    MessagePlugin.error(t('consumer.failedToLoadClients'))
   } finally {
     loadingClients.value = false
   }
@@ -393,7 +395,7 @@ const loadLag = async (groupName: string) => {
       lagInfo.value = response.data
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load lag info')
+    MessagePlugin.error(t('consumer.failedToLoadLag'))
   } finally {
     loadingLag.value = false
   }
@@ -407,13 +409,13 @@ const handleCreate = async () => {
     createForm.value.clusterId = selectedClusterId.value
     const response = await groupApi.createGroup(createForm.value)
     if (response.success) {
-      MessagePlugin.success('Consumer group created successfully')
+      MessagePlugin.success(t('consumer.groupCreatedSuccess'))
       showCreateDialog.value = false
       createFormRef.value?.reset()
       loadGroups()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to create consumer group')
+    MessagePlugin.error(t('consumer.failedToCreateGroup'))
   } finally {
     creating.value = false
   }
@@ -436,12 +438,12 @@ const handleUpdate = async () => {
   try {
     const response = await groupApi.updateGroup(currentEditName.value, editForm.value)
     if (response.success) {
-      MessagePlugin.success('Consumer group updated successfully')
+      MessagePlugin.success(t('consumer.groupUpdatedSuccess'))
       showEditDialog.value = false
       loadGroups()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to update consumer group')
+    MessagePlugin.error(t('consumer.failedToUpdateGroup'))
   } finally {
     updating.value = false
   }
@@ -451,11 +453,11 @@ const handleDelete = async (groupName: string) => {
   try {
     const response = await groupApi.deleteGroup(groupName, selectedClusterId.value)
     if (response.success) {
-      MessagePlugin.success('Consumer group deleted successfully')
+      MessagePlugin.success(t('consumer.groupDeletedSuccess'))
       loadGroups()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to delete consumer group')
+    MessagePlugin.error(t('consumer.failedToDeleteGroup'))
   }
 }
 
@@ -483,12 +485,12 @@ const handleResetConfirm = async () => {
   try {
     const response = await groupApi.resetOffset(resetForm.value.groupName, resetForm.value)
     if (response.success) {
-      MessagePlugin.success('Offset reset successfully')
+      MessagePlugin.success(t('consumer.offsetResetSuccess'))
       showResetDialog.value = false
       resetFormRef.value?.reset()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to reset offset')
+    MessagePlugin.error(t('consumer.failedToResetOffset'))
   } finally {
     resetting.value = false
   }

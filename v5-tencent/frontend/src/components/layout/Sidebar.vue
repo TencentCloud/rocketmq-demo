@@ -84,9 +84,16 @@ const navigateTo = (path: string) => {
 }
 
 .sidebar-header {
-  padding: 28px 20px;
+  min-height: 68px;
+  height: 68px;
+  padding: 0 20px;
   border-bottom: 1px solid rgba(0, 82, 217, 0.08);
   background: linear-gradient(135deg, rgba(0, 82, 217, 0.02) 0%, rgba(0, 102, 255, 0.02) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .sidebar-title {
@@ -99,6 +106,8 @@ const navigateTo = (path: string) => {
   background-clip: text;
   margin: 0;
   letter-spacing: -0.01em;
+  line-height: 1;
+  padding-top: 2px;
 }
 
 :deep(.t-menu) {
@@ -171,5 +180,20 @@ const navigateTo = (path: string) => {
 
 :deep(.t-menu-item.t-is-active .t-icon) {
   color: #0052d9;
+}
+
+/* 响应式适配 - 与 Header 高度保持一致 */
+@media (min-width: 1920px) {
+  .sidebar-header {
+    min-height: 72px;
+    height: 72px;
+  }
+}
+
+@media (min-width: 2560px) {
+  .sidebar-header {
+    min-height: 80px;
+    height: 80px;
+  }
 }
 </style>

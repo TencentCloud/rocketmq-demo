@@ -36,6 +36,7 @@ const handleSettings = () => {
 
 <style scoped>
 .app-header {
+  min-height: 68px;
   height: 68px;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border-bottom: 1px solid rgba(0, 82, 217, 0.08);
@@ -46,6 +47,8 @@ const handleSettings = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .app-header::before {
@@ -104,6 +107,7 @@ const handleSettings = () => {
 /* 响应式适配 */
 @media (min-width: 1920px) {
   .app-header {
+    min-height: 72px;
     height: 72px;
     padding: 0 40px;
   }
@@ -115,6 +119,7 @@ const handleSettings = () => {
 
 @media (min-width: 2560px) {
   .app-header {
+    min-height: 80px;
     height: 80px;
     padding: 0 48px;
   }

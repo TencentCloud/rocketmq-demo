@@ -17,7 +17,7 @@
           </t-input>
           <t-select
             v-model="selectedClusterId"
-            placeholder="Select cluster"
+            :placeholder="t('topic.selectCluster')"
             style="width: 200px"
             @change="loadTopics"
           >
@@ -48,7 +48,7 @@
           <t-space :size="8">
             <t-button theme="default" variant="outline" size="small" @click="handleView(row)">
               <template #icon><t-icon name="view-module" /></template>
-              View
+              {{ t('topic.view') }}
             </t-button>
             <t-button
               theme="default"
@@ -57,19 +57,19 @@
               @click="handleSendMessage(row)"
             >
               <template #icon><t-icon name="send" /></template>
-              Send
+              {{ t('topic.send') }}
             </t-button>
             <t-button theme="default" variant="outline" size="small" @click="handleEdit(row)">
               <template #icon><t-icon name="edit" /></template>
-              Edit
+              {{ t('common.edit') }}
             </t-button>
             <t-popconfirm
-              content="Are you sure you want to delete this topic?"
+              :content="t('topic.deleteConfirm')"
               @confirm="handleDelete(row.topicName)"
             >
               <t-button theme="danger" variant="outline" size="small">
                 <template #icon><t-icon name="delete" /></template>
-                Delete
+                {{ t('common.delete') }}
               </t-button>
             </t-popconfirm>
           </t-space>
@@ -79,38 +79,38 @@
 
     <EmptyState
       v-else-if="!loading && (!selectedClusterId || topics.length === 0)"
-      :message="!selectedClusterId ? 'Please select a cluster' : 'No topics found'"
-      :action-text="selectedClusterId ? 'Create Topic' : undefined"
+      :message="!selectedClusterId ? t('topic.pleaseSelectCluster') : t('topic.noTopicsFound')"
+      :action-text="selectedClusterId ? t('topic.createTopic') : undefined"
       @action="showCreateDialog = true"
     />
 
     <!-- Create Dialog -->
     <t-dialog
       v-model:visible="showCreateDialog"
-      header="Create Topic"
+      :header="t('topic.createTopicTitle')"
       :on-confirm="handleCreate"
       :confirm-btn="{ loading: creating }"
       width="600px"
     >
       <t-form ref="createFormRef" :data="createForm" :rules="formRules" label-width="150px">
-        <t-form-item label="Topic Name" name="topicName">
-          <t-input v-model="createForm.topicName" placeholder="Enter topic name" />
+        <t-form-item :label="t('topic.topicName')" name="topicName">
+          <t-input v-model="createForm.topicName" :placeholder="t('topic.enterTopicName')" />
         </t-form-item>
-        <t-form-item label="Message Type" name="messageType">
-          <t-select v-model="createForm.messageType" placeholder="Select message type">
-            <t-option value="NORMAL" label="Normal" />
-            <t-option value="FIFO" label="FIFO" />
-            <t-option value="DELAY" label="Delay" />
-            <t-option value="TRANSACTION" label="Transaction" />
+        <t-form-item :label="t('topic.messageType')" name="messageType">
+          <t-select v-model="createForm.messageType" :placeholder="t('topic.selectMessageType')">
+            <t-option value="NORMAL" :label="t('topic.normal')" />
+            <t-option value="FIFO" :label="t('topic.fifo')" />
+            <t-option value="DELAY" :label="t('topic.delay')" />
+            <t-option value="TRANSACTION" :label="t('topic.transaction')" />
           </t-select>
         </t-form-item>
-        <t-form-item label="Partition Number" name="partitionNum">
+        <t-form-item :label="t('topic.partitionNumber')" name="partitionNum">
           <t-input-number v-model="createForm.partitionNum" :min="1" :max="128" />
         </t-form-item>
-        <t-form-item label="Remark" name="remark">
+        <t-form-item :label="t('topic.remark')" name="remark">
           <t-textarea
             v-model="createForm.remark"
-            placeholder="Enter description"
+            :placeholder="t('topic.enterDescription')"
             :maxlength="200"
           />
         </t-form-item>
@@ -120,17 +120,21 @@
     <!-- Edit Dialog -->
     <t-dialog
       v-model:visible="showEditDialog"
-      header="Edit Topic"
+      :header="t('topic.editTopicTitle')"
       :on-confirm="handleUpdate"
       :confirm-btn="{ loading: updating }"
       width="600px"
     >
       <t-form ref="editFormRef" :data="editForm" :rules="editFormRules" label-width="150px">
-        <t-form-item label="Partition Number" name="partitionNum">
+        <t-form-item :label="t('topic.partitionNumber')" name="partitionNum">
           <t-input-number v-model="editForm.partitionNum" :min="1" :max="128" />
         </t-form-item>
-        <t-form-item label="Remark" name="remark">
-          <t-textarea v-model="editForm.remark" placeholder="Enter description" :maxlength="200" />
+        <t-form-item :label="t('topic.remark')" name="remark">
+          <t-textarea
+            v-model="editForm.remark"
+            :placeholder="t('topic.enterDescription')"
+            :maxlength="200"
+          />
         </t-form-item>
       </t-form>
     </t-dialog>
@@ -138,20 +142,24 @@
     <!-- Send Message Dialog -->
     <t-dialog
       v-model:visible="showSendDialog"
-      header="Send Message"
+      :header="t('topic.sendMessageTitle')"
       :on-confirm="handleSend"
       :confirm-btn="{ loading: sending }"
       width="700px"
     >
       <t-form ref="sendFormRef" :data="sendForm" :rules="sendFormRules" label-width="120px">
-        <t-form-item label="Body" name="body">
-          <t-textarea v-model="sendForm.body" placeholder="Enter message body" :rows="5" />
+        <t-form-item :label="t('topic.body')" name="body">
+          <t-textarea
+            v-model="sendForm.body"
+            :placeholder="t('topic.enterMessageBody')"
+            :rows="5"
+          />
         </t-form-item>
-        <t-form-item label="Tags" name="tags">
-          <t-input v-model="sendForm.tags" placeholder="Optional tags" />
+        <t-form-item :label="t('topic.tags')" name="tags">
+          <t-input v-model="sendForm.tags" :placeholder="t('topic.optionalTags')" />
         </t-form-item>
-        <t-form-item label="Keys" name="keys">
-          <t-input v-model="sendForm.keys" placeholder="Optional keys" />
+        <t-form-item :label="t('topic.keys')" name="keys">
+          <t-input v-model="sendForm.keys" :placeholder="t('topic.optionalKeys')" />
         </t-form-item>
       </t-form>
     </t-dialog>
@@ -159,38 +167,38 @@
     <!-- Detail Drawer -->
     <t-drawer
       v-model:visible="showDetailDrawer"
-      header="Topic Details"
+      :header="t('topic.topicDetailsTitle')"
       size="large"
       :footer="false"
     >
       <div v-if="selectedTopic">
-        <t-descriptions bordered title="Basic Information">
-          <t-descriptions-item label="Topic Name">{{
+        <t-descriptions bordered :title="t('topic.basicInformation')">
+          <t-descriptions-item :label="t('topic.topicName')">{{
             selectedTopic.topicName
           }}</t-descriptions-item>
-          <t-descriptions-item label="Message Type">{{
+          <t-descriptions-item :label="t('topic.messageType')">{{
             selectedTopic.messageType
           }}</t-descriptions-item>
-          <t-descriptions-item label="Partition Num">{{
+          <t-descriptions-item :label="t('topic.partitionNumber')">{{
             selectedTopic.partitionNum
           }}</t-descriptions-item>
-          <t-descriptions-item label="Create Time">{{
+          <t-descriptions-item :label="t('common.createTime')">{{
             formatTime(selectedTopic.createTime)
           }}</t-descriptions-item>
-          <t-descriptions-item label="Remark" :span="2">{{
+          <t-descriptions-item :label="t('topic.remark')" :span="2">{{
             selectedTopic.remark || '-'
           }}</t-descriptions-item>
         </t-descriptions>
 
         <t-divider />
 
-        <h3>Producers</h3>
+        <h3>{{ t('topic.producers') }}</h3>
         <t-table
           :data="producers"
           :columns="producerColumns"
           :loading="loadingProducers"
           row-key="clientId"
-          :empty="'No producers connected'"
+          :empty="t('topic.noProducersConnected')"
           size="small"
         />
       </div>
@@ -282,19 +290,19 @@ const sendFormRules: Record<string, FormRule[]> = {
 }
 
 const columns: PrimaryTableCol[] = [
-  { colKey: 'topicName', title: 'Topic Name', width: 200 },
-  { colKey: 'messageType', title: 'Type', width: 120 },
-  { colKey: 'partitionNum', title: 'Partitions', width: 100 },
-  { colKey: 'createTime', title: 'Create Time', cell: 'createTime', width: 180 },
-  { colKey: 'remark', title: 'Remark', ellipsis: true },
-  { colKey: 'action', title: 'Actions', cell: 'action', width: 250, fixed: 'right' }
+  { colKey: 'topicName', title: t('topic.topicName'), width: 200 },
+  { colKey: 'messageType', title: t('topic.type'), width: 120 },
+  { colKey: 'partitionNum', title: t('topic.partitions'), width: 100 },
+  { colKey: 'createTime', title: t('common.createTime'), cell: 'createTime', width: 180 },
+  { colKey: 'remark', title: t('topic.remark'), ellipsis: true },
+  { colKey: 'action', title: t('topic.actions'), cell: 'action', width: 250, fixed: 'right' }
 ]
 
 const producerColumns: PrimaryTableCol[] = [
-  { colKey: 'clientId', title: 'Client ID' },
-  { colKey: 'clientAddress', title: 'Address' },
-  { colKey: 'language', title: 'Language' },
-  { colKey: 'version', title: 'Version' }
+  { colKey: 'clientId', title: t('topic.clientId') },
+  { colKey: 'clientAddress', title: t('topic.clientAddress') },
+  { colKey: 'language', title: t('topic.language') },
+  { colKey: 'version', title: t('topic.version') }
 ]
 
 const loadClusters = async () => {
@@ -307,7 +315,7 @@ const loadClusters = async () => {
       }
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load clusters')
+    MessagePlugin.error(t('cluster.failedToLoadClusters'))
   }
 }
 
@@ -324,7 +332,7 @@ const loadTopics = async () => {
       topics.value = response.data
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load topics')
+    MessagePlugin.error(t('topic.failedToLoadTopics'))
   } finally {
     tableLoading.value = false
   }
@@ -347,7 +355,7 @@ const loadProducers = async (topicName: string) => {
       producers.value = response.data
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load producers')
+    MessagePlugin.error(t('topic.failedToLoadProducers'))
   } finally {
     loadingProducers.value = false
   }
@@ -362,13 +370,13 @@ const handleCreate = async () => {
     createForm.value.clusterId = selectedClusterId.value
     const response = await topicApi.createTopic(createForm.value)
     if (response.success) {
-      MessagePlugin.success('Topic created successfully')
+      MessagePlugin.success(t('topic.topicCreatedSuccess'))
       showCreateDialog.value = false
       createFormRef.value?.reset()
       loadTopics()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to create topic')
+    MessagePlugin.error(t('topic.failedToCreateTopic'))
   } finally {
     creating.value = false
   }
@@ -391,12 +399,12 @@ const handleUpdate = async () => {
   try {
     const response = await topicApi.updateTopic(currentEditName.value, editForm.value)
     if (response.success) {
-      MessagePlugin.success('Topic updated successfully')
+      MessagePlugin.success(t('topic.topicUpdatedSuccess'))
       showEditDialog.value = false
       loadTopics()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to update topic')
+    MessagePlugin.error(t('topic.failedToUpdateTopic'))
   } finally {
     updating.value = false
   }
@@ -406,11 +414,11 @@ const handleDelete = async (topicName: string) => {
   try {
     const response = await topicApi.deleteTopic(topicName, selectedClusterId.value)
     if (response.success) {
-      MessagePlugin.success('Topic deleted successfully')
+      MessagePlugin.success(t('topic.topicDeletedSuccess'))
       loadTopics()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to delete topic')
+    MessagePlugin.error(t('topic.failedToDeleteTopic'))
   }
 }
 
@@ -439,12 +447,12 @@ const handleSend = async () => {
   try {
     const response = await messageApi.sendMessage(sendForm.value)
     if (response.success) {
-      MessagePlugin.success('Message sent successfully')
+      MessagePlugin.success(t('topic.messageSentSuccess'))
       showSendDialog.value = false
       sendFormRef.value?.reset()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to send message')
+    MessagePlugin.error(t('topic.failedToSendMessage'))
   } finally {
     sending.value = false
   }
