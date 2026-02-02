@@ -47,8 +47,8 @@ export interface GroupInfo {
   groupName: string
   consumeEnable: boolean
   consumeType: string
-  retryMaxTimes: number
-  remark?: string
+  maxRetryTimes: number
+  description?: string
   createTime: string
 }
 
@@ -138,14 +138,14 @@ export interface CreateGroupRequest {
   clusterId: string
   groupName: string
   consumeType: string
-  retryMaxTimes?: number
-  remark?: string
+  maxRetryTimes?: number
+  description?: string
 }
 
 export interface UpdateGroupRequest {
   consumeEnable?: boolean
-  retryMaxTimes?: number
-  remark?: string
+  maxRetryTimes?: number
+  description?: string
 }
 
 export interface SendMessageRequest {

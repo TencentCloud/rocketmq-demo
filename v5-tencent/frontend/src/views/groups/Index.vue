@@ -1,6 +1,6 @@
 <template>
   <div class="groups-page">
-    <PageHeader :title="t('consumer.title')" description="Manage RocketMQ consumer groups">
+    <PageHeader :title="t('consumer.title')" :description="t('consumer.pageDescription')">
       <template #actions>
         <t-space>
           <t-input
@@ -90,28 +90,28 @@
 
     <t-dialog
       v-model:visible="showCreateDialog"
-      header="Create Consumer Group"
+      :header="t('consumer.createGroupTitle')"
       :on-confirm="handleCreate"
       :confirm-btn="{ loading: creating }"
       width="600px"
     >
       <t-form ref="createFormRef" :data="createForm" :rules="formRules" label-width="150px">
-        <t-form-item label="Group Name" name="groupName">
-          <t-input v-model="createForm.groupName" placeholder="Enter group name" />
+        <t-form-item :label="t('consumer.groupName')" name="groupName">
+          <t-input v-model="createForm.groupName" :placeholder="t('consumer.enterGroupName')" />
         </t-form-item>
-        <t-form-item label="Consume Type" name="consumeType">
-          <t-select v-model="createForm.consumeType" placeholder="Select type">
-            <t-option value="PULL" label="Pull" />
-            <t-option value="PUSH" label="Push" />
+        <t-form-item :label="t('consumer.consumeType')" name="consumeType">
+          <t-select v-model="createForm.consumeType" :placeholder="t('consumer.selectType')">
+            <t-option value="PULL" :label="t('consumer.pull')" />
+            <t-option value="PUSH" :label="t('consumer.push')" />
           </t-select>
         </t-form-item>
-        <t-form-item label="Retry Max Times" name="retryMaxTimes">
-          <t-input-number v-model="createForm.retryMaxTimes" :min="0" :max="16" />
+        <t-form-item :label="t('consumer.maxRetryTimes')" name="maxRetryTimes">
+          <t-input-number v-model="createForm.maxRetryTimes" :min="0" :max="16" />
         </t-form-item>
-        <t-form-item label="Remark" name="remark">
+        <t-form-item :label="t('consumer.description')" name="description">
           <t-textarea
-            v-model="createForm.remark"
-            placeholder="Enter description"
+            v-model="createForm.description"
+            :placeholder="t('consumer.enterDescription')"
             :maxlength="200"
           />
         </t-form-item>
@@ -120,40 +120,44 @@
 
     <t-dialog
       v-model:visible="showEditDialog"
-      header="Edit Consumer Group"
+      :header="t('consumer.editGroupTitle')"
       :on-confirm="handleUpdate"
       :confirm-btn="{ loading: updating }"
       width="600px"
     >
       <t-form ref="editFormRef" :data="editForm" :rules="editFormRules" label-width="150px">
-        <t-form-item label="Consume Enable" name="consumeEnable">
+        <t-form-item :label="t('consumer.consumeEnable')" name="consumeEnable">
           <t-switch v-model="editForm.consumeEnable" />
         </t-form-item>
-        <t-form-item label="Retry Max Times" name="retryMaxTimes">
-          <t-input-number v-model="editForm.retryMaxTimes" :min="0" :max="16" />
+        <t-form-item :label="t('consumer.maxRetryTimes')" name="maxRetryTimes">
+          <t-input-number v-model="editForm.maxRetryTimes" :min="0" :max="16" />
         </t-form-item>
-        <t-form-item label="Remark" name="remark">
-          <t-textarea v-model="editForm.remark" placeholder="Enter description" :maxlength="200" />
+        <t-form-item :label="t('consumer.description')" name="description">
+          <t-textarea
+            v-model="editForm.description"
+            :placeholder="t('consumer.enterDescription')"
+            :maxlength="200"
+          />
         </t-form-item>
       </t-form>
     </t-dialog>
 
     <t-dialog
       v-model:visible="showResetDialog"
-      header="Reset Offset"
+      :header="t('consumer.resetOffsetTitle')"
       :on-confirm="handleResetConfirm"
       :confirm-btn="{ loading: resetting }"
       width="600px"
     >
       <t-form ref="resetFormRef" :data="resetForm" :rules="resetFormRules" label-width="120px">
-        <t-form-item label="Topic Name" name="topicName">
-          <t-input v-model="resetForm.topicName" placeholder="Enter topic name" />
+        <t-form-item :label="t('consumer.topicName')" name="topicName">
+          <t-input v-model="resetForm.topicName" :placeholder="t('consumer.enterTopicName')" />
         </t-form-item>
-        <t-form-item label="Timestamp" name="timestamp">
+        <t-form-item :label="t('consumer.timestamp')" name="timestamp">
           <t-date-picker
             v-model="resetForm.timestamp"
             mode="date-time"
-            placeholder="Select timestamp"
+            :placeholder="t('consumer.selectTimestamp')"
           />
         </t-form-item>
       </t-form>
@@ -161,47 +165,47 @@
 
     <t-drawer
       v-model:visible="showDetailDrawer"
-      header="Consumer Group Details"
+      :header="t('consumer.groupDetailsTitle')"
       size="large"
       :footer="false"
     >
       <div v-if="selectedGroup">
-        <t-descriptions bordered title="Basic Information">
-          <t-descriptions-item label="Group Name">{{
+        <t-descriptions bordered :title="t('consumer.basicInformation')">
+          <t-descriptions-item :label="t('consumer.groupName')">{{
             selectedGroup.groupName
           }}</t-descriptions-item>
-          <t-descriptions-item label="Consume Type">{{
+          <t-descriptions-item :label="t('consumer.consumeType')">{{
             selectedGroup.consumeType
           }}</t-descriptions-item>
-          <t-descriptions-item label="Consume Enable">
+          <t-descriptions-item :label="t('consumer.consumeEnable')">
             <t-tag :theme="selectedGroup.consumeEnable ? 'success' : 'default'" variant="light">
-              {{ selectedGroup.consumeEnable ? 'Enabled' : 'Disabled' }}
+              {{ selectedGroup.consumeEnable ? t('consumer.enabled') : t('consumer.disabled') }}
             </t-tag>
           </t-descriptions-item>
-          <t-descriptions-item label="Max Retry Times">{{
+          <t-descriptions-item :label="t('consumer.maxRetryTimes')">{{
             selectedGroup.maxRetryTimes
           }}</t-descriptions-item>
-          <t-descriptions-item label="Create Time">{{
+          <t-descriptions-item :label="t('common.createTime')">{{
             formatTime(selectedGroup.createTime)
           }}</t-descriptions-item>
-          <t-descriptions-item label="Description" :span="2">{{
+          <t-descriptions-item :label="t('consumer.description')" :span="2">{{
             selectedGroup.description || '-'
           }}</t-descriptions-item>
         </t-descriptions>
 
         <t-divider />
-        <h3>Consumer Clients</h3>
+        <h3>{{ t('consumer.consumerClients') }}</h3>
         <t-table
           :data="clients"
           :columns="clientColumns"
           :loading="loadingClients"
           row-key="clientId"
-          :empty="'No clients connected'"
+          :empty="t('consumer.noClientsConnected')"
           size="small"
         />
 
         <t-divider />
-        <h3>Consumption Lag</h3>
+        <h3>{{ t('consumer.consumptionLag') }}</h3>
         <t-table
           :data="lagInfo"
           :columns="lagColumns"
@@ -271,14 +275,14 @@ const createForm = ref<CreateGroupRequest>({
   clusterId: '',
   groupName: '',
   consumeType: 'PUSH',
-  retryMaxTimes: 3,
-  remark: ''
+  maxRetryTimes: 3,
+  description: ''
 })
 
 const editForm = ref<UpdateGroupRequest>({
   consumeEnable: true,
-  retryMaxTimes: 3,
-  remark: ''
+  maxRetryTimes: 3,
+  description: ''
 })
 
 const resetForm = ref<ResetOffsetRequest>({
@@ -291,14 +295,14 @@ const resetForm = ref<ResetOffsetRequest>({
 const currentEditName = ref('')
 
 const formRules: Record<string, FormRule[]> = {
-  groupName: [{ required: true, message: 'Group name is required', type: 'error' }],
-  consumeType: [{ required: true, message: 'Consume type is required', type: 'error' }]
+  groupName: [{ required: true, message: t('consumer.groupNameRequired'), type: 'error' }],
+  consumeType: [{ required: true, message: t('consumer.consumeTypeRequired'), type: 'error' }]
 }
 
 const editFormRules: Record<string, FormRule[]> = {}
 const resetFormRules: Record<string, FormRule[]> = {
-  topicName: [{ required: true, message: 'Topic name is required', type: 'error' }],
-  timestamp: [{ required: true, message: 'Timestamp is required', type: 'error' }]
+  topicName: [{ required: true, message: t('consumer.topicNameRequired'), type: 'error' }],
+  timestamp: [{ required: true, message: t('consumer.timestampRequired'), type: 'error' }]
 }
 
 const columns: PrimaryTableCol[] = [
@@ -425,8 +429,8 @@ const handleEdit = (group: GroupInfo) => {
   currentEditName.value = group.groupName
   editForm.value = {
     consumeEnable: group.consumeEnable,
-    retryMaxTimes: group.retryMaxTimes,
-    remark: group.remark
+    maxRetryTimes: group.maxRetryTimes,
+    description: group.description
   }
   showEditDialog.value = true
 }

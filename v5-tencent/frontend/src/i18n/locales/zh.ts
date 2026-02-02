@@ -216,6 +216,7 @@ export default {
     type: '类型',
     status: '状态',
     retryMax: '最大重试',
+    description: '描述',
     remark: '备注',
     actions: '操作',
     view: '查看',
@@ -262,7 +263,13 @@ export default {
     failedToDeleteGroup: '删除消费者组失败',
     failedToResetOffset: '重置偏移量失败',
     failedToLoadClients: '加载客户端失败',
-    failedToLoadLag: '加载延迟信息失败'
+    failedToLoadLag: '加载延迟信息失败',
+    groupNameRequired: '消费者组名称为必填项',
+    consumeTypeRequired: '消费类型为必填项',
+    topicNameRequired: '主题名称为必填项',
+    timestampRequired: '时间戳为必填项',
+    pageDescription: '管理 RocketMQ 消费者组',
+    maxRetryTimes: '最大重试次数'
   },
   producer: {
     title: '生产者管理',

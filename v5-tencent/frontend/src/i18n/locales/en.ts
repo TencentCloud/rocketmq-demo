@@ -268,7 +268,13 @@ export default {
     failedToDeleteGroup: 'Failed to delete consumer group',
     failedToResetOffset: 'Failed to reset offset',
     failedToLoadClients: 'Failed to load clients',
-    failedToLoadLag: 'Failed to load lag info'
+    failedToLoadLag: 'Failed to load lag information',
+    groupNameRequired: 'Group name is required',
+    consumeTypeRequired: 'Consume type is required',
+    topicNameRequired: 'Topic name is required',
+    timestampRequired: 'Timestamp is required',
+    pageDescription: 'Manage RocketMQ consumer groups',
+    maxRetryTimes: 'Max Retry Times'
   },
   producer: {
     title: 'Producer Management',
