@@ -8,37 +8,37 @@
         <template #icon>
           <t-icon name="dashboard" />
         </template>
-        Dashboard
+        {{ t('sidebar.dashboard') }}
       </t-menu-item>
       <t-menu-item value="clusters" @click="navigateTo('/clusters')">
         <template #icon>
           <t-icon name="server" />
         </template>
-        Clusters
+        {{ t('sidebar.cluster') }}
       </t-menu-item>
       <t-menu-item value="topics" @click="navigateTo('/topics')">
         <template #icon>
           <t-icon name="layers" />
         </template>
-        Topics
+        {{ t('sidebar.topic') }}
       </t-menu-item>
       <t-menu-item value="groups" @click="navigateTo('/groups')">
         <template #icon>
           <t-icon name="usergroup" />
         </template>
-        Groups
+        {{ t('sidebar.consumer') }}
       </t-menu-item>
       <t-menu-item value="messages" @click="navigateTo('/messages')">
         <template #icon>
           <t-icon name="mail" />
         </template>
-        Messages
+        {{ t('sidebar.message') }}
       </t-menu-item>
       <t-menu-item value="roles" @click="navigateTo('/roles')">
         <template #icon>
           <t-icon name="user" />
         </template>
-        Roles
+        {{ t('sidebar.producer') }}
       </t-menu-item>
     </t-menu>
   </aside>
@@ -47,9 +47,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 const activeMenu = ref('dashboard')
 
 watch(
@@ -110,7 +112,13 @@ const navigateTo = (path: string) => {
   border-radius: 8px;
   padding: 12px 16px;
   font-weight: 500;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
