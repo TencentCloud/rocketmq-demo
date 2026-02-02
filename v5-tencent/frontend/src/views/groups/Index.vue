@@ -1,14 +1,31 @@
 <template>
   <div class="groups-page">
-    <PageHeader title="Consumer Group Management" description="Manage RocketMQ consumer groups">
+    <PageHeader :title="t('consumer.title')" description="Manage RocketMQ consumer groups">
       <template #actions>
         <t-space>
-          <t-select v-model="selectedClusterId" placeholder="Select cluster" style="width: 200px" @change="loadGroups">
-            <t-option 
-              v-for="cluster in clusters" 
-              :key="cluster.clusterId" 
-              :value="cluster.clusterId" 
-              :label="`${cluster.clusterId}${cluster.clusterName ? ' (' + cluster.clusterName + ')' : ''}`" 
+          <t-input
+            v-model="searchKeyword"
+            :placeholder="t('consumer.searchGroupPlaceholder')"
+            clearable
+            style="width: 250px"
+            @enter="handleSearch"
+            @clear="handleClearSearch"
+          >
+            <template #suffix-icon>
+              <t-icon name="search" @click="handleSearch" style="cursor: pointer" />
+            </template>
+          </t-input>
+          <t-select
+            v-model="selectedClusterId"
+            placeholder="Select cluster"
+            style="width: 200px"
+            @change="loadGroups"
+          >
+            <t-option
+              v-for="cluster in clusters"
+              :key="cluster.clusterId"
+              :value="cluster.clusterId"
+              :label="`${cluster.clusterId}${cluster.clusterName ? ' (' + cluster.clusterName + ')' : ''}`"
             />
           </t-select>
           <t-button theme="primary" :disabled="!selectedClusterId" @click="showCreateDialog = true">
@@ -35,7 +52,12 @@
               <template #icon><t-icon name="view-module" /></template>
               View
             </t-button>
-            <t-button theme="default" variant="outline" size="small" @click="handleResetOffset(row)">
+            <t-button
+              theme="default"
+              variant="outline"
+              size="small"
+              @click="handleResetOffset(row)"
+            >
               <template #icon><t-icon name="refresh" /></template>
               Reset
             </t-button>
@@ -43,7 +65,10 @@
               <template #icon><t-icon name="edit" /></template>
               Edit
             </t-button>
-            <t-popconfirm content="Are you sure you want to delete this group?" @confirm="handleDelete(row.groupName)">
+            <t-popconfirm
+              content="Are you sure you want to delete this group?"
+              @confirm="handleDelete(row.groupName)"
+            >
               <t-button theme="danger" variant="outline" size="small">
                 <template #icon><t-icon name="delete" /></template>
                 Delete
@@ -54,9 +79,20 @@
       </t-table>
     </t-card>
 
-    <EmptyState v-else-if="!loading && (!selectedClusterId || groups.length === 0)" :message="!selectedClusterId ? 'Please select a cluster' : 'No consumer groups found'" :action-text="selectedClusterId ? 'Create Group' : undefined" @action="showCreateDialog = true" />
+    <EmptyState
+      v-else-if="!loading && (!selectedClusterId || groups.length === 0)"
+      :message="!selectedClusterId ? 'Please select a cluster' : 'No consumer groups found'"
+      :action-text="selectedClusterId ? 'Create Group' : undefined"
+      @action="showCreateDialog = true"
+    />
 
-    <t-dialog v-model:visible="showCreateDialog" header="Create Consumer Group" :on-confirm="handleCreate" :confirm-btn="{ loading: creating }" width="600px">
+    <t-dialog
+      v-model:visible="showCreateDialog"
+      header="Create Consumer Group"
+      :on-confirm="handleCreate"
+      :confirm-btn="{ loading: creating }"
+      width="600px"
+    >
       <t-form ref="createFormRef" :data="createForm" :rules="formRules" label-width="150px">
         <t-form-item label="Group Name" name="groupName">
           <t-input v-model="createForm.groupName" placeholder="Enter group name" />
@@ -71,12 +107,22 @@
           <t-input-number v-model="createForm.retryMaxTimes" :min="0" :max="16" />
         </t-form-item>
         <t-form-item label="Remark" name="remark">
-          <t-textarea v-model="createForm.remark" placeholder="Enter description" :maxlength="200" />
+          <t-textarea
+            v-model="createForm.remark"
+            placeholder="Enter description"
+            :maxlength="200"
+          />
         </t-form-item>
       </t-form>
     </t-dialog>
 
-    <t-dialog v-model:visible="showEditDialog" header="Edit Consumer Group" :on-confirm="handleUpdate" :confirm-btn="{ loading: updating }" width="600px">
+    <t-dialog
+      v-model:visible="showEditDialog"
+      header="Edit Consumer Group"
+      :on-confirm="handleUpdate"
+      :confirm-btn="{ loading: updating }"
+      width="600px"
+    >
       <t-form ref="editFormRef" :data="editForm" :rules="editFormRules" label-width="150px">
         <t-form-item label="Consume Enable" name="consumeEnable">
           <t-switch v-model="editForm.consumeEnable" />
@@ -90,39 +136,77 @@
       </t-form>
     </t-dialog>
 
-    <t-dialog v-model:visible="showResetDialog" header="Reset Offset" :on-confirm="handleResetConfirm" :confirm-btn="{ loading: resetting }" width="600px">
+    <t-dialog
+      v-model:visible="showResetDialog"
+      header="Reset Offset"
+      :on-confirm="handleResetConfirm"
+      :confirm-btn="{ loading: resetting }"
+      width="600px"
+    >
       <t-form ref="resetFormRef" :data="resetForm" :rules="resetFormRules" label-width="120px">
         <t-form-item label="Topic Name" name="topicName">
           <t-input v-model="resetForm.topicName" placeholder="Enter topic name" />
         </t-form-item>
         <t-form-item label="Timestamp" name="timestamp">
-          <t-date-picker v-model="resetForm.timestamp" mode="date-time" placeholder="Select timestamp" />
+          <t-date-picker
+            v-model="resetForm.timestamp"
+            mode="date-time"
+            placeholder="Select timestamp"
+          />
         </t-form-item>
       </t-form>
     </t-dialog>
 
-    <t-drawer v-model:visible="showDetailDrawer" header="Consumer Group Details" size="large" :footer="false">
+    <t-drawer
+      v-model:visible="showDetailDrawer"
+      header="Consumer Group Details"
+      size="large"
+      :footer="false"
+    >
       <div v-if="selectedGroup">
         <t-descriptions bordered title="Basic Information">
-          <t-descriptions-item label="Group Name">{{ selectedGroup.groupName }}</t-descriptions-item>
-          <t-descriptions-item label="Consume Type">{{ selectedGroup.consumeType }}</t-descriptions-item>
+          <t-descriptions-item label="Group Name">{{
+            selectedGroup.groupName
+          }}</t-descriptions-item>
+          <t-descriptions-item label="Consume Type">{{
+            selectedGroup.consumeType
+          }}</t-descriptions-item>
           <t-descriptions-item label="Consume Enable">
             <t-tag :theme="selectedGroup.consumeEnable ? 'success' : 'default'" variant="light">
               {{ selectedGroup.consumeEnable ? 'Enabled' : 'Disabled' }}
             </t-tag>
           </t-descriptions-item>
-          <t-descriptions-item label="Retry Max Times">{{ selectedGroup.retryMaxTimes }}</t-descriptions-item>
-          <t-descriptions-item label="Create Time">{{ formatTime(selectedGroup.createTime) }}</t-descriptions-item>
-          <t-descriptions-item label="Remark" :span="2">{{ selectedGroup.remark || '-' }}</t-descriptions-item>
+          <t-descriptions-item label="Retry Max Times">{{
+            selectedGroup.retryMaxTimes
+          }}</t-descriptions-item>
+          <t-descriptions-item label="Create Time">{{
+            formatTime(selectedGroup.createTime)
+          }}</t-descriptions-item>
+          <t-descriptions-item label="Remark" :span="2">{{
+            selectedGroup.remark || '-'
+          }}</t-descriptions-item>
         </t-descriptions>
 
         <t-divider />
         <h3>Consumer Clients</h3>
-        <t-table :data="clients" :columns="clientColumns" :loading="loadingClients" row-key="clientId" :empty="'No clients connected'" size="small" />
+        <t-table
+          :data="clients"
+          :columns="clientColumns"
+          :loading="loadingClients"
+          row-key="clientId"
+          :empty="'No clients connected'"
+          size="small"
+        />
 
         <t-divider />
         <h3>Consumption Lag</h3>
-        <t-table :data="lagInfo" :columns="lagColumns" :loading="loadingLag" row-key="topicName" size="small">
+        <t-table
+          :data="lagInfo"
+          :columns="lagColumns"
+          :loading="loadingLag"
+          row-key="topicName"
+          size="small"
+        >
           <template #lag="{ row }">
             <t-progress :percentage="getLagPercentage(row.lag)" :theme="getLagTheme(row.lag)" />
             <span style="margin-left: 8px">{{ formatNumber(row.lag) }}</span>
@@ -137,13 +221,24 @@
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
+import { useI18n } from 'vue-i18n'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
 import { groupApi } from '@/api/group'
 import { clusterApi } from '@/api/cluster'
-import type { GroupInfo, CreateGroupRequest, UpdateGroupRequest, ResetOffsetRequest, ClusterInfo, ConsumerClientInfo, ConsumerLagInfo } from '@/api/types'
+import type {
+  GroupInfo,
+  CreateGroupRequest,
+  UpdateGroupRequest,
+  ResetOffsetRequest,
+  ClusterInfo,
+  ConsumerClientInfo,
+  ConsumerLagInfo
+} from '@/api/types'
 import { formatTime, formatNumber } from '@/utils/format'
+
+const { t } = useI18n()
 
 const loading = ref(true)
 const tableLoading = ref(false)
@@ -159,6 +254,7 @@ const groups = ref<GroupInfo[]>([])
 const selectedGroup = ref<GroupInfo | null>(null)
 const clients = ref<ConsumerClientInfo[]>([])
 const lagInfo = ref<ConsumerLagInfo[]>([])
+const searchKeyword = ref('')
 
 const showCreateDialog = ref(false)
 const showEditDialog = ref(false)
@@ -252,7 +348,10 @@ const loadGroups = async () => {
   if (!selectedClusterId.value) return
   tableLoading.value = true
   try {
-    const response = await groupApi.listGroups(selectedClusterId.value)
+    const response = await groupApi.listGroups(
+      selectedClusterId.value,
+      searchKeyword.value || undefined
+    )
     if (response.success) {
       groups.value = response.data
     }
@@ -261,6 +360,15 @@ const loadGroups = async () => {
   } finally {
     tableLoading.value = false
   }
+}
+
+const handleSearch = () => {
+  loadGroups()
+}
+
+const handleClearSearch = () => {
+  searchKeyword.value = ''
+  loadGroups()
 }
 
 const loadClients = async (groupName: string) => {

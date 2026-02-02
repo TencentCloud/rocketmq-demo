@@ -20,7 +20,9 @@ export default {
     success: 'Success',
     failed: 'Failed',
     warning: 'Warning',
-    info: 'Info'
+    info: 'Info',
+    searchPlaceholder: 'Enter keyword to search',
+    clear: 'Clear'
   },
   header: {
     configuration: 'Configuration',
@@ -73,7 +75,8 @@ export default {
     topicStats: 'Topic Stats',
     topicConsumer: 'Topic Consumer',
     sendMessage: 'Send Message',
-    queryMessage: 'Query Message'
+    queryMessage: 'Query Message',
+    searchTopicPlaceholder: 'Search by topic name'
   },
   consumer: {
     title: 'Consumer Management',
@@ -94,7 +97,8 @@ export default {
     consumerProgress: 'Consumer Progress',
     consumerConfig: 'Consumer Config',
     resetOffset: 'Reset Offset',
-    deleteConsumerGroup: 'Delete Consumer Group'
+    deleteConsumerGroup: 'Delete Consumer Group',
+    searchGroupPlaceholder: 'Search by group name'
   },
   producer: {
     title: 'Producer Management',

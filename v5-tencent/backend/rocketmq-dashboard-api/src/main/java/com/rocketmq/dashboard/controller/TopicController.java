@@ -28,13 +28,15 @@ public class TopicController {
     }
     
     @GetMapping
-    @Operation(summary = "Get topic list", description = "Retrieve all topics in a cluster")
+    @Operation(summary = "Get topic list", description = "Retrieve all topics in a cluster, optionally filtered by topic name")
     public Result<List<TopicInfo>> listTopics(
             @Parameter(description = "Cluster ID", required = true, example = "rmq-cn-xxxxx")
-            @RequestParam String clusterId) {
+            @RequestParam String clusterId,
+            @Parameter(description = "Topic name for filtering (optional)", required = false)
+            @RequestParam(required = false) String topicName) {
         try {
-            log.info("Listing topics for cluster: {}", clusterId);
-            List<TopicInfo> topics = topicService.listTopics(clusterId);
+            log.info("Listing topics for cluster: {}, topicName filter: {}", clusterId, topicName);
+            List<TopicInfo> topics = topicService.listTopics(clusterId, topicName);
             return Result.success(topics);
         } catch (Exception e) {
             log.error("Failed to list topics for cluster: {}", clusterId, e);

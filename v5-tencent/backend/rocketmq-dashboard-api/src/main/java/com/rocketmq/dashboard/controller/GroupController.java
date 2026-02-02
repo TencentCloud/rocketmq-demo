@@ -30,13 +30,15 @@ public class GroupController {
     }
     
     @GetMapping
-    @Operation(summary = "Get consumer group list", description = "Retrieve all consumer groups in a cluster")
+    @Operation(summary = "Get consumer group list", description = "Retrieve all consumer groups in a cluster, optionally filtered by group name")
     public Result<List<GroupInfo>> listGroups(
             @Parameter(description = "Cluster ID", required = true, example = "rmq-cn-xxxxx")
-            @RequestParam String clusterId) {
+            @RequestParam String clusterId,
+            @Parameter(description = "Consumer group name for filtering (optional)", required = false)
+            @RequestParam(required = false) String groupName) {
         try {
-            log.info("Listing consumer groups for cluster: {}", clusterId);
-            List<GroupInfo> groups = groupService.listGroups(clusterId);
+            log.info("Listing consumer groups for cluster: {}, groupName filter: {}", clusterId, groupName);
+            List<GroupInfo> groups = groupService.listGroups(clusterId, groupName);
             return Result.success(groups);
         } catch (Exception e) {
             log.error("Failed to list consumer groups for cluster: {}", clusterId, e);

@@ -14,6 +14,7 @@ import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicRequest;
+import com.tencentcloudapi.trocket.v20230308.models.Filter;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicResponse;
 import com.tencentcloudapi.trocket.v20230308.models.TopicItem;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +36,8 @@ public class TopicService {
         this.trocketClient = trocketClient;
     }
 
-    public List<TopicInfo> listTopics(String clusterId) throws TencentCloudSDKException {
-        log.info("Listing topics for cluster: {}", clusterId);
+    public List<TopicInfo> listTopics(String clusterId, String topicName) throws TencentCloudSDKException {
+        log.info("Listing topics for cluster: {}, topicName filter: {}", clusterId, topicName);
 
         try {
             // Create request for DescribeTopicList API
@@ -44,6 +45,16 @@ public class TopicService {
             request.setInstanceId(clusterId);
             request.setOffset(0L);
             request.setLimit(100L); // Maximum reasonable limit
+
+            // Add filter if topicName is provided
+            if (topicName != null && !topicName.trim().isEmpty()) {
+                Filter[] filters = new Filter[1];
+                filters[0] = new Filter();
+                filters[0].setName("TopicName");
+                filters[0].setValues(new String[]{topicName});
+                request.setFilters(filters);
+                log.info("Applied filter for topic name: {}", topicName);
+            }
 
             // Call Tencent Cloud API
             DescribeTopicListResponse response = trocketClient.DescribeTopicList(request);

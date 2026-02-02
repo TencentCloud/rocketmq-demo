@@ -44,14 +44,24 @@ public class GroupService {
         this.trocketClient = trocketClient;
     }
     
-    public List<GroupInfo> listGroups(String clusterId) throws TencentCloudSDKException {
-        log.info("Listing consumer groups for cluster: {}", clusterId);
+    public List<GroupInfo> listGroups(String clusterId, String groupName) throws TencentCloudSDKException {
+        log.info("Listing consumer groups for cluster: {}, groupName filter: {}", clusterId, groupName);
 
         try {
             DescribeConsumerGroupListRequest request = new DescribeConsumerGroupListRequest();
             request.setInstanceId(clusterId);
             request.setOffset(0L);
             request.setLimit(100L);
+
+            // Add filter if groupName is provided
+            if (groupName != null && !groupName.trim().isEmpty()) {
+                Filter[] filters = new Filter[1];
+                filters[0] = new Filter();
+                filters[0].setName("ConsumerGroup");
+                filters[0].setValues(new String[]{groupName});
+                request.setFilters(filters);
+                log.info("Applied filter for consumer group name: {}", groupName);
+            }
 
             DescribeConsumerGroupListResponse response = trocketClient.DescribeConsumerGroupList(request);
 

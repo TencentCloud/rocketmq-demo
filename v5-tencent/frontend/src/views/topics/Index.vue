@@ -1,8 +1,20 @@
 <template>
   <div class="topics-page">
-    <PageHeader title="Topic Management" description="Manage RocketMQ topics">
+    <PageHeader :title="t('topic.title')" description="Manage RocketMQ topics">
       <template #actions>
         <t-space>
+          <t-input
+            v-model="searchKeyword"
+            :placeholder="t('topic.searchTopicPlaceholder')"
+            clearable
+            style="width: 250px"
+            @enter="handleSearch"
+            @clear="handleClearSearch"
+          >
+            <template #suffix-icon>
+              <t-icon name="search" @click="handleSearch" style="cursor: pointer" />
+            </template>
+          </t-input>
           <t-select
             v-model="selectedClusterId"
             placeholder="Select cluster"
@@ -18,7 +30,7 @@
           </t-select>
           <t-button theme="primary" :disabled="!selectedClusterId" @click="showCreateDialog = true">
             <template #icon><t-icon name="add" /></template>
-            Create Topic
+            {{ t('topic.createTopic') }}
           </t-button>
         </t-space>
       </template>
@@ -27,12 +39,7 @@
     <LoadingOverlay :visible="loading" />
 
     <t-card v-if="!loading && topics.length > 0" class="table-card">
-      <t-table
-        :data="topics"
-        :columns="columns"
-        row-key="topicId"
-        :loading="tableLoading"
-      >
+      <t-table :data="topics" :columns="columns" row-key="topicId" :loading="tableLoading">
         <template #createTime="{ row }">
           {{ formatTime(row.createTime) }}
         </template>
@@ -43,7 +50,12 @@
               <template #icon><t-icon name="view-module" /></template>
               View
             </t-button>
-            <t-button theme="default" variant="outline" size="small" @click="handleSendMessage(row)">
+            <t-button
+              theme="default"
+              variant="outline"
+              size="small"
+              @click="handleSendMessage(row)"
+            >
               <template #icon><t-icon name="send" /></template>
               Send
             </t-button>
@@ -96,7 +108,11 @@
           <t-input-number v-model="createForm.partitionNum" :min="1" :max="128" />
         </t-form-item>
         <t-form-item label="Remark" name="remark">
-          <t-textarea v-model="createForm.remark" placeholder="Enter description" :maxlength="200" />
+          <t-textarea
+            v-model="createForm.remark"
+            placeholder="Enter description"
+            :maxlength="200"
+          />
         </t-form-item>
       </t-form>
     </t-dialog>
@@ -149,11 +165,21 @@
     >
       <div v-if="selectedTopic">
         <t-descriptions bordered title="Basic Information">
-          <t-descriptions-item label="Topic Name">{{ selectedTopic.topicName }}</t-descriptions-item>
-          <t-descriptions-item label="Message Type">{{ selectedTopic.messageType }}</t-descriptions-item>
-          <t-descriptions-item label="Partition Num">{{ selectedTopic.partitionNum }}</t-descriptions-item>
-          <t-descriptions-item label="Create Time">{{ formatTime(selectedTopic.createTime) }}</t-descriptions-item>
-          <t-descriptions-item label="Remark" :span="2">{{ selectedTopic.remark || '-' }}</t-descriptions-item>
+          <t-descriptions-item label="Topic Name">{{
+            selectedTopic.topicName
+          }}</t-descriptions-item>
+          <t-descriptions-item label="Message Type">{{
+            selectedTopic.messageType
+          }}</t-descriptions-item>
+          <t-descriptions-item label="Partition Num">{{
+            selectedTopic.partitionNum
+          }}</t-descriptions-item>
+          <t-descriptions-item label="Create Time">{{
+            formatTime(selectedTopic.createTime)
+          }}</t-descriptions-item>
+          <t-descriptions-item label="Remark" :span="2">{{
+            selectedTopic.remark || '-'
+          }}</t-descriptions-item>
         </t-descriptions>
 
         <t-divider />
@@ -176,14 +202,24 @@
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
+import { useI18n } from 'vue-i18n'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
 import { topicApi } from '@/api/topic'
 import { clusterApi } from '@/api/cluster'
 import { messageApi } from '@/api/message'
-import type { TopicInfo, CreateTopicRequest, UpdateTopicRequest, ClusterInfo, ProducerInfo, SendMessageRequest } from '@/api/types'
+import type {
+  TopicInfo,
+  CreateTopicRequest,
+  UpdateTopicRequest,
+  ClusterInfo,
+  ProducerInfo,
+  SendMessageRequest
+} from '@/api/types'
 import { formatTime } from '@/utils/format'
+
+const { t } = useI18n()
 
 const loading = ref(true)
 const tableLoading = ref(false)
@@ -197,6 +233,7 @@ const clusters = ref<ClusterInfo[]>([])
 const topics = ref<TopicInfo[]>([])
 const selectedTopic = ref<TopicInfo | null>(null)
 const producers = ref<ProducerInfo[]>([])
+const searchKeyword = ref('')
 
 const showCreateDialog = ref(false)
 const showEditDialog = ref(false)
@@ -276,10 +313,13 @@ const loadClusters = async () => {
 
 const loadTopics = async () => {
   if (!selectedClusterId.value) return
-  
+
   tableLoading.value = true
   try {
-    const response = await topicApi.listTopics(selectedClusterId.value)
+    const response = await topicApi.listTopics(
+      selectedClusterId.value,
+      searchKeyword.value || undefined
+    )
     if (response.success) {
       topics.value = response.data
     }
@@ -288,6 +328,15 @@ const loadTopics = async () => {
   } finally {
     tableLoading.value = false
   }
+}
+
+const handleSearch = () => {
+  loadTopics()
+}
+
+const handleClearSearch = () => {
+  searchKeyword.value = ''
+  loadTopics()
 }
 
 const loadProducers = async (topicName: string) => {

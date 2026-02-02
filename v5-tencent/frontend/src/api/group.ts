@@ -10,8 +10,8 @@ import type {
 } from './types'
 
 export const groupApi = {
-  listGroups(clusterId: string): Promise<ApiResponse<GroupInfo[]>> {
-    return request.get('/v1/groups', { params: { clusterId } }).then(res => res.data)
+  listGroups(clusterId: string, groupName?: string): Promise<ApiResponse<GroupInfo[]>> {
+    return request.get('/v1/groups', { params: { clusterId, groupName } }).then(res => res.data)
   },
 
   getGroup(name: string, clusterId: string): Promise<ApiResponse<GroupInfo>> {

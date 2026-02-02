@@ -8,8 +8,8 @@ import type {
 } from './types'
 
 export const topicApi = {
-  listTopics(clusterId: string): Promise<ApiResponse<TopicInfo[]>> {
-    return request.get('/v1/topics', { params: { clusterId } }).then(res => res.data)
+  listTopics(clusterId: string, topicName?: string): Promise<ApiResponse<TopicInfo[]>> {
+    return request.get('/v1/topics', { params: { clusterId, topicName } }).then(res => res.data)
   },
 
   getTopic(name: string, clusterId: string): Promise<ApiResponse<TopicInfo>> {

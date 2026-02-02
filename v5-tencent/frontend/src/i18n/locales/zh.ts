@@ -20,7 +20,9 @@ export default {
     success: '成功',
     failed: '失败',
     warning: '警告',
-    info: '信息'
+    info: '信息',
+    searchPlaceholder: '输入关键词搜索',
+    clear: '清空'
   },
   header: {
     configuration: '配置',
@@ -73,7 +75,8 @@ export default {
     topicStats: '主题统计',
     topicConsumer: '主题消费者',
     sendMessage: '发送消息',
-    queryMessage: '查询消息'
+    queryMessage: '查询消息',
+    searchTopicPlaceholder: '按主题名称搜索'
   },
   consumer: {
     title: '消费者管理',
@@ -94,7 +97,8 @@ export default {
     consumerProgress: '消费进度',
     consumerConfig: '消费者配置',
     resetOffset: '重置偏移量',
-    deleteConsumerGroup: '删除消费者组'
+    deleteConsumerGroup: '删除消费者组',
+    searchGroupPlaceholder: '按消费者组名称搜索'
   },
   producer: {
     title: '生产者管理',
