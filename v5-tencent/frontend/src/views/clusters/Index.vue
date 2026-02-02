@@ -1,10 +1,10 @@
 <template>
   <div class="clusters-page">
-    <PageHeader title="Cluster Management" description="Manage RocketMQ clusters">
+    <PageHeader :title="t('cluster.pageTitle')" :description="t('cluster.pageDescription')">
       <template #actions>
         <t-button theme="primary" @click="showCreateDialog = true">
           <template #icon><t-icon name="add" /></template>
-          Create Cluster
+          {{ t('cluster.createCluster') }}
         </t-button>
       </template>
     </PageHeader>
@@ -12,12 +12,7 @@
     <LoadingOverlay :visible="loading" />
 
     <t-card v-if="!loading && clusters.length > 0" class="table-card">
-      <t-table
-        :data="clusters"
-        :columns="columns"
-        row-key="clusterId"
-        :loading="tableLoading"
-      >
+      <t-table :data="clusters" :columns="columns" row-key="clusterId" :loading="tableLoading">
         <template #status="{ row }">
           <t-tag :theme="row.status === 'RUNNING' ? 'success' : 'default'" variant="light">
             {{ row.status }}
@@ -32,19 +27,19 @@
           <t-space :size="8">
             <t-button theme="default" variant="outline" size="small" @click="handleView(row)">
               <template #icon><t-icon name="view-module" /></template>
-              View
+              {{ t('cluster.view') }}
             </t-button>
             <t-button theme="default" variant="outline" size="small" @click="handleEdit(row)">
               <template #icon><t-icon name="edit" /></template>
-              Edit
+              {{ t('cluster.edit') }}
             </t-button>
             <t-popconfirm
-              content="Are you sure you want to delete this cluster?"
+              :content="t('cluster.deleteConfirm')"
               @confirm="handleDelete(row.clusterId)"
             >
               <t-button theme="danger" variant="outline" size="small">
                 <template #icon><t-icon name="delete" /></template>
-                Delete
+                {{ t('cluster.delete') }}
               </t-button>
             </t-popconfirm>
           </t-space>
@@ -54,31 +49,26 @@
 
     <EmptyState
       v-else-if="!loading && clusters.length === 0"
-      message="No clusters found"
-      action-text="Create Cluster"
+      :message="t('cluster.noClustersFound')"
+      :action-text="t('cluster.createCluster')"
       @action="showCreateDialog = true"
     />
 
     <!-- Create Dialog -->
     <t-dialog
       v-model:visible="showCreateDialog"
-      header="Create Cluster"
+      :header="t('cluster.createClusterTitle')"
       :on-confirm="handleCreate"
       :confirm-btn="{ loading: creating }"
       width="600px"
     >
-      <t-form
-        ref="createFormRef"
-        :data="createForm"
-        :rules="formRules"
-        label-width="120px"
-      >
-        <t-form-item label="Cluster Name" name="clusterName">
-          <t-input v-model="createForm.clusterName" placeholder="Enter cluster name" />
+      <t-form ref="createFormRef" :data="createForm" :rules="formRules" label-width="120px">
+        <t-form-item :label="t('cluster.clusterName')" name="clusterName">
+          <t-input v-model="createForm.clusterName" :placeholder="t('cluster.enterClusterName')" />
         </t-form-item>
 
-        <t-form-item label="Region" name="region">
-          <t-select v-model="createForm.region" placeholder="Select region">
+        <t-form-item :label="t('cluster.region')" name="region">
+          <t-select v-model="createForm.region" :placeholder="t('cluster.selectRegion')">
             <t-option
               v-for="region in regions"
               :key="region.region"
@@ -88,10 +78,10 @@
           </t-select>
         </t-form-item>
 
-        <t-form-item label="Remark" name="remark">
+        <t-form-item :label="t('cluster.remark')" name="remark">
           <t-textarea
             v-model="createForm.remark"
-            placeholder="Enter cluster description"
+            :placeholder="t('cluster.enterDescription')"
             :maxlength="200"
           />
         </t-form-item>
@@ -101,25 +91,20 @@
     <!-- Edit Dialog -->
     <t-dialog
       v-model:visible="showEditDialog"
-      header="Edit Cluster"
+      :header="t('cluster.editClusterTitle')"
       :on-confirm="handleUpdate"
       :confirm-btn="{ loading: updating }"
       width="600px"
     >
-      <t-form
-        ref="editFormRef"
-        :data="editForm"
-        :rules="editFormRules"
-        label-width="120px"
-      >
-        <t-form-item label="Cluster Name" name="clusterName">
-          <t-input v-model="editForm.clusterName" placeholder="Enter cluster name" />
+      <t-form ref="editFormRef" :data="editForm" :rules="editFormRules" label-width="120px">
+        <t-form-item :label="t('cluster.clusterName')" name="clusterName">
+          <t-input v-model="editForm.clusterName" :placeholder="t('cluster.enterClusterName')" />
         </t-form-item>
 
-        <t-form-item label="Remark" name="remark">
+        <t-form-item :label="t('cluster.remark')" name="remark">
           <t-textarea
             v-model="editForm.remark"
-            placeholder="Enter cluster description"
+            :placeholder="t('cluster.enterDescription')"
             :maxlength="200"
           />
         </t-form-item>
@@ -129,29 +114,32 @@
     <!-- Detail Drawer -->
     <t-drawer
       v-model:visible="showDetailDrawer"
-      header="Cluster Details"
+      :header="t('cluster.clusterDetailsTitle')"
       size="large"
       :footer="false"
     >
       <t-descriptions v-if="selectedCluster" bordered>
-        <t-descriptions-item label="Cluster ID">
+        <t-descriptions-item :label="t('cluster.clusterId')">
           {{ selectedCluster.clusterId }}
         </t-descriptions-item>
-        <t-descriptions-item label="Cluster Name">
+        <t-descriptions-item :label="t('cluster.clusterName')">
           {{ selectedCluster.clusterName }}
         </t-descriptions-item>
-        <t-descriptions-item label="Region">
+        <t-descriptions-item :label="t('cluster.region')">
           {{ selectedCluster.region }}
         </t-descriptions-item>
-        <t-descriptions-item label="Status">
-          <t-tag :theme="selectedCluster.status === 'RUNNING' ? 'success' : 'default'" variant="light">
+        <t-descriptions-item :label="t('cluster.status')">
+          <t-tag
+            :theme="selectedCluster.status === 'RUNNING' ? 'success' : 'default'"
+            variant="light"
+          >
             {{ selectedCluster.status }}
           </t-tag>
         </t-descriptions-item>
-        <t-descriptions-item label="Create Time">
+        <t-descriptions-item :label="t('cluster.createTime')">
           {{ formatTime(selectedCluster.createTime) }}
         </t-descriptions-item>
-        <t-descriptions-item label="Remark" :span="2">
+        <t-descriptions-item :label="t('cluster.remark')" :span="2">
           {{ selectedCluster.remark || '-' }}
         </t-descriptions-item>
       </t-descriptions>
@@ -163,13 +151,21 @@
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
+import { useI18n } from 'vue-i18n'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
 import { clusterApi } from '@/api/cluster'
 import { configApi } from '@/api/config'
-import type { ClusterInfo, CreateClusterRequest, UpdateClusterRequest, RegionInfo } from '@/api/types'
+import type {
+  ClusterInfo,
+  CreateClusterRequest,
+  UpdateClusterRequest,
+  RegionInfo
+} from '@/api/types'
 import { formatTime } from '@/utils/format'
+
+const { t } = useI18n()
 
 const loading = ref(true)
 const tableLoading = ref(false)
@@ -201,56 +197,50 @@ const editForm = ref<UpdateClusterRequest>({
 const currentEditId = ref('')
 
 const formRules: Record<string, FormRule[]> = {
-  clusterName: [
-    { required: true, message: 'Cluster name is required', type: 'error' }
-  ],
-  region: [
-    { required: true, message: 'Region is required', type: 'error' }
-  ]
+  clusterName: [{ required: true, message: t('cluster.enterClusterName'), type: 'error' }],
+  region: [{ required: true, message: t('cluster.selectRegion'), type: 'error' }]
 }
 
 const editFormRules: Record<string, FormRule[]> = {
-  clusterName: [
-    { required: true, message: 'Cluster name is required', type: 'error' }
-  ]
+  clusterName: [{ required: true, message: t('cluster.enterClusterName'), type: 'error' }]
 }
 
 const columns: PrimaryTableCol[] = [
   {
     colKey: 'clusterId',
-    title: 'Cluster ID',
+    title: t('cluster.clusterId'),
     width: 200
   },
   {
     colKey: 'clusterName',
-    title: 'Cluster Name',
+    title: t('cluster.clusterName'),
     width: 200
   },
   {
     colKey: 'region',
-    title: 'Region',
+    title: t('cluster.region'),
     width: 150
   },
   {
     colKey: 'status',
-    title: 'Status',
+    title: t('cluster.status'),
     cell: 'status',
     width: 120
   },
   {
     colKey: 'createTime',
-    title: 'Create Time',
+    title: t('cluster.createTime'),
     cell: 'createTime',
     width: 180
   },
   {
     colKey: 'remark',
-    title: 'Remark',
+    title: t('cluster.remark'),
     ellipsis: true
   },
   {
     colKey: 'action',
-    title: 'Actions',
+    title: t('cluster.actions'),
     cell: 'action',
     width: 200,
     fixed: 'right'
@@ -265,7 +255,7 @@ const loadClusters = async () => {
       clusters.value = response.data
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load clusters')
+    MessagePlugin.error(t('cluster.failedToLoadClusters'))
   } finally {
     tableLoading.value = false
   }
@@ -278,7 +268,7 @@ const loadRegions = async () => {
       regions.value = response.data
     }
   } catch (error) {
-    MessagePlugin.error('Failed to load regions')
+    MessagePlugin.error(t('cluster.failedToLoadRegions'))
   }
 }
 
@@ -290,13 +280,13 @@ const handleCreate = async () => {
   try {
     const response = await clusterApi.createCluster(createForm.value)
     if (response.success) {
-      MessagePlugin.success('Cluster created successfully')
+      MessagePlugin.success(t('cluster.clusterCreatedSuccess'))
       showCreateDialog.value = false
       createFormRef.value?.reset()
       loadClusters()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to create cluster')
+    MessagePlugin.error(t('cluster.failedToCreateCluster'))
   } finally {
     creating.value = false
   }
@@ -319,12 +309,12 @@ const handleUpdate = async () => {
   try {
     const response = await clusterApi.updateCluster(currentEditId.value, editForm.value)
     if (response.success) {
-      MessagePlugin.success('Cluster updated successfully')
+      MessagePlugin.success(t('cluster.clusterUpdatedSuccess'))
       showEditDialog.value = false
       loadClusters()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to update cluster')
+    MessagePlugin.error(t('cluster.failedToUpdateCluster'))
   } finally {
     updating.value = false
   }
@@ -334,11 +324,11 @@ const handleDelete = async (clusterId: string) => {
   try {
     const response = await clusterApi.deleteCluster(clusterId)
     if (response.success) {
-      MessagePlugin.success('Cluster deleted successfully')
+      MessagePlugin.success(t('cluster.clusterDeletedSuccess'))
       loadClusters()
     }
   } catch (error) {
-    MessagePlugin.error('Failed to delete cluster')
+    MessagePlugin.error(t('cluster.failedToDeleteCluster'))
   }
 }
 
@@ -349,10 +339,7 @@ const handleView = (cluster: ClusterInfo) => {
 
 onMounted(async () => {
   loading.value = true
-  await Promise.all([
-    loadClusters(),
-    loadRegions()
-  ])
+  await Promise.all([loadClusters(), loadRegions()])
   loading.value = false
 })
 </script>

@@ -1,19 +1,24 @@
 <template>
   <div class="roles-page">
-    <PageHeader title="Role Management" description="Manage RocketMQ roles and permissions">
+    <PageHeader :title="t('role.pageTitle')" :description="t('role.pageDescription')">
       <template #actions>
         <t-space>
-          <t-select v-model="selectedClusterId" placeholder="Select cluster" style="width: 200px" @change="loadRoles">
-            <t-option 
-              v-for="cluster in clusters" 
-              :key="cluster.clusterId" 
-              :value="cluster.clusterId" 
-              :label="`${cluster.clusterId}${cluster.clusterName ? ' (' + cluster.clusterName + ')' : ''}`" 
+          <t-select
+            v-model="selectedClusterId"
+            :placeholder="t('role.selectCluster')"
+            style="width: 200px"
+            @change="loadRoles"
+          >
+            <t-option
+              v-for="cluster in clusters"
+              :key="cluster.clusterId"
+              :value="cluster.clusterId"
+              :label="`${cluster.clusterId}${cluster.clusterName ? ' (' + cluster.clusterName + ')' : ''}`"
             />
           </t-select>
           <t-button theme="primary" :disabled="!selectedClusterId" @click="showCreateDialog = true">
             <template #icon><t-icon name="add" /></template>
-            Create Role
+            {{ t('role.createRole') }}
           </t-button>
         </t-space>
       </template>
@@ -32,7 +37,10 @@
         <template #action="{ row }">
           <t-space>
             <t-link theme="primary" @click="handleEdit(row)">Edit</t-link>
-            <t-popconfirm content="Are you sure you want to delete this role?" @confirm="handleDelete(row.roleName)">
+            <t-popconfirm
+              content="Are you sure you want to delete this role?"
+              @confirm="handleDelete(row.roleName)"
+            >
               <t-link theme="danger">Delete</t-link>
             </t-popconfirm>
           </t-space>
@@ -40,9 +48,20 @@
       </t-table>
     </t-card>
 
-    <EmptyState v-else-if="!loading && (!selectedClusterId || roles.length === 0)" :message="!selectedClusterId ? 'Please select a cluster' : 'No roles found'" :action-text="selectedClusterId ? 'Create Role' : undefined" @action="showCreateDialog = true" />
+    <EmptyState
+      v-else-if="!loading && (!selectedClusterId || roles.length === 0)"
+      :message="!selectedClusterId ? 'Please select a cluster' : 'No roles found'"
+      :action-text="selectedClusterId ? 'Create Role' : undefined"
+      @action="showCreateDialog = true"
+    />
 
-    <t-dialog v-model:visible="showCreateDialog" header="Create Role" :on-confirm="handleCreate" :confirm-btn="{ loading: creating }" width="600px">
+    <t-dialog
+      v-model:visible="showCreateDialog"
+      header="Create Role"
+      :on-confirm="handleCreate"
+      :confirm-btn="{ loading: creating }"
+      width="600px"
+    >
       <t-form ref="createFormRef" :data="createForm" :rules="formRules" label-width="150px">
         <t-form-item label="Role Name" name="roleName">
           <t-input v-model="createForm.roleName" placeholder="Enter role name" />
@@ -56,12 +75,22 @@
           </t-select>
         </t-form-item>
         <t-form-item label="Remark" name="remark">
-          <t-textarea v-model="createForm.remark" placeholder="Enter description" :maxlength="200" />
+          <t-textarea
+            v-model="createForm.remark"
+            placeholder="Enter description"
+            :maxlength="200"
+          />
         </t-form-item>
       </t-form>
     </t-dialog>
 
-    <t-dialog v-model:visible="showEditDialog" header="Edit Role" :on-confirm="handleUpdate" :confirm-btn="{ loading: updating }" width="600px">
+    <t-dialog
+      v-model:visible="showEditDialog"
+      header="Edit Role"
+      :on-confirm="handleUpdate"
+      :confirm-btn="{ loading: updating }"
+      width="600px"
+    >
       <t-form ref="editFormRef" :data="editForm" :rules="editFormRules" label-width="150px">
         <t-form-item label="Permission Type" name="permissionType">
           <t-select v-model="editForm.permissionType" placeholder="Select permission type">
@@ -83,6 +112,7 @@
 import { ref, onMounted } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
+import { useI18n } from 'vue-i18n'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingOverlay from '@/components/common/LoadingOverlay.vue'
@@ -90,6 +120,8 @@ import { roleApi } from '@/api/role'
 import { clusterApi } from '@/api/cluster'
 import type { RoleInfo, CreateRoleRequest, UpdateRoleRequest, ClusterInfo } from '@/api/types'
 import { formatTime } from '@/utils/format'
+
+const { t } = useI18n()
 
 const loading = ref(true)
 const tableLoading = ref(false)
@@ -121,29 +153,34 @@ const editForm = ref<UpdateRoleRequest>({
 const currentEditName = ref('')
 
 const formRules: Record<string, FormRule[]> = {
-  roleName: [{ required: true, message: 'Role name is required', type: 'error' }],
-  permissionType: [{ required: true, message: 'Permission type is required', type: 'error' }]
+  roleName: [{ required: true, message: t('role.roleNameRequired'), type: 'error' }],
+  permissionType: [{ required: true, message: t('role.permissionTypeRequired'), type: 'error' }]
 }
 
 const editFormRules: Record<string, FormRule[]> = {
-  permissionType: [{ required: true, message: 'Permission type is required', type: 'error' }]
+  permissionType: [{ required: true, message: t('role.permissionTypeRequired'), type: 'error' }]
 }
 
 const columns: PrimaryTableCol[] = [
-  { colKey: 'roleName', title: 'Role Name', width: 200 },
-  { colKey: 'permissionType', title: 'Permission Type', cell: 'permissionType', width: 180 },
-  { colKey: 'createTime', title: 'Create Time', cell: 'createTime', width: 180 },
-  { colKey: 'remark', title: 'Remark', ellipsis: true },
-  { colKey: 'action', title: 'Actions', cell: 'action', width: 200, fixed: 'right' }
+  { colKey: 'roleName', title: t('role.roleName'), width: 200 },
+  { colKey: 'permissionType', title: t('role.permissionType'), cell: 'permissionType', width: 180 },
+  { colKey: 'createTime', title: t('role.createTime'), cell: 'createTime', width: 180 },
+  { colKey: 'remark', title: t('role.remark'), ellipsis: true },
+  { colKey: 'action', title: t('role.actions'), cell: 'action', width: 200, fixed: 'right' }
 ]
 
 const getPermissionTheme = (type: string) => {
   switch (type) {
-    case 'PUB': return 'success'
-    case 'SUB': return 'primary'
-    case 'PUB_SUB': return 'warning'
-    case 'DENY': return 'danger'
-    default: return 'default'
+    case 'PUB':
+      return 'success'
+    case 'SUB':
+      return 'primary'
+    case 'PUB_SUB':
+      return 'warning'
+    case 'DENY':
+      return 'danger'
+    default:
+      return 'default'
   }
 }
 

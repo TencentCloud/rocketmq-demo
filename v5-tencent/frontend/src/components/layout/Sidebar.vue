@@ -38,7 +38,7 @@
         <template #icon>
           <t-icon name="user" />
         </template>
-        {{ t('sidebar.producer') }}
+        {{ t('sidebar.role') }}
       </t-menu-item>
     </t-menu>
   </aside>
@@ -81,6 +81,7 @@ const navigateTo = (path: string) => {
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
 }
 
 .sidebar-header {
@@ -113,11 +114,13 @@ const navigateTo = (path: string) => {
 :deep(.t-menu) {
   border: none;
   flex: 1;
-  padding: 8px 0;
+  padding: 8px 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 :deep(.t-menu-item) {
-  margin: 4px 12px;
+  margin: 4px 0;
   border-radius: 8px;
   padding: 12px 16px;
   font-weight: 500;

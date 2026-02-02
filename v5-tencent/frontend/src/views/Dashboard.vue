@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-page">
-    <PageHeader title="RocketMQ Dashboard" description="Tencent Cloud RocketMQ 5.x Management Console" />
+    <PageHeader :title="t('dashboard.pageTitle')" :description="t('dashboard.pageDescription')" />
 
     <div class="dashboard-content">
       <!-- Welcome Card -->
@@ -8,12 +8,12 @@
         <template #header>
           <div class="card-header">
             <t-icon name="check-circle" class="header-icon" />
-            <span class="header-title">Welcome to RocketMQ Dashboard</span>
+            <span class="header-title">{{ t('dashboard.welcomeTitle') }}</span>
           </div>
         </template>
         <div class="welcome-content">
-          <p>This is a modern web-based management console for Tencent Cloud RocketMQ 5.x.</p>
-          <p>You can manage clusters, topics, consumer groups, messages, and more through this dashboard.</p>
+          <p>{{ t('dashboard.welcomeContent1') }}</p>
+          <p>{{ t('dashboard.welcomeContent2') }}</p>
         </div>
       </t-card>
 
@@ -22,15 +22,27 @@
         <template #header>
           <div class="card-header">
             <t-icon name="book" class="header-icon" />
-            <span class="header-title">Quick Start Guide</span>
+            <span class="header-title">{{ t('dashboard.quickStartTitle') }}</span>
           </div>
         </template>
         <div class="guide-content">
           <t-steps :current="0" layout="vertical">
-            <t-step-item title="Configure Cluster" content="Go to 'Config' page to add your Tencent Cloud RocketMQ cluster information." />
-            <t-step-item title="Manage Topics" content="Navigate to 'Topics' page to create, view, and manage topics." />
-            <t-step-item title="Manage Consumer Groups" content="Go to 'Groups' page to manage consumer groups and monitor consumption lag." />
-            <t-step-item title="Query Messages" content="Use 'Messages' page to query message details by message ID." />
+            <t-step-item
+              :title="t('dashboard.step1Title')"
+              :content="t('dashboard.step1Content')"
+            />
+            <t-step-item
+              :title="t('dashboard.step2Title')"
+              :content="t('dashboard.step2Content')"
+            />
+            <t-step-item
+              :title="t('dashboard.step3Title')"
+              :content="t('dashboard.step3Content')"
+            />
+            <t-step-item
+              :title="t('dashboard.step4Title')"
+              :content="t('dashboard.step4Content')"
+            />
           </t-steps>
         </div>
       </t-card>
@@ -42,8 +54,8 @@
             <div class="feature-content">
               <t-icon name="server" class="feature-icon cluster-icon" />
               <div class="feature-info">
-                <div class="feature-title">Clusters</div>
-                <div class="feature-desc">View and manage RocketMQ clusters</div>
+                <div class="feature-title">{{ t('dashboard.featureClusters') }}</div>
+                <div class="feature-desc">{{ t('dashboard.featureClustersDesc') }}</div>
               </div>
             </div>
           </t-card>
@@ -54,8 +66,8 @@
             <div class="feature-content">
               <t-icon name="layers" class="feature-icon topic-icon" />
               <div class="feature-info">
-                <div class="feature-title">Topics</div>
-                <div class="feature-desc">Create and manage message topics</div>
+                <div class="feature-title">{{ t('dashboard.featureTopics') }}</div>
+                <div class="feature-desc">{{ t('dashboard.featureTopicsDesc') }}</div>
               </div>
             </div>
           </t-card>
@@ -66,8 +78,8 @@
             <div class="feature-content">
               <t-icon name="usergroup" class="feature-icon group-icon" />
               <div class="feature-info">
-                <div class="feature-title">Consumer Groups</div>
-                <div class="feature-desc">Manage consumer groups and monitor lag</div>
+                <div class="feature-title">{{ t('dashboard.featureGroups') }}</div>
+                <div class="feature-desc">{{ t('dashboard.featureGroupsDesc') }}</div>
               </div>
             </div>
           </t-card>
@@ -78,8 +90,8 @@
             <div class="feature-content">
               <t-icon name="mail" class="feature-icon message-icon" />
               <div class="feature-info">
-                <div class="feature-title">Messages</div>
-                <div class="feature-desc">Query and trace message details</div>
+                <div class="feature-title">{{ t('dashboard.featureMessages') }}</div>
+                <div class="feature-desc">{{ t('dashboard.featureMessagesDesc') }}</div>
               </div>
             </div>
           </t-card>
@@ -91,16 +103,29 @@
         <template #header>
           <div class="card-header">
             <t-icon name="info-circle" class="header-icon" />
-            <span class="header-title">API Limitations</span>
+            <span class="header-title">{{ t('dashboard.limitationsTitle') }}</span>
           </div>
         </template>
         <div class="limitations-content">
-          <t-alert theme="warning" message="Important Notes" style="margin-bottom: 16px;">
+          <t-alert
+            theme="warning"
+            :message="t('dashboard.limitationsAlert')"
+            style="margin-bottom: 16px"
+          >
             <template #default>
               <ul class="limitation-list">
-                <li><strong>Message Query:</strong> Currently only supports querying by message ID. Time-based queries require using Tencent Cloud Console.</li>
-                <li><strong>Cluster Management:</strong> Cluster creation and deletion should be done through Tencent Cloud Console.</li>
-                <li><strong>Message Sending:</strong> For production use, please use official RocketMQ client SDKs instead of dashboard.</li>
+                <li>
+                  <strong>{{ t('dashboard.limitation1').split(':')[0] }}:</strong>
+                  {{ t('dashboard.limitation1').split(':')[1] }}
+                </li>
+                <li>
+                  <strong>{{ t('dashboard.limitation2').split(':')[0] }}:</strong>
+                  {{ t('dashboard.limitation2').split(':')[1] }}
+                </li>
+                <li>
+                  <strong>{{ t('dashboard.limitation3').split(':')[0] }}:</strong>
+                  {{ t('dashboard.limitation3').split(':')[1] }}
+                </li>
               </ul>
             </template>
           </t-alert>
@@ -112,30 +137,34 @@
         <template #header>
           <div class="card-header">
             <t-icon name="link" class="header-icon" />
-            <span class="header-title">Documentation & Resources</span>
+            <span class="header-title">{{ t('dashboard.docsTitle') }}</span>
           </div>
         </template>
         <div class="docs-content">
           <t-list :split="true">
             <t-list-item>
-              <t-list-item-meta 
-                title="Tencent Cloud RocketMQ Documentation" 
-                description="Official documentation for Tencent Cloud RocketMQ 5.x"
+              <t-list-item-meta
+                :title="t('dashboard.docsItem1Title')"
+                :description="t('dashboard.docsItem1Desc')"
               >
                 <template #image>
                   <t-icon name="file-text" size="24px" />
                 </template>
               </t-list-item-meta>
               <template #action>
-                <t-link theme="primary" href="https://cloud.tencent.com/document/product/1493" target="_blank">
-                  View Docs
+                <t-link
+                  theme="primary"
+                  href="https://cloud.tencent.com/document/product/1493"
+                  target="_blank"
+                >
+                  {{ t('dashboard.viewDocs') }}
                 </t-link>
               </template>
             </t-list-item>
             <t-list-item>
-              <t-list-item-meta 
-                title="RocketMQ Official Website" 
-                description="Apache RocketMQ official documentation and guides"
+              <t-list-item-meta
+                :title="t('dashboard.docsItem2Title')"
+                :description="t('dashboard.docsItem2Desc')"
               >
                 <template #image>
                   <t-icon name="internet" size="24px" />
@@ -143,22 +172,26 @@
               </t-list-item-meta>
               <template #action>
                 <t-link theme="primary" href="https://rocketmq.apache.org/" target="_blank">
-                  Visit Site
+                  {{ t('dashboard.visitSite') }}
                 </t-link>
               </template>
             </t-list-item>
             <t-list-item>
-              <t-list-item-meta 
-                title="API Reference" 
-                description="Tencent Cloud RocketMQ API documentation"
+              <t-list-item-meta
+                :title="t('dashboard.docsItem3Title')"
+                :description="t('dashboard.docsItem3Desc')"
               >
                 <template #image>
                   <t-icon name="code" size="24px" />
                 </template>
               </t-list-item-meta>
               <template #action>
-                <t-link theme="primary" href="https://cloud.tencent.com/document/api/1493" target="_blank">
-                  API Docs
+                <t-link
+                  theme="primary"
+                  href="https://cloud.tencent.com/document/api/1493"
+                  target="_blank"
+                >
+                  {{ t('dashboard.apiDocs') }}
                 </t-link>
               </template>
             </t-list-item>
@@ -171,9 +204,11 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import PageHeader from '@/components/common/PageHeader.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const navigateTo = (path: string) => {
   router.push(path)
