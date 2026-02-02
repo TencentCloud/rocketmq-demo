@@ -383,6 +383,24 @@ const navigateTo = (path: string) => {
   padding: 8px 0;
 }
 
+/* 修复文档列表图标居中问题 */
+.docs-content :deep(.t-list-item__meta-avatar) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, rgba(0, 82, 217, 0.08) 0%, rgba(0, 102, 255, 0.08) 100%);
+  border-radius: 8px;
+}
+
+.docs-content :deep(.t-list-item__meta-avatar .t-icon) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0052d9;
+}
+
 /* Responsive */
 @media (min-width: 1920px) {
   .dashboard-page {

@@ -176,11 +176,14 @@
           <t-descriptions-item :label="t('topic.topicName')">{{
             selectedTopic.topicName
           }}</t-descriptions-item>
-          <t-descriptions-item :label="t('topic.messageType')">{{
-            selectedTopic.messageType
+          <t-descriptions-item :label="t('topic.type')">{{
+            selectedTopic.topicType
           }}</t-descriptions-item>
-          <t-descriptions-item :label="t('topic.partitionNumber')">{{
-            selectedTopic.partitionNum
+          <t-descriptions-item :label="t('topic.partitions')">{{
+            selectedTopic.queueNum
+          }}</t-descriptions-item>
+          <t-descriptions-item :label="t('topic.retentionHours')">{{
+            selectedTopic.retentionHours
           }}</t-descriptions-item>
           <t-descriptions-item :label="t('common.createTime')">{{
             formatTime(selectedTopic.createTime)
@@ -291,8 +294,9 @@ const sendFormRules: Record<string, FormRule[]> = {
 
 const columns: PrimaryTableCol[] = [
   { colKey: 'topicName', title: t('topic.topicName'), width: 200 },
-  { colKey: 'messageType', title: t('topic.type'), width: 120 },
-  { colKey: 'partitionNum', title: t('topic.partitions'), width: 100 },
+  { colKey: 'topicType', title: t('topic.type'), width: 120 },
+  { colKey: 'queueNum', title: t('topic.partitions'), width: 100 },
+  { colKey: 'retentionHours', title: t('topic.retentionHours'), width: 120 },
   { colKey: 'createTime', title: t('common.createTime'), cell: 'createTime', width: 180 },
   { colKey: 'remark', title: t('topic.remark'), ellipsis: true },
   { colKey: 'action', title: t('topic.actions'), cell: 'action', width: 250, fixed: 'right' }

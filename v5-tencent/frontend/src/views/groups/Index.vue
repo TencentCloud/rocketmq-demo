@@ -178,14 +178,14 @@
               {{ selectedGroup.consumeEnable ? 'Enabled' : 'Disabled' }}
             </t-tag>
           </t-descriptions-item>
-          <t-descriptions-item label="Retry Max Times">{{
-            selectedGroup.retryMaxTimes
+          <t-descriptions-item label="Max Retry Times">{{
+            selectedGroup.maxRetryTimes
           }}</t-descriptions-item>
           <t-descriptions-item label="Create Time">{{
             formatTime(selectedGroup.createTime)
           }}</t-descriptions-item>
-          <t-descriptions-item label="Remark" :span="2">{{
-            selectedGroup.remark || '-'
+          <t-descriptions-item label="Description" :span="2">{{
+            selectedGroup.description || '-'
           }}</t-descriptions-item>
         </t-descriptions>
 
@@ -305,9 +305,9 @@ const columns: PrimaryTableCol[] = [
   { colKey: 'groupName', title: t('consumer.groupName'), width: 200 },
   { colKey: 'consumeType', title: t('consumer.type'), width: 100 },
   { colKey: 'consumeEnable', title: t('consumer.status'), cell: 'consumeEnable', width: 120 },
-  { colKey: 'retryMaxTimes', title: t('consumer.retryMax'), width: 100 },
+  { colKey: 'maxRetryTimes', title: t('consumer.retryMax'), width: 120 },
+  { colKey: 'description', title: t('consumer.description'), width: 200, ellipsis: true },
   { colKey: 'createTime', title: t('common.createTime'), cell: 'createTime', width: 180 },
-  { colKey: 'remark', title: t('consumer.remark'), ellipsis: true },
   { colKey: 'action', title: t('consumer.actions'), cell: 'action', width: 250, fixed: 'right' }
 ]
 

@@ -111,11 +111,12 @@ const navigateTo = (path: string) => {
   padding-top: 2px;
 }
 
-:deep(.t-menu) {
+:deep(.t-menu),
+:deep(.t-default-menu) {
   border: none;
   flex: 1;
   padding: 8px 16px;
-  width: 100%;
+  width: 100% !important;
   box-sizing: border-box;
 }
 
