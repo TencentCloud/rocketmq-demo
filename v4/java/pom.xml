@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>remoting</module>
+        <module>rocketmqclient</module>
         <module>springboot</module>
         <module>springcloud_stream</module>
     </modules>
