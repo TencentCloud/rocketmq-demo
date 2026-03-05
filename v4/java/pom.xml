@@ -5,16 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tencent.rocketmq</groupId>
-    <artifactId>rocketmq-demo</artifactId>
+    <artifactId>rocketmq-demo-v4</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>rocketmq4</module>
-        <module>rocketmq5</module>
         <module>springboot</module>
-        <module>springboot5</module>
         <module>springcloud_stream</module>
-        <module>mqtt</module>
     </modules>
 
     <properties>

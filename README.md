@@ -1,6 +1,25 @@
 # 腾讯云 RocketMQ 使用示例
 
-本项目主要帮助用户在使用时候的代码参考，项目以语言分为不同的目录。
+本项目主要帮助用户在使用时候的代码参考，项目以版本分为不同的目录。
+
+```
+rocketmq-demo/
+├── v4/          # RocketMQ 4.x 示例
+│   ├── java/    # Java 原生客户端 / SpringBoot / Spring Cloud Stream
+│   ├── golang/
+│   ├── cpp/
+│   ├── python/
+│   └── csharp/
+├── v5/          # RocketMQ 5.x 示例
+│   ├── java/    # Java 原生客户端 / SpringBoot
+│   ├── golang/
+│   ├── cpp/
+│   ├── nodejs/
+│   ├── rust/
+│   └── csharp/
+└── mqtt/        # MQTT 协议示例
+    └── java/
+```
 
 # 5.x 已完成demo
 
@@ -27,6 +46,6 @@
 
 # 使用手册
 
-## java
+## Java
 
-java用户直接导入该目录，作为项目根目录即可。
+Java 用户将 `v4/java/` 或 `v5/java/` 作为项目根目录导入 IDE 即可。
