@@ -21,6 +21,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Description: 启动类
+ *
+ * <p>【说明】此模块（v5/remoting/springboot）与 v4/remoting/springboot 使用相同的
+ * rocketmq-spring-boot-starter（基于 4.x Remoting 协议），连接腾讯云 RocketMQ 5.x Broker
+ * 时走兼容协议，无需代码改造即可迁移。
+ * 如需使用 5.x 原生 gRPC 特性，请参考 v5/grpc/springboot5 目录。
  */
 @SpringBootApplication
 public class DemoApplication {

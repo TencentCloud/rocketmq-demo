@@ -49,5 +49,7 @@ public class RetryProducer {
             SendResult sendResult = producer.send(msg);
             System.out.printf("%s%n", sendResult);
         }
+        // 关闭生产者，释放资源
+        producer.shutdown();
     }
 }
