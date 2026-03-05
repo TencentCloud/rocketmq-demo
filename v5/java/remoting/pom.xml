@@ -5,13 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tencent.rocketmq</groupId>
-    <artifactId>rocketmq-demo-v4</artifactId>
+    <artifactId>rocketmq-demo-v5-remoting</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>remoting</module>
+        <module>rocketmq4</module>
         <module>springboot</module>
-        <module>springcloud_stream</module>
     </modules>
 
     <properties>
