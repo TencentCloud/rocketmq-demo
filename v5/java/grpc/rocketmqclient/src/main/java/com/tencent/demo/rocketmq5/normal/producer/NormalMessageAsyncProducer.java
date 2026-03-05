@@ -30,12 +30,11 @@ import org.apache.rocketmq.client.apis.StaticSessionCredentialsProvider;
 import org.apache.rocketmq.client.apis.message.Message;
 import org.apache.rocketmq.client.apis.producer.Producer;
 import org.apache.rocketmq.client.apis.producer.SendReceipt;
-import org.apache.rocketmq.client.java.example.AsyncProducerExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class NormalMessageAsyncProducer {
-    private static final Logger log = LoggerFactory.getLogger(AsyncProducerExample.class);
+    private static final Logger log = LoggerFactory.getLogger(NormalMessageAsyncProducer.class);
 
     private NormalMessageAsyncProducer() {
     }

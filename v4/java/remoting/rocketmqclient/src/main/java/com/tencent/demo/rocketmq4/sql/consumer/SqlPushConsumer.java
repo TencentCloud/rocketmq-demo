@@ -42,14 +42,17 @@ public class SqlPushConsumer {
         // 创建消息消费者
         DefaultMQPushConsumer pushConsumer = ClientCreater.createPushConsumer(GROUP_NAME);
 
-        //订阅所有消息
-        pushConsumer.subscribe(TOPIC_NAME, MessageSelector.bySql("True"));
+        // 注意：对同一个 topic 多次调用 subscribe() 时，后一次会覆盖前一次的订阅表达式。
+        // 以下三种方式仅选择其中一种使用，注释掉其余两种。
 
-        // 订阅topic 订阅单个key的sql
-        pushConsumer.subscribe(TOPIC_NAME,
-            MessageSelector.bySql("key1 IS NOT NULL AND key1='value1'"));
+        // 方式一：订阅所有消息（无过滤）
+        // pushConsumer.subscribe(TOPIC_NAME, MessageSelector.bySql("True"));
 
-        //订阅多个属性
+        // 方式二：按单个属性过滤
+        // pushConsumer.subscribe(TOPIC_NAME,
+        //     MessageSelector.bySql("key1 IS NOT NULL AND key1='value1'"));
+
+        // 方式三：按多个属性联合过滤（当前生效）
         pushConsumer.subscribe(TOPIC_NAME,
             MessageSelector.bySql("key1 IS NOT NULL AND key2 IS NOT NULL  AND key1='value1' AND key2='value2'"));
 
