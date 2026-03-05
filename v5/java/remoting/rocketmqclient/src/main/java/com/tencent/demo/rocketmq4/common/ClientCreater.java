@@ -28,6 +28,15 @@ import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 /**
  * Description: 创建客户端
  * 生产者或消费者
+ *
+ * <p>【说明】此目录（v5/remoting）下的代码与 v4/remoting 完全相同。
+ * 腾讯云 RocketMQ 5.x 同时支持两种接入协议：
+ * <ul>
+ *   <li><b>gRPC 协议</b>（推荐）：使用 rocketmq-client-java 5.x SDK，见 v5/grpc 目录，
+ *       功能最全，支持任意精度延迟消息、FIFO 消息组等新特性。</li>
+ *   <li><b>Remoting 协议</b>（兼容）：使用 rocketmq-client 4.x SDK 连接 5.x Broker，迁移成本低。</li>
+ * </ul>
+ * 新项目建议优先选用 gRPC 协议（v5/grpc 目录）。
  */
 public class ClientCreater {
 
