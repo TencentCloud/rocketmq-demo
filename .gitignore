@@ -54,3 +54,6 @@ cmake-build*
 #csharp
 bin/
 obj/
+
+# Git worktrees
+.worktrees/

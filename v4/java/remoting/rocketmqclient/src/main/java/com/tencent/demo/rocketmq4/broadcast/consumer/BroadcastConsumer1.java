@@ -45,7 +45,7 @@ public class BroadcastConsumer1 {
     public static void main(String[] args) throws Exception {
         // 创建消息消费者
         DefaultMQPushConsumer pushConsumer = ClientCreater.createPushConsumer(GROUP_NAME);
-        // 设置从第一个偏移量开始消费
+        // 设置从最新偏移量开始消费（广播模式下仅首次启动有效）
         pushConsumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
         // 设置消息模型为广播模型
         pushConsumer.setMessageModel(MessageModel.BROADCASTING);

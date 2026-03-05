@@ -37,7 +37,7 @@ public class TimerMessageProducer {
     private static final String GROUP_NAME = "group2";
 
     public static void main(String[] args) throws Exception {
-        // 创建消息消费者
+        // 创建消息生产者
         DefaultMQProducer producer = ClientCreater.createProducer(GROUP_NAME);
 
         int totalMessagesToSend = 1;
