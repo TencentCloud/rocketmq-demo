@@ -218,227 +218,146 @@ const navigateTo = (path: string) => {
 <style scoped>
 .dashboard-page {
   height: 100%;
-  padding: 24px;
-  width: 100%;
+  padding: var(--gap-lg);
   overflow-y: auto;
 }
 
 .dashboard-content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-top: 16px;
+  gap: var(--gap-md);
 }
 
-/* Card Headers */
+/* ---- Card Headers ---- */
 .card-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 16px;
+  gap: var(--gap-sm);
+  font-size: 15px;
   font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 .header-icon {
-  font-size: 20px;
-  color: #0052d9;
+  font-size: 18px;
+  color: var(--color-primary);
 }
 
-.header-title {
-  color: #000;
-}
-
-/* Welcome Card */
-.welcome-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 12px;
-}
-
-.welcome-content {
-  padding: 8px 0;
-}
-
+/* ---- Welcome ---- */
 .welcome-content p {
-  margin: 8px 0;
-  color: #666;
-  line-height: 1.6;
+  margin: 6px 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
 }
 
-/* Guide Card */
-.guide-card {
-  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-  border-radius: 12px;
-}
-
+/* ---- Guide ---- */
 .guide-content {
-  padding: 16px 0;
+  padding: var(--gap-sm) 0;
 }
 
-/* Feature Cards */
+/* ---- Feature Cards ---- */
 .feature-row {
   margin: 0;
 }
 
 .feature-card {
-  height: 140px;
   cursor: pointer;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border: 1px solid rgba(0, 82, 217, 0.08);
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: var(--transition-spring);
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 82, 217, 0.15);
-  border-color: rgba(0, 82, 217, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 82, 217, 0.12);
+  border-color: var(--color-primary-border) !important;
 }
 
 .feature-content {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  height: 100%;
-  text-align: center;
+  gap: var(--gap-md);
+  padding: var(--gap-sm) 0;
 }
 
 .feature-icon {
-  font-size: 48px;
-  padding: 12px;
-  border-radius: 12px;
+  font-size: 32px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
 }
 
 .cluster-icon {
-  color: #0052d9;
-  background: linear-gradient(135deg, rgba(0, 82, 217, 0.1) 0%, rgba(0, 102, 255, 0.1) 100%);
+  color: var(--color-primary);
+  background-color: rgba(0, 82, 217, 0.08);
 }
 
 .topic-icon {
-  color: #29cc85;
-  background: linear-gradient(135deg, rgba(41, 204, 133, 0.1) 0%, rgba(41, 204, 133, 0.08) 100%);
+  color: var(--color-success);
+  background-color: rgba(0, 168, 112, 0.08);
 }
 
 .group-icon {
-  color: #e37318;
-  background: linear-gradient(135deg, rgba(227, 115, 24, 0.1) 0%, rgba(227, 115, 24, 0.08) 100%);
+  color: var(--color-warning);
+  background-color: rgba(227, 115, 24, 0.08);
 }
 
 .message-icon {
-  color: #eb2f96;
-  background: linear-gradient(135deg, rgba(235, 47, 150, 0.1) 0%, rgba(235, 47, 150, 0.08) 100%);
+  color: var(--color-danger);
+  background-color: rgba(213, 73, 65, 0.08);
 }
 
 .feature-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
 .feature-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  color: #000;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
 }
 
 .feature-desc {
   font-size: 13px;
-  color: #666;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
 }
 
-/* Limitations Card */
-.limitations-card {
-  background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
-  border-radius: 12px;
-}
-
+/* ---- Limitations ---- */
 .limitations-content {
-  padding: 8px 0;
+  padding: var(--gap-xs) 0;
 }
 
 .limitation-list {
-  margin: 0;
-  padding-left: 20px;
+  margin: var(--gap-sm) 0 0 0;
+  padding-left: var(--gap-lg);
   list-style: disc;
 }
 
 .limitation-list li {
-  margin: 8px 0;
-  color: #666;
+  margin: var(--gap-xs) 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
   line-height: 1.6;
 }
 
-.limitation-list strong {
-  color: #333;
-}
-
-/* Documentation Card */
-.docs-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 12px;
-}
-
-.docs-content {
-  padding: 8px 0;
-}
-
-/* 修复文档列表图标居中问题 */
+/* ---- Docs ---- */
 .docs-content :deep(.t-list-item__meta-avatar) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, rgba(0, 82, 217, 0.08) 0%, rgba(0, 102, 255, 0.08) 100%);
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  background: var(--color-primary-light-1);
+  border-radius: var(--radius-md);
 }
 
 .docs-content :deep(.t-list-item__meta-avatar .t-icon) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #0052d9;
-}
-
-/* Responsive */
-@media (min-width: 1920px) {
-  .dashboard-page {
-    padding: 32px;
-  }
-
-  .feature-card {
-    height: 160px;
-  }
-
-  .feature-icon {
-    font-size: 56px;
-  }
-
-  .feature-title {
-    font-size: 18px;
-  }
-}
-
-@media (min-width: 2560px) {
-  .dashboard-page {
-    padding: 40px;
-  }
-
-  .feature-card {
-    height: 180px;
-  }
-
-  .feature-icon {
-    font-size: 64px;
-  }
-
-  .feature-title {
-    font-size: 20px;
-  }
-
-  .feature-desc {
-    font-size: 14px;
-  }
+  color: var(--color-primary);
 }
 </style>
