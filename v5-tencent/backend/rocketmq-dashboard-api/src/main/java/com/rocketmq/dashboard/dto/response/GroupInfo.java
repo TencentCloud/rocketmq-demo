@@ -24,6 +24,12 @@ public class GroupInfo {
     @Schema(description = "Group description")
     private String description;
     
+    @Schema(description = "Consume enable status")
+    private Boolean consumeEnable;
+    
+    @Schema(description = "Consume type: CLUSTERING or BROADCASTING")
+    private String consumeType;
+    
     @Schema(description = "Consume from where", example = "CONSUME_FROM_LAST_OFFSET")
     private String consumeFrom;
     

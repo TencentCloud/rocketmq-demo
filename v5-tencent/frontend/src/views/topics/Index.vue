@@ -96,20 +96,20 @@
         <t-form-item :label="t('topic.topicName')" name="topicName">
           <t-input v-model="createForm.topicName" :placeholder="t('topic.enterTopicName')" />
         </t-form-item>
-        <t-form-item :label="t('topic.messageType')" name="messageType">
-          <t-select v-model="createForm.messageType" :placeholder="t('topic.selectMessageType')">
+        <t-form-item :label="t('topic.messageType')" name="topicType">
+          <t-select v-model="createForm.topicType" :placeholder="t('topic.selectMessageType')">
             <t-option value="NORMAL" :label="t('topic.normal')" />
             <t-option value="FIFO" :label="t('topic.fifo')" />
             <t-option value="DELAY" :label="t('topic.delay')" />
             <t-option value="TRANSACTION" :label="t('topic.transaction')" />
           </t-select>
         </t-form-item>
-        <t-form-item :label="t('topic.partitionNumber')" name="partitionNum">
-          <t-input-number v-model="createForm.partitionNum" :min="1" :max="128" />
+        <t-form-item :label="t('topic.partitionNumber')" name="queueNum">
+          <t-input-number v-model="createForm.queueNum" :min="1" :max="128" />
         </t-form-item>
-        <t-form-item :label="t('topic.remark')" name="remark">
+        <t-form-item :label="t('topic.remark')" name="description">
           <t-textarea
-            v-model="createForm.remark"
+            v-model="createForm.description"
             :placeholder="t('topic.enterDescription')"
             :maxlength="200"
           />
@@ -126,12 +126,12 @@
       width="600px"
     >
       <t-form ref="editFormRef" :data="editForm" :rules="editFormRules" label-width="150px">
-        <t-form-item :label="t('topic.partitionNumber')" name="partitionNum">
-          <t-input-number v-model="editForm.partitionNum" :min="1" :max="128" />
+        <t-form-item :label="t('topic.partitionNumber')" name="queueNum">
+          <t-input-number v-model="editForm.queueNum" :min="1" :max="128" />
         </t-form-item>
-        <t-form-item :label="t('topic.remark')" name="remark">
+        <t-form-item :label="t('topic.remark')" name="description">
           <t-textarea
-            v-model="editForm.remark"
+            v-model="editForm.description"
             :placeholder="t('topic.enterDescription')"
             :maxlength="200"
           />
@@ -213,14 +213,14 @@ const sendFormRef = ref<FormInstanceFunctions>()
 const createForm = ref<CreateTopicRequest>({
   clusterId: '',
   topicName: '',
-  messageType: 'NORMAL',
-  partitionNum: 1,
-  remark: ''
+  topicType: 'NORMAL',
+  queueNum: 1,
+  description: ''
 })
 
 const editForm = ref<UpdateTopicRequest>({
-  partitionNum: 1,
-  remark: ''
+  queueNum: 1,
+  description: ''
 })
 
 const sendForm = ref<SendMessageRequest>({
@@ -235,12 +235,12 @@ const currentEditName = ref('')
 
 const formRules: Record<string, FormRule[]> = {
   topicName: [{ required: true, message: 'Topic name is required', type: 'error' }],
-  messageType: [{ required: true, message: 'Message type is required', type: 'error' }],
-  partitionNum: [{ required: true, message: 'Partition number is required', type: 'error' }]
+  topicType: [{ required: true, message: 'Message type is required', type: 'error' }],
+  queueNum: [{ required: true, message: 'Partition number is required', type: 'error' }]
 }
 
 const editFormRules: Record<string, FormRule[]> = {
-  partitionNum: [{ required: true, message: 'Partition number is required', type: 'error' }]
+  queueNum: [{ required: true, message: 'Partition number is required', type: 'error' }]
 }
 
 const sendFormRules: Record<string, FormRule[]> = {
@@ -253,7 +253,7 @@ const columns: PrimaryTableCol[] = [
   { colKey: 'queueNum', title: t('topic.partitions'), width: 100 },
   { colKey: 'retentionHours', title: t('topic.retentionHours'), width: 120 },
   { colKey: 'createTime', title: t('common.createTime'), cell: 'createTime', width: 180 },
-  { colKey: 'remark', title: t('topic.remark'), ellipsis: true },
+  { colKey: 'description', title: t('topic.remark'), ellipsis: true },
   { colKey: 'action', title: t('topic.actions'), cell: 'action', width: 250, fixed: 'right' }
 ]
 
@@ -323,8 +323,8 @@ const handleCreate = async () => {
 const handleEdit = (topic: TopicInfo) => {
   currentEditName.value = topic.topicName
   editForm.value = {
-    partitionNum: topic.partitionNum,
-    remark: topic.remark
+    queueNum: topic.queueNum,
+    description: topic.description
   }
   showEditDialog.value = true
 }

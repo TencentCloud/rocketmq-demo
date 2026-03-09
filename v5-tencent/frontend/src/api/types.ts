@@ -22,11 +22,13 @@ export interface ClusterInfo {
 
 export interface TopicInfo {
   topicName: string
-  topicId: string
-  messageType: string
-  partitionNum: number
-  remark?: string
+  clusterId: string
+  topicType: string
+  description?: string
+  queueNum: number
+  retentionHours?: number
   createTime: string
+  updateTime?: string
 }
 
 export interface ProducerInfo {
@@ -37,12 +39,12 @@ export interface ProducerInfo {
 }
 
 export interface GroupInfo {
-  groupId: string
   groupName: string
+  clusterId: string
+  description?: string
   consumeEnable: boolean
   consumeType: string
   maxRetryTimes: number
-  description?: string
   createTime: string
 }
 
@@ -118,14 +120,15 @@ export interface UpdateClusterRequest {
 export interface CreateTopicRequest {
   clusterId: string
   topicName: string
-  messageType: string
-  partitionNum: number
-  remark?: string
+  topicType: string
+  queueNum: number
+  description?: string
+  retentionHours?: number
 }
 
 export interface UpdateTopicRequest {
-  partitionNum?: number
-  remark?: string
+  queueNum?: number
+  description?: string
 }
 
 export interface CreateGroupRequest {

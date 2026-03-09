@@ -81,13 +81,16 @@ public class GroupService {
     }
 
     private GroupInfo mapToGroupInfo(ConsumeGroupItem item) {
+        boolean orderly = Boolean.TRUE.equals(item.getConsumeMessageOrderly());
         return GroupInfo.builder()
                 .groupName(item.getConsumerGroup())
                 .clusterId(item.getInstanceId())
                 .description(item.getRemark())
+                .consumeEnable(item.getConsumeEnable())
+                .consumeType(orderly ? "CLUSTERING_ORDERLY" : "CLUSTERING")
                 .consumeFrom("CONSUME_FROM_LAST_OFFSET")
                 .broadcast(Boolean.FALSE.equals(item.getConsumeMessageOrderly()))
-                .retryEnabled(Boolean.TRUE.equals(item.getConsumeEnable()))
+                .retryEnabled(item.getMaxRetryTimes() != null && item.getMaxRetryTimes() > 0)
                 .maxRetryTimes(item.getMaxRetryTimes() != null ? item.getMaxRetryTimes().intValue() : 16)
                 .subscribedTopics(null)
                 .onlineConsumers(null)
@@ -141,13 +144,16 @@ public class GroupService {
      * Map Tencent Cloud ConsumeGroupItem to GroupInfo with detailed fields
      */
     private GroupInfo mapToGroupInfoDetailed(ConsumeGroupItem item) {
+        boolean orderly = Boolean.TRUE.equals(item.getConsumeMessageOrderly());
         return GroupInfo.builder()
                 .groupName(item.getConsumerGroup())
                 .clusterId(item.getInstanceId())
                 .description(item.getRemark())
+                .consumeEnable(item.getConsumeEnable())
+                .consumeType(orderly ? "CLUSTERING_ORDERLY" : "CLUSTERING")
                 .consumeFrom("CONSUME_FROM_LAST_OFFSET")
                 .broadcast(Boolean.FALSE.equals(item.getConsumeMessageOrderly()))
-                .retryEnabled(Boolean.TRUE.equals(item.getConsumeEnable()))
+                .retryEnabled(item.getMaxRetryTimes() != null && item.getMaxRetryTimes() > 0)
                 .maxRetryTimes(item.getMaxRetryTimes() != null ? item.getMaxRetryTimes().intValue() : 16)
                 .subscribedTopics(null)
                 .onlineConsumers(null)

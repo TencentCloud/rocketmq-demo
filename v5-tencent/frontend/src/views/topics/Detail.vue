@@ -19,7 +19,7 @@
           <t-descriptions-item :label="t('topic.partitions')">{{ (topic as any).queueNum }}</t-descriptions-item>
           <t-descriptions-item :label="t('topic.retentionHours')">{{ (topic as any).retentionHours }}</t-descriptions-item>
           <t-descriptions-item :label="t('common.createTime')">{{ formatTime(topic.createTime) }}</t-descriptions-item>
-          <t-descriptions-item :label="t('topic.remark')" :span="2">{{ topic.remark || '-' }}</t-descriptions-item>
+          <t-descriptions-item :label="t('topic.remark')" :span="2">{{ topic.description || '-' }}</t-descriptions-item>
         </t-descriptions>
       </t-card>
 
