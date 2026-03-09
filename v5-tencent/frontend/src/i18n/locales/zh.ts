@@ -386,7 +386,8 @@ export default {
     tagFilter: '标签过滤',
     tagPlaceholder: '请输入Tag',
     timeRangeRequired: '请选择时间范围',
-    recentNumRequired: '请输入最近条数'
+    recentNumRequired: '请输入最近条数',
+    bodySize: '消息体大小'
   },
   messageTrace: {
     title: '消息轨迹',

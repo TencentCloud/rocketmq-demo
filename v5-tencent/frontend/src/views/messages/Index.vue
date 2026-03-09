@@ -53,12 +53,12 @@
 
         <!-- BY_ID -->
         <t-row v-if="queryForm.queryType === 'BY_ID'" :gutter="16">
-          <t-col :span="19">
+          <t-col :span="24">
             <t-form-item :label="t('message.messageId')" name="messageId">
               <t-input v-model="queryForm.messageId" :placeholder="t('message.enterMessageId')" clearable />
             </t-form-item>
           </t-col>
-          <t-col :span="5">
+          <t-col :span="24">
             <t-form-item label=" " label-width="120px">
               <t-space>
                 <t-button theme="primary" @click="handleQuery" :loading="querying">
@@ -143,18 +143,6 @@
       </t-form>
     </t-card>
 
-    <!-- 复用按钮片段 -->
-    <template #QueryButtons>
-      <t-button theme="primary" @click="handleQuery" :loading="querying">
-        <template #icon><t-icon name="search" /></template>
-        {{ t('message.query') }}
-      </t-button>
-      <t-button theme="default" @click="handleReset">
-        <template #icon><t-icon name="refresh" /></template>
-        {{ t('message.reset') }}
-      </t-button>
-    </template>
-
     <LoadingOverlay :visible="loading" />
 
     <t-card v-if="!loading && messages.length > 0" class="result-card">
@@ -167,20 +155,10 @@
         <template #bornTime="{ row }">{{ formatTime(row.bornTime) }}</template>
         <template #storeTime="{ row }">{{ formatTime(row.storeTime) }}</template>
         <template #action="{ row }">
-          <t-space :size="8">
-            <t-button theme="default" variant="outline" size="small" @click="handleViewDetail(row)">
-              <template #icon><t-icon name="view-module" /></template>
-              {{ t('message.detail') }}
-            </t-button>
-            <t-button theme="default" variant="outline" size="small" @click="handleViewTrace(row)">
-              <template #icon><t-icon name="chart-scatter" /></template>
-              {{ t('message.trace') }}
-            </t-button>
-            <t-button theme="default" variant="outline" size="small" @click="handleResend(row)">
-              <template #icon><t-icon name="send" /></template>
-              {{ t('message.resend') }}
-            </t-button>
-          </t-space>
+          <t-button theme="primary" variant="text" size="small" @click="handleViewDetail(row)">
+            <template #icon><t-icon name="browse" /></template>
+            {{ t('message.detail') }}
+          </t-button>
         </template>
       </t-table>
     </t-card>
@@ -190,78 +168,13 @@
       message="No messages found. Please check the message ID and try again."
     />
 
-    <t-drawer
-      v-model:visible="showDetailDrawer"
-      header="Message Details"
-      size="large"
-      :footer="false"
-    >
-      <div v-if="selectedMessage">
-        <t-descriptions bordered title="Message Information">
-          <t-descriptions-item label="Message ID" :span="2">{{
-            selectedMessage.messageId
-          }}</t-descriptions-item>
-          <t-descriptions-item label="Topic">{{ selectedMessage.topicName }}</t-descriptions-item>
-          <t-descriptions-item label="Born Time">{{
-            formatTime(selectedMessage.bornTime)
-          }}</t-descriptions-item>
-          <t-descriptions-item label="Store Time">{{
-            formatTime(selectedMessage.storeTime)
-          }}</t-descriptions-item>
-          <t-descriptions-item label="Tags">{{ selectedMessage.tags || '-' }}</t-descriptions-item>
-          <t-descriptions-item label="Keys">{{ selectedMessage.keys || '-' }}</t-descriptions-item>
-          <t-descriptions-item label="Born Host">{{
-            selectedMessage.bornHost || '-'
-          }}</t-descriptions-item>
-        </t-descriptions>
 
-        <t-divider />
-        <h3>Message Body</h3>
-        <pre class="message-body">{{ selectedMessage.body || 'No body content' }}</pre>
-
-        <t-divider />
-        <h3>Properties</h3>
-        <t-descriptions
-          v-if="selectedMessage.properties && Object.keys(selectedMessage.properties).length > 0"
-          bordered
-        >
-          <t-descriptions-item
-            v-for="(value, key) in selectedMessage.properties"
-            :key="key"
-            :label="key"
-            >{{ value }}</t-descriptions-item
-          >
-        </t-descriptions>
-        <t-empty v-else description="No properties" />
-      </div>
-    </t-drawer>
-
-    <t-drawer v-model:visible="showTraceDrawer" header="Message Trace" size="large" :footer="false">
-      <t-timeline v-if="traceInfo.length > 0" :loading="loadingTrace">
-        <t-timeline-item v-for="trace in traceInfo" :key="trace.traceId">
-          <template #dot>
-            <t-icon
-              :name="trace.status === 'SUCCESS' ? 'check-circle' : 'close-circle'"
-              :style="{ color: trace.status === 'SUCCESS' ? '#00a870' : '#e34d59' }"
-            />
-          </template>
-          <div class="trace-item">
-            <div class="trace-action">{{ trace.traceType }}</div>
-            <div class="trace-time">{{ formatTime(trace.time) }}</div>
-            <div class="trace-host">{{ trace.clientHost }}</div>
-            <t-tag :theme="trace.status === 'SUCCESS' ? 'success' : 'danger'" variant="light">{{
-              trace.status
-            }}</t-tag>
-          </div>
-        </t-timeline-item>
-      </t-timeline>
-      <EmptyState v-else message="No trace information available" />
-    </t-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
 import { useI18n } from 'vue-i18n'
@@ -273,7 +186,6 @@ import { clusterApi } from '@/api/cluster'
 import { topicApi } from '@/api/topic'
 import type {
   MessageInfo,
-  MessageTraceInfo,
   QueryMessagesRequest,
   ClusterInfo,
   TopicInfo
@@ -281,21 +193,16 @@ import type {
 import { formatTime } from '@/utils/format'
 
 const { t } = useI18n()
+const router = useRouter()
 
 const loading = ref(false)
 const querying = ref(false)
-const loadingTrace = ref(false)
 const loadingTopics = ref(false)
 const hasQueried = ref(false)
 
 const clusters = ref<ClusterInfo[]>([])
 const topics = ref<TopicInfo[]>([])
 const messages = ref<MessageInfo[]>([])
-const selectedMessage = ref<MessageInfo | null>(null)
-const traceInfo = ref<MessageTraceInfo[]>([])
-
-const showDetailDrawer = ref(false)
-const showTraceDrawer = ref(false)
 
 const queryFormRef = ref<FormInstanceFunctions>()
 
@@ -336,7 +243,7 @@ const columns: PrimaryTableCol[] = [
   { colKey: 'keys', title: t('message.keys'), width: 120 },
   { colKey: 'bornTime', title: t('message.bornTime'), cell: 'bornTime', width: 180 },
   { colKey: 'storeTime', title: t('message.storeTime'), cell: 'storeTime', width: 180 },
-  { colKey: 'action', title: t('cluster.actions'), cell: 'action', width: 220, fixed: 'right' }
+  { colKey: 'action', title: t('cluster.actions'), cell: 'action', width: 100, fixed: 'right' }
 ]
 
 const loadClusters = async () => {
@@ -438,35 +345,11 @@ const handleReset = () => {
 }
 
 const handleViewDetail = (message: MessageInfo) => {
-  selectedMessage.value = message
-  showDetailDrawer.value = true
-}
-
-const handleViewTrace = async (message: MessageInfo) => {
-  selectedMessage.value = message
-  showTraceDrawer.value = true
-  loadingTrace.value = true
-  try {
-    const response = await messageApi.getMessageTrace(message.messageId, queryForm.value.clusterId)
-    if (response.success) {
-      traceInfo.value = response.data
-    }
-  } catch (error) {
-    MessagePlugin.error('Failed to load message trace')
-  } finally {
-    loadingTrace.value = false
-  }
-}
-
-const handleResend = async (message: MessageInfo) => {
-  try {
-    const response = await messageApi.resendMessage(message.messageId, queryForm.value.clusterId)
-    if (response.success) {
-      MessagePlugin.success('Message resent successfully')
-    }
-  } catch (error) {
-    MessagePlugin.error('Failed to resend message')
-  }
+  router.push({
+    name: 'MessageDetail',
+    params: { messageId: message.messageId },
+    query: { clusterId: queryForm.value.clusterId, topicName: queryForm.value.topicName }
+  })
 }
 
 onMounted(async () => {
@@ -498,43 +381,5 @@ onMounted(async () => {
   color: var(--color-text-primary);
 }
 
-.message-body {
-  background: #f9fafb;
-  padding: var(--gap-md);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border-default);
-  overflow: auto;
-  max-height: 400px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
 
-.trace-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-xs);
-}
-
-.trace-action {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--color-text-primary);
-}
-
-.trace-time,
-.trace-host {
-  font-size: 12px;
-  color: var(--color-text-secondary);
-}
-
-h3 {
-  margin: var(--gap-md) 0 var(--gap-sm);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  font-family: var(--font-sans);
-}
 </style>

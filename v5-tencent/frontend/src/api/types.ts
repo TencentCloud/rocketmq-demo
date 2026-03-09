@@ -65,20 +65,35 @@ export interface ConsumerLagInfo {
 export interface MessageInfo {
   messageId: string
   topicName: string
-  bornTime: string
-  storeTime: string
-  body: string
-  properties: Record<string, string>
-  tags?: string
-  keys?: string
+  queueId?: number | null
+  queueOffset?: number | null
+  body?: string | null
+  tags?: string | null
+  keys?: string | null
+  properties?: Record<string, string>
+  bodySize?: number | null
+  storeTimestamp?: number | null
+  bornTimestamp?: number | null
+  bornHost?: string | null
+  storeHost?: string | null
+  reconsumeTimes?: number | null
+  storeTime?: string | null
+  bornTime?: string | null
 }
 
 export interface MessageTraceInfo {
-  traceId: string
-  action: string
-  timestamp: string
+  traceType: string
   status: string
-  clientHost: string
+  timestamp?: number | null
+  time?: string | null
+  clientHost?: string | null
+  groupName?: string | null
+  messageId?: string | null
+  keys?: string | null
+  costTime?: number | null
+  regionId?: string | null
+  topicName?: string | null
+  storeHost?: string | null
 }
 
 export interface RoleInfo {

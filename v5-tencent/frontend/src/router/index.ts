@@ -70,6 +70,15 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/messages/:messageId',
+    name: 'MessageDetail',
+    component: () => import('@/views/messages/Detail.vue'),
+    meta: {
+      title: 'Message Detail',
+      icon: 'mail'
+    }
+  },
+  {
     path: '/roles',
     name: 'Roles',
     component: () => import('@/views/roles/Index.vue'),

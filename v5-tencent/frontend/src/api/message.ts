@@ -12,13 +12,13 @@ export const messageApi = {
     return request.get('/v1/messages', { params }).then(res => res.data)
   },
 
-  getMessage(id: string, clusterId: string): Promise<ApiResponse<MessageInfo>> {
-    return request.get(`/v1/messages/${id}`, { params: { clusterId } }).then(res => res.data)
+  getMessage(id: string, clusterId: string, topicName: string): Promise<ApiResponse<MessageInfo>> {
+    return request.get(`/v1/messages/${id}`, { params: { clusterId, topicName } }).then(res => res.data)
   },
 
-  getMessageTrace(id: string, clusterId: string): Promise<ApiResponse<MessageTraceInfo[]>> {
+  getMessageTrace(id: string, clusterId: string, topicName: string): Promise<ApiResponse<MessageTraceInfo[]>> {
     return request
-      .get(`/v1/messages/${id}/trace`, { params: { clusterId } })
+      .get(`/v1/messages/${id}/trace`, { params: { clusterId, topicName } })
       .then(res => res.data)
   },
 

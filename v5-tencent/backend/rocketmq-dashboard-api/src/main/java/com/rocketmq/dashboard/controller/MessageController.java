@@ -67,11 +67,13 @@ public class MessageController {
     public Result<List<MessageTraceInfo>> getMessageTrace(
             @Parameter(description = "Cluster ID", required = true, example = "rmq-cn-xxxxx")
             @RequestParam String clusterId,
+            @Parameter(description = "Topic name", required = true, example = "test-topic")
+            @RequestParam String topicName,
             @Parameter(description = "Message ID", required = true, example = "01000000000000000000000000000000")
             @PathVariable String id) {
         try {
             log.info("Getting message trace for id: {}", id);
-            List<MessageTraceInfo> traces = messageService.getMessageTrace(clusterId, id);
+            List<MessageTraceInfo> traces = messageService.getMessageTrace(clusterId, topicName, id);
             return Result.success(traces);
         } catch (Exception e) {
             log.error("Failed to get message trace: {}", id, e);

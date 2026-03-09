@@ -391,7 +391,8 @@ export default {
     tagFilter: 'Tag Filter',
     tagPlaceholder: 'Enter tag',
     timeRangeRequired: 'Please select time range',
-    recentNumRequired: 'Please enter recent count'
+    recentNumRequired: 'Please enter recent count',
+    bodySize: 'Body Size'
   },
   messageTrace: {
     title: 'Message Trace',

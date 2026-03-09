@@ -132,9 +132,7 @@ public class MessageService {
                 .storeTime(localDateTime)
                 .bornTime(localDateTime)
                 .build();
-    }
-
-    /**
+    }    /**
      * Get message details by message ID
      * Uses DescribeMessage API which requires:
      * - InstanceId (cluster ID)
@@ -164,7 +162,7 @@ public class MessageService {
         }
     }
     
-    public List<MessageTraceInfo> getMessageTrace(String clusterId, String messageId) throws TencentCloudSDKException {
+    public List<MessageTraceInfo> getMessageTrace(String clusterId, String topicName, String messageId) throws TencentCloudSDKException {
         log.info("Getting message trace for messageId: {}", messageId);
 
         List<MessageTraceInfo> traces = new ArrayList<>();
@@ -172,13 +170,14 @@ public class MessageService {
         try {
             DescribeMessageTraceRequest request = new DescribeMessageTraceRequest();
             request.setInstanceId(clusterId);
+            request.setTopic(topicName);
             request.setMsgId(messageId);
 
             DescribeMessageTraceResponse response = trocketClient.DescribeMessageTrace(request);
 
             if (response.getData() != null && response.getData().length > 0) {
                 for (MessageTraceItem item : response.getData()) {
-                    traces.add(mapToMessageTraceInfo(item));
+                    traces.addAll(parseTraceItem(item));
                 }
             }
 
@@ -188,6 +187,65 @@ public class MessageService {
             log.error("Failed to query message trace from Tencent Cloud API: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<MessageTraceInfo> parseTraceItem(MessageTraceItem item) {
+        List<MessageTraceInfo> result = new ArrayList<>();
+        String stage = item.getStage();
+        String dataJson = item.getData();
+        if (dataJson == null || dataJson.isEmpty()) return result;
+
+        try {
+            Map<String, Object> data = new ObjectMapper().readValue(dataJson, new TypeReference<Map<String, Object>>() {});
+
+            if ("produce".equals(stage)) {
+                String timeStr = (String) data.get("ProduceTime");
+                result.add(MessageTraceInfo.builder()
+                        .traceType("PRODUCE")
+                        .status(Integer.valueOf(0).equals(data.get("Status")) ? "SUCCESS" : "FAILURE")
+                        .timestamp(parseTimestampToMillis(timeStr))
+                        .time(convertToLocalDateTime(parseTimestampToMillis(timeStr)))
+                        .clientHost((String) data.get("ProducerAddr"))
+                        .messageId((String) data.get("MsgId"))
+                        .keys((String) data.get("MsgKey"))
+                        .costTime(parseLong(data.get("Duration")))
+                        .build());
+
+            } else if ("persist".equals(stage)) {
+                String timeStr = (String) data.get("PersistTime");
+                result.add(MessageTraceInfo.builder()
+                        .traceType("PERSIST")
+                        .status(Integer.valueOf(0).equals(data.get("Status")) ? "SUCCESS" : "FAILURE")
+                        .timestamp(parseTimestampToMillis(timeStr))
+                        .time(convertToLocalDateTime(parseTimestampToMillis(timeStr)))
+                        .messageId((String) data.get("MsgId"))
+                        .build());
+
+            } else if ("consume".equals(stage)) {
+                Object logsObj = data.get("RocketMqConsumeLogs");
+                if (logsObj instanceof List) {
+                    for (Object logObj : (List<?>) logsObj) {
+                        if (logObj instanceof Map) {
+                            Map<String, Object> log2 = (Map<String, Object>) logObj;
+                            String timeStr = (String) log2.get("PushTime");
+                            result.add(MessageTraceInfo.builder()
+                                    .traceType("CONSUME")
+                                    .status(Integer.valueOf(2).equals(log2.get("Status")) ? "SUCCESS" : "FAILURE")
+                                    .timestamp(parseTimestampToMillis(timeStr))
+                                    .time(convertToLocalDateTime(parseTimestampToMillis(timeStr)))
+                                    .clientHost((String) log2.get("ConsumerAddr"))
+                                    .groupName((String) log2.get("ConsumerGroup"))
+                                    .messageId((String) log2.get("MsgId"))
+                                    .build());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to parse trace stage={} data={}: {}", stage, dataJson, e.getMessage());
+        }
+        return result;
     }
     
     public SendMessageResponse sendMessage(SendMessageRequest request) throws Exception {
@@ -273,36 +331,6 @@ public class MessageService {
                 .storeTime(localDateTime)
                 .bornTime(localDateTime)
                 .build();
-    }
-
-    private MessageTraceInfo mapToMessageTraceInfo(MessageTraceItem item) {
-        try {
-            Map<String, Object> dataMap = new ObjectMapper().readValue(
-                    item.getData(), new TypeReference<Map<String, Object>>() {}
-            );
-
-            return MessageTraceInfo.builder()
-                    .traceType((String) dataMap.get("operationType"))
-                    .timestamp(parseTimestampToMillis((String) dataMap.get("produceTime")))
-                    .time(convertToLocalDateTime(parseTimestampToMillis((String) dataMap.get("produceTime"))))
-                    .regionId((String) dataMap.get("region"))
-                    .topicName((String) dataMap.get("topic"))
-                    .messageId((String) dataMap.get("msgId"))
-                    .keys(null)
-                    .status((String) dataMap.get("status"))
-                    .storeHost((String) dataMap.get("brokerName"))
-                    .clientHost((String) dataMap.get("clientId"))
-                    .costTime(parseLong(dataMap.get("costTime")))
-                    .build();
-        } catch (Exception e) {
-            log.warn("Failed to parse message trace data: {}", item.getData(), e);
-            return MessageTraceInfo.builder()
-                    .traceType(item.getStage())
-                    .timestamp(System.currentTimeMillis())
-                    .time(LocalDateTime.now())
-                    .status("UNKNOWN")
-                    .build();
-        }
     }
 
     private String extractTag(Map<String, String> properties) {
