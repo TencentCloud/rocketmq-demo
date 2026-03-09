@@ -1,0 +1,26 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Frontend
+node_modules/
+dist/
+.DS_Store
+backend/rocketmq-dashboard-api/src/main/resources/static/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+logs/
+/tmp/
+
+# Environment
+.env
+.env.local
