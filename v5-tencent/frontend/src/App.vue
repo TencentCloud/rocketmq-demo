@@ -14,164 +14,116 @@ const appStore = useAppStore()
 </template>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* TDesign 全局主题覆写 */
 
-:root {
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --primary-gradient: linear-gradient(135deg, #0052d9 0%, #0066ff 100%);
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --card-shadow-hover: 0 4px 16px rgba(0, 82, 217, 0.12);
-}
-
-#app {
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* 标题使用等宽字体增强技术感 */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-/* 卡片标题、按钮文字等使用等宽字体 */
-.card-title,
-.t-card__header-title,
-.t-button,
-.t-table__th {
-  font-family: var(--font-mono);
-  font-weight: 500;
-}
-
-/* TDesign 卡片增强 */
+/* ---- Card ---- */
 :deep(.t-card) {
-  border-radius: 8px;
-  box-shadow: var(--card-shadow);
-  border: 1px solid rgba(0, 82, 217, 0.06);
-  transition: all 0.2s ease;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border-light);
+  transition: var(--transition-default);
 }
 
 :deep(.t-card:hover) {
-  box-shadow: var(--card-shadow-hover);
-  border-color: rgba(0, 82, 217, 0.12);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary-border);
 }
 
 :deep(.t-card__body) {
-  padding: 20px;
+  padding: var(--gap-lg);
 }
 
 :deep(.t-card__header) {
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: var(--gap-md) var(--gap-lg);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
-/* TDesign 按钮增强 */
+/* ---- Button ---- */
 :deep(.t-button) {
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: var(--transition-default);
 }
 
 :deep(.t-button--theme-primary) {
-  background: var(--primary-gradient);
-  border: none;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 :deep(.t-button--theme-primary:hover) {
-  background: linear-gradient(135deg, #0047c0 0%, #0052d9 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 82, 217, 0.3);
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 2px 8px rgba(0, 82, 217, 0.25);
 }
 
 :deep(.t-button--theme-default) {
-  border-color: rgba(0, 82, 217, 0.2);
-  color: #0052d9;
+  border-color: var(--color-primary-border);
+  color: var(--color-primary);
 }
 
 :deep(.t-button--theme-default:hover) {
-  border-color: rgba(0, 82, 217, 0.4);
-  background-color: rgba(0, 82, 217, 0.04);
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light-2);
 }
 
-/* TDesign 表格增强 */
+/* ---- Table ---- */
 :deep(.t-table) {
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
-:deep(.t-table__thead tr) {
-  background: linear-gradient(135deg, rgba(0, 82, 217, 0.03) 0%, rgba(0, 102, 255, 0.03) 100%);
-}
-
 :deep(.t-table__th) {
-  background: transparent;
   font-weight: 600;
-  color: #0052d9;
+  color: var(--color-text-secondary);
+  font-size: 13px;
   letter-spacing: 0.02em;
-  border-bottom: 2px solid rgba(0, 82, 217, 0.08);
+  background-color: #f9fafb;
 }
 
-:deep(.t-table__body tr:hover) {
-  background-color: rgba(0, 82, 217, 0.03);
+:deep(.t-table__body tr:hover td) {
+  background-color: var(--color-primary-light-2);
 }
 
-:deep(.t-table__body tr:nth-child(even)) {
-  background-color: rgba(0, 0, 0, 0.015);
-}
-
-:deep(.t-table__body tr:nth-child(even):hover) {
-  background-color: rgba(0, 82, 217, 0.03);
-}
-
-/* TDesign 标签增强 */
+/* ---- Tag ---- */
 :deep(.t-tag) {
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-weight: 500;
-  padding: 2px 8px;
   font-size: 12px;
 }
 
-:deep(.t-tag--theme-success) {
-  background: rgba(41, 204, 133, 0.1);
-  color: #29cc85;
-  border: 1px solid rgba(41, 204, 133, 0.2);
+/* ---- Input ---- */
+:deep(.t-input) {
+  border-radius: var(--radius-md);
 }
 
-:deep(.t-tag--theme-warning) {
-  background: rgba(227, 115, 24, 0.1);
-  color: #e37318;
-  border: 1px solid rgba(227, 115, 24, 0.2);
+:deep(.t-input:not(.t-is-disabled):hover .t-input__inner) {
+  border-color: var(--color-primary);
 }
 
-:deep(.t-tag--theme-danger) {
-  background: rgba(235, 47, 150, 0.1);
-  color: #eb2f96;
-  border: 1px solid rgba(235, 47, 150, 0.2);
+:deep(.t-input.t-is-focused .t-input__inner),
+:deep(.t-input--focused .t-input__inner) {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 82, 217, 0.12);
 }
 
-/* TDesign 输入框增强 */
-:deep(.t-input__inner) {
-  border-radius: 6px;
-  border-color: rgba(0, 82, 217, 0.2);
-  transition: all 0.2s ease;
+/* ---- Select ---- */
+:deep(.t-select) {
+  border-radius: var(--radius-md);
 }
 
-:deep(.t-input__inner:hover) {
-  border-color: rgba(0, 82, 217, 0.4);
+/* ---- Form ---- */
+:deep(.t-form-item__label) {
+  font-weight: 500;
+  color: var(--color-text-primary);
 }
 
-:deep(.t-input__inner:focus) {
-  border-color: #0052d9;
-  box-shadow: 0 0 0 2px rgba(0, 82, 217, 0.1);
+/* ---- Dialog ---- */
+:deep(.t-dialog) {
+  border-radius: var(--radius-xl);
+}
+
+/* ---- Drawer ---- */
+:deep(.t-drawer__header) {
+  border-bottom: 1px solid var(--color-border-default);
 }
 </style>
