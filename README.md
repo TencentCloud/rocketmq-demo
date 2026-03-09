@@ -18,7 +18,7 @@ rocketmq-demo/
 │   ├── nodejs/
 │   ├── rust/
 │   └── csharp/
-├── v5-dashboard/  # 腾讯云 RocketMQ Dashboard（可视化管理控制台）→ [Wiki](v5-dashboard/wiki/README.md)
+├── v5-dashboard/  # 腾讯云 RocketMQ Dashboard（可视化管理控制台）
 └── mqtt/        # MQTT 协议示例
     └── java/
 ```
@@ -33,6 +33,12 @@ rocketmq-demo/
 | `remoting/` | Remoting | 兼容协议，使用 4.x SDK 连接，迁移成本低 |
 
 > **注意：** `v4/` 下只有 `remoting/` 协议。`v5/` 下两种协议均可使用，建议优先选择 `grpc/`。
+
+---
+
+# RocketMQ Dashboard
+
+[`v5-dashboard/`](v5-dashboard/README.md) 是腾讯云 RocketMQ 5.x 的可视化管理控制台，基于 Vue 3 + Spring Boot 3 构建，通过腾讯云 SDK 对接 RocketMQ 服务，支持集群、Topic、消费组、消息、角色的查看与管理。详见 [使用文档](v5-dashboard/README.md)。
 
 ---
 
