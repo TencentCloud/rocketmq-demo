@@ -18,6 +18,7 @@ rocketmq-demo/
 │   ├── nodejs/
 │   ├── rust/
 │   └── csharp/
+├── v5-dashboard/  # 腾讯云 RocketMQ Dashboard（可视化管理控制台）→ [Wiki](v5-dashboard/wiki/README.md)
 └── mqtt/        # MQTT 协议示例
     └── java/
 ```
