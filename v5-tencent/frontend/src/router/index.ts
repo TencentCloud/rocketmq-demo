@@ -34,11 +34,29 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/topics/:topicName',
+    name: 'TopicDetail',
+    component: () => import('@/views/topics/Detail.vue'),
+    meta: {
+      title: 'Topic Detail',
+      icon: 'layers'
+    }
+  },
+  {
     path: '/groups',
     name: 'Groups',
     component: () => import('@/views/groups/Index.vue'),
     meta: {
       title: 'Consumer Group Management',
+      icon: 'usergroup'
+    }
+  },
+  {
+    path: '/groups/:groupName',
+    name: 'GroupDetail',
+    component: () => import('@/views/groups/Detail.vue'),
+    meta: {
+      title: 'Consumer Group Detail',
       icon: 'usergroup'
     }
   },

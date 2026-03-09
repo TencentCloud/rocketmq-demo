@@ -163,68 +163,12 @@
       </t-form>
     </t-dialog>
 
-    <t-drawer
-      v-model:visible="showDetailDrawer"
-      :header="t('consumer.groupDetailsTitle')"
-      size="large"
-      :footer="false"
-    >
-      <div v-if="selectedGroup">
-        <t-descriptions bordered :title="t('consumer.basicInformation')">
-          <t-descriptions-item :label="t('consumer.groupName')">{{
-            selectedGroup.groupName
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('consumer.consumeType')">{{
-            selectedGroup.consumeType
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('consumer.consumeEnable')">
-            <t-tag :theme="selectedGroup.consumeEnable ? 'success' : 'default'" variant="light">
-              {{ selectedGroup.consumeEnable ? t('consumer.enabled') : t('consumer.disabled') }}
-            </t-tag>
-          </t-descriptions-item>
-          <t-descriptions-item :label="t('consumer.maxRetryTimes')">{{
-            selectedGroup.maxRetryTimes
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('common.createTime')">{{
-            formatTime(selectedGroup.createTime)
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('consumer.description')" :span="2">{{
-            selectedGroup.description || '-'
-          }}</t-descriptions-item>
-        </t-descriptions>
-
-        <t-divider />
-        <h3>{{ t('consumer.consumerClients') }}</h3>
-        <t-table
-          :data="clients"
-          :columns="clientColumns"
-          :loading="loadingClients"
-          row-key="clientId"
-          :empty="t('consumer.noClientsConnected')"
-          size="small"
-        />
-
-        <t-divider />
-        <h3>{{ t('consumer.consumptionLag') }}</h3>
-        <t-table
-          :data="lagInfo"
-          :columns="lagColumns"
-          :loading="loadingLag"
-          row-key="topicName"
-          size="small"
-        >
-          <template #lag="{ row }">
-            <t-progress :percentage="getLagPercentage(row.lag)" :theme="getLagTheme(row.lag)" />
-            <span style="margin-left: 8px">{{ formatNumber(row.lag) }}</span>
-          </template>
-        </t-table>
-      </div>
-    </t-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
 import { useI18n } from 'vue-i18n'
@@ -238,34 +182,27 @@ import type {
   CreateGroupRequest,
   UpdateGroupRequest,
   ResetOffsetRequest,
-  ClusterInfo,
-  ConsumerClientInfo,
-  ConsumerLagInfo
+  ClusterInfo
 } from '@/api/types'
-import { formatTime, formatNumber } from '@/utils/format'
+import { formatTime } from '@/utils/format'
 
 const { t } = useI18n()
+const router = useRouter()
 
 const loading = ref(true)
 const tableLoading = ref(false)
 const creating = ref(false)
 const updating = ref(false)
 const resetting = ref(false)
-const loadingClients = ref(false)
-const loadingLag = ref(false)
 
 const selectedClusterId = ref('')
 const clusters = ref<ClusterInfo[]>([])
 const groups = ref<GroupInfo[]>([])
-const selectedGroup = ref<GroupInfo | null>(null)
-const clients = ref<ConsumerClientInfo[]>([])
-const lagInfo = ref<ConsumerLagInfo[]>([])
 const searchKeyword = ref('')
 
 const showCreateDialog = ref(false)
 const showEditDialog = ref(false)
 const showResetDialog = ref(false)
-const showDetailDrawer = ref(false)
 
 const createFormRef = ref<FormInstanceFunctions>()
 const editFormRef = ref<FormInstanceFunctions>()
@@ -315,27 +252,6 @@ const columns: PrimaryTableCol[] = [
   { colKey: 'action', title: t('consumer.actions'), cell: 'action', width: 250, fixed: 'right' }
 ]
 
-const clientColumns: PrimaryTableCol[] = [
-  { colKey: 'clientId', title: t('consumer.clientId') },
-  { colKey: 'clientAddress', title: t('consumer.clientAddress') },
-  { colKey: 'language', title: t('consumer.language') },
-  { colKey: 'version', title: t('consumer.version') },
-  { colKey: 'connectionTime', title: t('consumer.connectionTime') }
-]
-
-const lagColumns: PrimaryTableCol[] = [
-  { colKey: 'topicName', title: t('consumer.topic') },
-  { colKey: 'partitionId', title: t('consumer.partition') },
-  { colKey: 'lag', title: t('consumer.lag'), cell: 'lag' }
-]
-
-const getLagPercentage = (lag: number) => Math.min(100, (lag / 10000) * 100)
-const getLagTheme = (lag: number) => {
-  if (lag > 10000) return 'danger'
-  if (lag > 1000) return 'warning'
-  return 'success'
-}
-
 const loadClusters = async () => {
   try {
     const response = await clusterApi.listClusters()
@@ -375,34 +291,6 @@ const handleSearch = () => {
 const handleClearSearch = () => {
   searchKeyword.value = ''
   loadGroups()
-}
-
-const loadClients = async (groupName: string) => {
-  loadingClients.value = true
-  try {
-    const response = await groupApi.listClients(groupName, selectedClusterId.value)
-    if (response.success) {
-      clients.value = response.data
-    }
-  } catch (error) {
-    MessagePlugin.error(t('consumer.failedToLoadClients'))
-  } finally {
-    loadingClients.value = false
-  }
-}
-
-const loadLag = async (groupName: string) => {
-  loadingLag.value = true
-  try {
-    const response = await groupApi.getLag(groupName, selectedClusterId.value)
-    if (response.success) {
-      lagInfo.value = response.data
-    }
-  } catch (error) {
-    MessagePlugin.error(t('consumer.failedToLoadLag'))
-  } finally {
-    loadingLag.value = false
-  }
 }
 
 const handleCreate = async () => {
@@ -465,11 +353,8 @@ const handleDelete = async (groupName: string) => {
   }
 }
 
-const handleView = async (group: GroupInfo) => {
-  selectedGroup.value = group
-  showDetailDrawer.value = true
-  loadClients(group.groupName)
-  loadLag(group.groupName)
+const handleView = (group: GroupInfo) => {
+  router.push({ name: 'GroupDetail', params: { groupName: group.groupName }, query: { clusterId: selectedClusterId.value } })
 }
 
 const handleResetOffset = (group: GroupInfo) => {

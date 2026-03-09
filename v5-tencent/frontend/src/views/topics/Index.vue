@@ -164,53 +164,12 @@
       </t-form>
     </t-dialog>
 
-    <!-- Detail Drawer -->
-    <t-drawer
-      v-model:visible="showDetailDrawer"
-      :header="t('topic.topicDetailsTitle')"
-      size="large"
-      :footer="false"
-    >
-      <div v-if="selectedTopic">
-        <t-descriptions bordered :title="t('topic.basicInformation')">
-          <t-descriptions-item :label="t('topic.topicName')">{{
-            selectedTopic.topicName
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('topic.type')">{{
-            selectedTopic.topicType
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('topic.partitions')">{{
-            selectedTopic.queueNum
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('topic.retentionHours')">{{
-            selectedTopic.retentionHours
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('common.createTime')">{{
-            formatTime(selectedTopic.createTime)
-          }}</t-descriptions-item>
-          <t-descriptions-item :label="t('topic.remark')" :span="2">{{
-            selectedTopic.remark || '-'
-          }}</t-descriptions-item>
-        </t-descriptions>
-
-        <t-divider />
-
-        <h3>{{ t('topic.producers') }}</h3>
-        <t-table
-          :data="producers"
-          :columns="producerColumns"
-          :loading="loadingProducers"
-          row-key="clientId"
-          :empty="t('topic.noProducersConnected')"
-          size="small"
-        />
-      </div>
-    </t-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { MessagePlugin } from 'tdesign-vue-next'
 import type { FormInstanceFunctions, FormRule, PrimaryTableCol } from 'tdesign-vue-next'
 import { useI18n } from 'vue-i18n'
@@ -225,31 +184,27 @@ import type {
   CreateTopicRequest,
   UpdateTopicRequest,
   ClusterInfo,
-  ProducerInfo,
   SendMessageRequest
 } from '@/api/types'
 import { formatTime } from '@/utils/format'
 
 const { t } = useI18n()
+const router = useRouter()
 
 const loading = ref(true)
 const tableLoading = ref(false)
 const creating = ref(false)
 const updating = ref(false)
 const sending = ref(false)
-const loadingProducers = ref(false)
 
 const selectedClusterId = ref('')
 const clusters = ref<ClusterInfo[]>([])
 const topics = ref<TopicInfo[]>([])
-const selectedTopic = ref<TopicInfo | null>(null)
-const producers = ref<ProducerInfo[]>([])
 const searchKeyword = ref('')
 
 const showCreateDialog = ref(false)
 const showEditDialog = ref(false)
 const showSendDialog = ref(false)
-const showDetailDrawer = ref(false)
 
 const createFormRef = ref<FormInstanceFunctions>()
 const editFormRef = ref<FormInstanceFunctions>()
@@ -302,13 +257,6 @@ const columns: PrimaryTableCol[] = [
   { colKey: 'action', title: t('topic.actions'), cell: 'action', width: 250, fixed: 'right' }
 ]
 
-const producerColumns: PrimaryTableCol[] = [
-  { colKey: 'clientId', title: t('topic.clientId') },
-  { colKey: 'clientAddress', title: t('topic.clientAddress') },
-  { colKey: 'language', title: t('topic.language') },
-  { colKey: 'version', title: t('topic.version') }
-]
-
 const loadClusters = async () => {
   try {
     const response = await clusterApi.listClusters()
@@ -349,20 +297,6 @@ const handleSearch = () => {
 const handleClearSearch = () => {
   searchKeyword.value = ''
   loadTopics()
-}
-
-const loadProducers = async (topicName: string) => {
-  loadingProducers.value = true
-  try {
-    const response = await topicApi.listProducers(topicName, selectedClusterId.value)
-    if (response.success) {
-      producers.value = response.data
-    }
-  } catch (error) {
-    MessagePlugin.error(t('topic.failedToLoadProducers'))
-  } finally {
-    loadingProducers.value = false
-  }
 }
 
 const handleCreate = async () => {
@@ -426,10 +360,8 @@ const handleDelete = async (topicName: string) => {
   }
 }
 
-const handleView = async (topic: TopicInfo) => {
-  selectedTopic.value = topic
-  showDetailDrawer.value = true
-  loadProducers(topic.topicName)
+const handleView = (topic: TopicInfo) => {
+  router.push({ name: 'TopicDetail', params: { topicName: topic.topicName }, query: { clusterId: selectedClusterId.value } })
 }
 
 const handleSendMessage = (topic: TopicInfo) => {
