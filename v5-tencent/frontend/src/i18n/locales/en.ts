@@ -378,7 +378,20 @@ export default {
     failedToLoadClusters: 'Failed to load clusters',
     failedToLoadTopics: 'Failed to load topics',
     failedToLoadTrace: 'Failed to load message trace',
-    failedToResendMessage: 'Failed to resend message'
+    failedToResendMessage: 'Failed to resend message',
+    queryType: 'Query Type',
+    queryById: 'By Message ID',
+    queryByTime: 'By Time Range',
+    queryByRecent: 'Recent N Messages',
+    timeRange: 'Time Range',
+    recentNum: 'Recent Count',
+    recentNumPlaceholder: 'Enter count (max 1024)',
+    msgKey: 'Message Key',
+    msgKeyPlaceholder: 'Enter message key',
+    tagFilter: 'Tag Filter',
+    tagPlaceholder: 'Enter tag',
+    timeRangeRequired: 'Please select time range',
+    recentNumRequired: 'Please enter recent count'
   },
   messageTrace: {
     title: 'Message Trace',

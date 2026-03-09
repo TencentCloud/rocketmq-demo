@@ -11,8 +11,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
 import com.tencentcloudapi.trocket.v20230308.TrocketClient;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeMessageListRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeMessageListResponse;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeMessageRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeMessageResponse;
+import com.tencentcloudapi.trocket.v20230308.models.MessageItem;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeMessageTraceRequest;
 import com.tencentcloudapi.trocket.v20230308.models.DescribeMessageTraceResponse;
 import com.tencentcloudapi.trocket.v20230308.models.MessageTraceItem;
@@ -39,42 +42,96 @@ public class MessageService {
     }
     
     /**
-     * Query messages based on different query types:
-     * 1. BY_ID: Query by message ID (uses DescribeMessage API)
-     * 2. RECENT: Query recent 100 messages (not supported by Tencent Cloud API, returns empty)
-     * 3. BY_TIME: Query by time range (not supported by Tencent Cloud API, returns empty)
-     * 
-     * Note: Tencent Cloud RocketMQ 5.x only supports querying by message ID directly.
-     * For time-based queries, you need to use the console or implement async query tasks.
+     * Query messages supporting three modes:
+     * - BY_ID:   query by message ID (MsgId)
+     * - BY_TIME: query by time range (StartTime + EndTime), optionally filtered by MsgKey / Tag
+     * - RECENT:  query recent N messages (RecentMessageNum), requires StartTime/EndTime window
      */
     public List<MessageInfo> queryMessages(QueryMessagesRequest request) throws TencentCloudSDKException {
-        log.info("Querying messages for topic: {}, messageId: {}, startTime: {}, endTime: {}",
-                request.getTopicName(), request.getMessageId(),
-                request.getStartTime(), request.getEndTime());
-
-        List<MessageInfo> messages = new ArrayList<>();
+        log.info("Querying messages: type={}, topic={}, msgId={}, startTime={}, endTime={}, recentNum={}",
+                request.getQueryType(), request.getTopicName(), request.getMessageId(),
+                request.getStartTime(), request.getEndTime(), request.getRecentNum());
 
         try {
-            // Query by message ID - this is the only direct query method supported
-            if (request.getMessageId() != null && !request.getMessageId().isEmpty()) {
-                log.info("Querying by message ID: {}", request.getMessageId());
-                MessageInfo message = getMessageById(request.getClusterId(), request.getTopicName(), request.getMessageId());
-                if (message != null) {
-                    messages.add(message);
-                }
-                return messages;
+            DescribeMessageListRequest sdkRequest = new DescribeMessageListRequest();
+            sdkRequest.setInstanceId(request.getClusterId());
+            sdkRequest.setTopic(request.getTopicName());
+            sdkRequest.setTaskRequestId("");
+            sdkRequest.setOffset(request.getOffset() != null ? Long.valueOf(request.getOffset()) : 0L);
+            sdkRequest.setLimit(request.getLimit() != null ? Long.valueOf(request.getLimit()) : 20L);
+
+            String queryType = request.getQueryType() != null ? request.getQueryType() : "BY_ID";
+
+            switch (queryType) {
+                case "BY_ID":
+                    // StartTime/EndTime required by API; use wide window when querying by ID
+                    long now = System.currentTimeMillis();
+                    sdkRequest.setStartTime(request.getStartTime() != null ? request.getStartTime() : now - 7 * 24 * 3600 * 1000L);
+                    sdkRequest.setEndTime(request.getEndTime() != null ? request.getEndTime() : now);
+                    sdkRequest.setMsgId(request.getMessageId());
+                    break;
+
+                case "BY_TIME":
+                    if (request.getStartTime() == null || request.getEndTime() == null) {
+                        throw new TencentCloudSDKException("StartTime and EndTime are required for BY_TIME query");
+                    }
+                    sdkRequest.setStartTime(request.getStartTime());
+                    sdkRequest.setEndTime(request.getEndTime());
+                    if (request.getMsgKey() != null && !request.getMsgKey().isEmpty()) {
+                        sdkRequest.setMsgKey(request.getMsgKey());
+                    }
+                    if (request.getTag() != null && !request.getTag().isEmpty()) {
+                        sdkRequest.setTag(request.getTag());
+                    }
+                    break;
+
+                case "RECENT":
+                    int recentNum = request.getRecentNum() != null ? Math.min(request.getRecentNum(), 1024) : 20;
+                    long recentNow = System.currentTimeMillis();
+                    sdkRequest.setStartTime(recentNow - 24 * 3600 * 1000L);
+                    sdkRequest.setEndTime(recentNow);
+                    sdkRequest.setRecentMessageNum((long) recentNum);
+                    break;
+
+                default:
+                    throw new TencentCloudSDKException("Invalid queryType: " + queryType);
             }
 
-            // For RECENT or BY_TIME queries, Tencent Cloud API doesn't support direct query
-            // These require async query tasks which are complex to implement
-            log.warn("Time range and recent message queries are not supported by Tencent Cloud RocketMQ 5.x API");
-            log.info("Please use message ID query or check the Tencent Cloud console for time-based queries");
-            
+            DescribeMessageListResponse response = trocketClient.DescribeMessageList(sdkRequest);
+
+            List<MessageInfo> messages = new ArrayList<>();
+            if (response.getData() != null) {
+                for (MessageItem item : response.getData()) {
+                    messages.add(mapMessageItemToInfo(item, request.getTopicName()));
+                }
+            }
+
+            log.info("Found {} messages", messages.size());
             return messages;
+
         } catch (TencentCloudSDKException e) {
             log.error("Failed to query messages from Tencent Cloud API: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    private MessageInfo mapMessageItemToInfo(MessageItem item, String topicName) {
+        Long timestamp = parseTimestamp(item.getProduceTime());
+        LocalDateTime localDateTime = convertToLocalDateTime(timestamp);
+
+        return MessageInfo.builder()
+                .messageId(item.getMsgId())
+                .topicName(topicName)
+                .tags(item.getTags())
+                .keys(item.getKeys())
+                .properties(new HashMap<>())
+                .bornHost(item.getProducerAddr())
+                .storeHost(null)
+                .storeTimestamp(timestamp)
+                .bornTimestamp(timestamp)
+                .storeTime(localDateTime)
+                .bornTime(localDateTime)
+                .build();
     }
 
     /**

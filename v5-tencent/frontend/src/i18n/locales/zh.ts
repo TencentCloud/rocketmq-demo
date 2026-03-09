@@ -373,7 +373,20 @@ export default {
     failedToLoadClusters: '加载集群失败',
     failedToLoadTopics: '加载主题失败',
     failedToLoadTrace: '加载消息轨迹失败',
-    failedToResendMessage: '重发消息失败'
+    failedToResendMessage: '重发消息失败',
+    queryType: '查询方式',
+    queryById: '按消息ID',
+    queryByTime: '按时间范围',
+    queryByRecent: '最近N条',
+    timeRange: '时间范围',
+    recentNum: '最近条数',
+    recentNumPlaceholder: '请输入条数（最大1024）',
+    msgKey: '消息Key',
+    msgKeyPlaceholder: '请输入消息Key',
+    tagFilter: '标签过滤',
+    tagPlaceholder: '请输入Tag',
+    timeRangeRequired: '请选择时间范围',
+    recentNumRequired: '请输入最近条数'
   },
   messageTrace: {
     title: '消息轨迹',

@@ -157,11 +157,15 @@ export interface SendMessageRequest {
 export interface QueryMessagesRequest {
   clusterId: string
   topicName: string
-  startTime?: string
-  endTime?: string
+  queryType: 'BY_ID' | 'BY_TIME' | 'RECENT'
   messageId?: string
-  keys?: string
-  tags?: string
+  msgKey?: string
+  tag?: string
+  startTime?: number
+  endTime?: number
+  recentNum?: number
+  offset?: number
+  limit?: number
 }
 
 export interface ResetOffsetRequest {

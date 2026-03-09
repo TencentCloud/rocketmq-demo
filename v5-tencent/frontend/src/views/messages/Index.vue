@@ -5,7 +5,7 @@
     <t-card class="filter-card">
       <t-form ref="queryFormRef" :data="queryForm" :rules="formRules" label-width="120px">
         <t-row :gutter="16">
-          <t-col :span="6">
+          <t-col :span="5">
             <t-form-item :label="t('message.cluster')" name="clusterId">
               <t-select
                 v-model="queryForm.clusterId"
@@ -21,7 +21,7 @@
               </t-select>
             </t-form-item>
           </t-col>
-          <t-col :span="6">
+          <t-col :span="5">
             <t-form-item :label="t('message.topic')" name="topicName">
               <t-select
                 v-model="queryForm.topicName"
@@ -40,25 +40,101 @@
               </t-select>
             </t-form-item>
           </t-col>
-          <t-col :span="8">
+          <t-col :span="14">
+            <t-form-item :label="t('message.queryType')" name="queryType">
+              <t-radio-group v-model="queryForm.queryType" variant="default-filled">
+                <t-radio-button value="BY_ID">{{ t('message.queryById') }}</t-radio-button>
+                <t-radio-button value="BY_TIME">{{ t('message.queryByTime') }}</t-radio-button>
+                <t-radio-button value="RECENT">{{ t('message.queryByRecent') }}</t-radio-button>
+              </t-radio-group>
+            </t-form-item>
+          </t-col>
+        </t-row>
+
+        <!-- BY_ID -->
+        <t-row v-if="queryForm.queryType === 'BY_ID'" :gutter="16">
+          <t-col :span="19">
             <t-form-item :label="t('message.messageId')" name="messageId">
-              <t-input
-                v-model="queryForm.messageId"
-                :placeholder="t('message.enterMessageId')"
-                clearable
+              <t-input v-model="queryForm.messageId" :placeholder="t('message.enterMessageId')" clearable />
+            </t-form-item>
+          </t-col>
+          <t-col :span="5">
+            <t-form-item label=" " label-width="120px">
+              <t-space>
+                <t-button theme="primary" @click="handleQuery" :loading="querying">
+                  <template #icon><t-icon name="search" /></template>{{ t('message.query') }}
+                </t-button>
+                <t-button theme="default" @click="handleReset">
+                  <template #icon><t-icon name="refresh" /></template>{{ t('message.reset') }}
+                </t-button>
+              </t-space>
+            </t-form-item>
+          </t-col>
+        </t-row>
+
+        <!-- BY_TIME -->
+        <t-row v-if="queryForm.queryType === 'BY_TIME'" :gutter="16">
+          <t-col :span="10">
+            <t-form-item :label="t('message.timeRange')" name="timeRange">
+              <t-date-range-picker
+                v-model="queryForm.timeRange"
+                enable-time-picker
+                format="YYYY-MM-DD HH:mm:ss"
+                :placeholder="[t('message.startTime'), t('message.endTime')]"
+                style="width: 100%"
               />
             </t-form-item>
           </t-col>
           <t-col :span="4">
-            <t-form-item label=" " label-width="0">
+            <t-form-item :label="t('message.msgKey')" name="msgKey">
+              <t-input v-model="queryForm.msgKey" :placeholder="t('message.msgKeyPlaceholder')" clearable />
+            </t-form-item>
+          </t-col>
+          <t-col :span="4">
+            <t-form-item :label="t('message.tagFilter')" name="tag">
+              <t-input v-model="queryForm.tag" :placeholder="t('message.tagPlaceholder')" clearable />
+            </t-form-item>
+          </t-col>
+          <t-col :span="6">
+            <t-form-item label=" " label-width="120px">
               <t-space>
                 <t-button theme="primary" @click="handleQuery" :loading="querying">
-                  <template #icon><t-icon name="search" /></template>
-                  {{ t('message.query') }}
+                  <template #icon><t-icon name="search" /></template>{{ t('message.query') }}
                 </t-button>
                 <t-button theme="default" @click="handleReset">
-                  <template #icon><t-icon name="refresh" /></template>
-                  {{ t('message.reset') }}
+                  <template #icon><t-icon name="refresh" /></template>{{ t('message.reset') }}
+                </t-button>
+              </t-space>
+            </t-form-item>
+          </t-col>
+        </t-row>
+
+        <!-- RECENT -->
+        <t-row v-if="queryForm.queryType === 'RECENT'" :gutter="16">
+          <t-col :span="9">
+            <t-form-item :label="t('message.recentNum')" name="recentNum">
+              <t-input-number
+                v-model="queryForm.recentNum"
+                :min="1"
+                :max="1024"
+                :placeholder="t('message.recentNumPlaceholder')"
+                style="width: 100%"
+              />
+            </t-form-item>
+          </t-col>
+          <t-col :span="4">
+            <t-form-item :label="t('message.tagFilter')" name="tag">
+              <t-input v-model="queryForm.tag" :placeholder="t('message.tagPlaceholder')" clearable />
+            </t-form-item>
+          </t-col>
+          <t-col :span="11">
+            <t-form-item label=" " label-width="120px">
+              <t-space>
+                <t-button theme="primary" @click="handleQuery" :loading="querying">
+                  <template #icon><t-icon name="search" /></template>{{ t('message.query') }}
+                </t-button>
+                <t-button theme="default" @click="handleReset">
+                  <template #icon><t-icon name="refresh" /></template>{{ t('message.reset') }}
                 </t-button>
               </t-space>
             </t-form-item>
@@ -66,6 +142,18 @@
         </t-row>
       </t-form>
     </t-card>
+
+    <!-- 复用按钮片段 -->
+    <template #QueryButtons>
+      <t-button theme="primary" @click="handleQuery" :loading="querying">
+        <template #icon><t-icon name="search" /></template>
+        {{ t('message.query') }}
+      </t-button>
+      <t-button theme="default" @click="handleReset">
+        <template #icon><t-icon name="refresh" /></template>
+        {{ t('message.reset') }}
+      </t-button>
+    </template>
 
     <LoadingOverlay :visible="loading" />
 
@@ -214,19 +302,31 @@ const queryFormRef = ref<FormInstanceFunctions>()
 interface QueryForm {
   clusterId: string
   topicName: string
+  queryType: 'BY_ID' | 'BY_TIME' | 'RECENT'
   messageId: string
+  msgKey: string
+  tag: string
+  timeRange: [string, string] | []
+  recentNum: number
 }
 
 const queryForm = ref<QueryForm>({
   clusterId: '',
   topicName: '',
-  messageId: ''
+  queryType: 'BY_ID',
+  messageId: '',
+  msgKey: '',
+  tag: '',
+  timeRange: [],
+  recentNum: 20
 })
 
 const formRules: Record<string, FormRule[]> = {
   clusterId: [{ required: true, message: t('message.clusterRequired'), type: 'error' }],
   topicName: [{ required: true, message: t('message.topicRequired'), type: 'error' }],
-  messageId: [{ required: true, message: t('message.messageIdRequired'), type: 'error' }]
+  messageId: [{ required: true, message: t('message.messageIdRequired'), type: 'error', validator: () => queryForm.value.queryType !== 'BY_ID' || !!queryForm.value.messageId }],
+  timeRange: [{ required: true, message: t('message.timeRangeRequired'), type: 'error', validator: () => queryForm.value.queryType !== 'BY_TIME' || queryForm.value.timeRange.length === 2 }],
+  recentNum: [{ required: true, message: t('message.recentNumRequired'), type: 'error', validator: () => queryForm.value.queryType !== 'RECENT' || !!queryForm.value.recentNum }]
 }
 
 const columns: PrimaryTableCol[] = [
@@ -280,31 +380,39 @@ const handleQuery = async () => {
   const valid = await queryFormRef.value?.validate()
   if (!valid) return
 
-  if (!queryForm.value.messageId || queryForm.value.messageId.trim() === '') {
-    MessagePlugin.warning('Please enter message ID')
-    return
-  }
-
   querying.value = true
   hasQueried.value = true
   try {
     const params: QueryMessagesRequest = {
       clusterId: queryForm.value.clusterId,
       topicName: queryForm.value.topicName,
-      messageId: queryForm.value.messageId.trim()
+      queryType: queryForm.value.queryType
+    }
+
+    if (queryForm.value.queryType === 'BY_ID') {
+      params.messageId = queryForm.value.messageId.trim()
+    } else if (queryForm.value.queryType === 'BY_TIME') {
+      const [start, end] = queryForm.value.timeRange as [string, string]
+      params.startTime = new Date(start).getTime()
+      params.endTime = new Date(end).getTime()
+      if (queryForm.value.msgKey) params.msgKey = queryForm.value.msgKey
+      if (queryForm.value.tag) params.tag = queryForm.value.tag
+    } else if (queryForm.value.queryType === 'RECENT') {
+      params.recentNum = queryForm.value.recentNum
+      if (queryForm.value.tag) params.tag = queryForm.value.tag
     }
 
     const response = await messageApi.queryMessages(params)
     if (response.success) {
       messages.value = response.data
       if (response.data.length === 0) {
-        MessagePlugin.warning('Message not found. Please check the message ID.')
+        MessagePlugin.warning(t('message.messageNotFound'))
       } else {
         MessagePlugin.success(`Found ${response.data.length} message(s)`)
       }
     }
   } catch (error: any) {
-    MessagePlugin.error(error.message || 'Failed to query messages')
+    MessagePlugin.error(error.message || t('message.failedToQueryMessages'))
   } finally {
     querying.value = false
   }
@@ -317,7 +425,12 @@ const handleReset = () => {
   queryForm.value = {
     clusterId: clusters.value[0]?.clusterId || '',
     topicName: '',
-    messageId: ''
+    queryType: 'BY_ID',
+    messageId: '',
+    msgKey: '',
+    tag: '',
+    timeRange: [],
+    recentNum: 20
   }
   if (queryForm.value.clusterId) {
     loadTopics()
@@ -372,6 +485,11 @@ onMounted(async () => {
 
 .filter-card {
   margin-bottom: var(--gap-md);
+}
+
+.filter-card :deep(.t-form__item) {
+  margin-bottom: 0;
+  padding: 12px 0;
 }
 
 .result-header {
