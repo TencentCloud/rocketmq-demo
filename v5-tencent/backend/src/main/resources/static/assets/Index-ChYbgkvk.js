@@ -1,0 +1,1 @@
+import{P as a,E as t}from"./EmptyState-aF5rfPdN.js";import{d as o,o as s,c,a as e,_ as n}from"./index-BSFjECzw.js";const p={class:"topics-page"},r=o({__name:"Index",setup(_){return(i,d)=>(s(),c("div",p,[e(a,{title:"Topic Management",description:"Manage RocketMQ topics"}),e(t,{message:"No topics available"})]))}}),f=n(r,[["__scopeId","data-v-79abf816"]]);export{f as default};
