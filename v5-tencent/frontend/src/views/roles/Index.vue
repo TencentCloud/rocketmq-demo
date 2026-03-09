@@ -35,11 +35,6 @@
             </t-tag>
           </t-space>
         </template>
-        <template #enabled="{ row }">
-          <t-tag :theme="row.enabled ? 'success' : 'default'" variant="light">
-            {{ row.enabled ? t('common.enabled') : t('common.disabled') }}
-          </t-tag>
-        </template>
         <template #createTime="{ row }">{{ formatTime(row.createTime) }}</template>
         <template #action="{ row }">
           <t-button theme="default" variant="outline" size="small" @click="handleEdit(row)">
@@ -167,7 +162,6 @@ const columns: PrimaryTableCol[] = [
   { colKey: 'roleName', title: t('role.roleName'), width: 200 },
   { colKey: 'accessKey', title: 'Access Key', width: 180, ellipsis: true },
   { colKey: 'permissions', title: t('role.permissionType'), cell: 'permissions', width: 180 },
-  { colKey: 'enabled', title: t('common.status'), cell: 'enabled', width: 100 },
   { colKey: 'createTime', title: t('role.createTime'), cell: 'createTime', width: 180 },
   { colKey: 'description', title: t('role.remark'), ellipsis: true },
   { colKey: 'action', title: t('role.actions'), cell: 'action', width: 120, fixed: 'right' }

@@ -72,6 +72,16 @@ public class GroupService {
                         .collect(Collectors.toList());
             }
 
+            // Client-side filtering as fallback (API filter may not work reliably)
+            if (groupName != null && !groupName.trim().isEmpty()) {
+                String filterName = groupName.trim();
+                List<GroupInfo> filtered = groups.stream()
+                        .filter(g -> g.getGroupName() != null && g.getGroupName().contains(filterName))
+                        .collect(Collectors.toList());
+                log.info("Client-side filter: {} -> {} groups (filter: {})", groups.size(), filtered.size(), filterName);
+                groups = filtered;
+            }
+
             log.info("Found {} consumer groups", groups.size());
             return groups;
         } catch (TencentCloudSDKException e) {
