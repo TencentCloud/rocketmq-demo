@@ -2,7 +2,27 @@
 
 腾讯云 RocketMQ 可视化管理控制台，基于 Vue 3 + Spring Boot 3 构建。
 
-代码位于本仓库 [`v5-tencent/`](../) 目录。
+代码位于本仓库 [`v5-dashboard/`](../) 目录。
+
+---
+
+## 界面预览
+
+**仪表盘首页**
+
+![仪表盘首页](images/SCR-20260309-lswv.png)
+
+**主题管理**
+
+![主题管理](images/SCR-20260309-magl.png)
+
+**消费者组详情**
+
+![消费者组详情](images/SCR-20260309-lvty.png)
+
+**消息详情**
+
+![消息详情](images/SCR-20260309-makm.png)
 
 ---
 
