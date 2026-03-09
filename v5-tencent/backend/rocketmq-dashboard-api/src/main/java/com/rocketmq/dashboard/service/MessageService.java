@@ -376,17 +376,21 @@ public class MessageService {
         }
     }
 
+    private static final java.time.format.DateTimeFormatter TIMESTAMP_FORMATTER =
+            new java.time.format.DateTimeFormatterBuilder()
+                    .appendPattern("yyyy-MM-dd HH:mm:ss")
+                    .optionalStart().appendPattern(".SSS").optionalEnd()
+                    .toFormatter();
+
     /**
-     * Parse timestamp string (format: 2024-01-30 10:00:00) to epoch milliseconds
+     * Parse timestamp string (format: "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-dd HH:mm:ss.SSS") to epoch milliseconds
      */
     private Long parseTimestamp(String timestampStr) {
         if (timestampStr == null || timestampStr.isEmpty()) {
             return null;
         }
         try {
-            // Format appears to be: yyyy-MM-dd HH:mm:ss
-            LocalDateTime localDateTime = LocalDateTime.parse(timestampStr,
-                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            LocalDateTime localDateTime = LocalDateTime.parse(timestampStr, TIMESTAMP_FORMATTER);
             return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         } catch (Exception e) {
             log.warn("Failed to parse timestamp: {}", timestampStr, e);
@@ -405,16 +409,6 @@ public class MessageService {
     }
 
     private Long parseTimestampToMillis(String timestampStr) {
-        if (timestampStr == null || timestampStr.isEmpty()) {
-            return null;
-        }
-        try {
-            LocalDateTime localDateTime = LocalDateTime.parse(timestampStr,
-                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-        } catch (Exception e) {
-            log.warn("Failed to parse timestamp: {}", timestampStr, e);
-            return null;
-        }
+        return parseTimestamp(timestampStr);
     }
 }

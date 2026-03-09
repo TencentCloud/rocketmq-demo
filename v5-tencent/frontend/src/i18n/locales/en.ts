@@ -74,7 +74,7 @@ export default {
     limitationsTitle: 'API Limitations',
     limitationsAlert: 'Important Notes',
     limitation1:
-      'Message Query: Currently only supports querying by message ID. Time-based queries require using Tencent Cloud Console.',
+      'Message Query: Supports querying messages by Message ID, time range, and recent N messages.',
     limitation2:
       'Cluster Management: Cluster creation and deletion should be done through Tencent Cloud Console.',
     limitation3:
@@ -343,7 +343,7 @@ export default {
     startTime: 'Start Time',
     endTime: 'End Time',
     pageTitle: 'Message Management',
-    pageDescription: 'Query message details by message ID',
+    pageDescription: 'Query message details by Message ID, time range, or recent N messages',
     cluster: 'Cluster',
     selectCluster: 'Select cluster',
     selectOrEnterTopic: 'Select or enter topic',

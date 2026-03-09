@@ -36,20 +36,11 @@
           <t-descriptions-item :label="t('message.bornTime')">
             {{ formatTime(message.bornTime) }}
           </t-descriptions-item>
-          <t-descriptions-item :label="t('message.storeTime')">
-            {{ formatTime(message.storeTime) }}
-          </t-descriptions-item>
           <t-descriptions-item :label="t('message.bornHost')">
             {{ message.bornHost || '-' }}
           </t-descriptions-item>
-          <t-descriptions-item :label="t('message.storeHost')">
-            {{ message.storeHost || '-' }}
-          </t-descriptions-item>
           <t-descriptions-item :label="t('message.bodySize')">
             {{ message.bodySize != null ? formatSize(message.bodySize) : '-' }}
-          </t-descriptions-item>
-          <t-descriptions-item :label="t('message.reconsumeTimes')">
-            {{ message.reconsumeTimes ?? '-' }}
           </t-descriptions-item>
         </t-descriptions>
       </t-card>

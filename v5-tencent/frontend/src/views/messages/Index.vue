@@ -133,7 +133,6 @@
       </template>
       <t-table :data="messages" :columns="columns" row-key="messageId" :loading="querying">
         <template #bornTime="{ row }">{{ formatTime(row.bornTime) }}</template>
-        <template #storeTime="{ row }">{{ formatTime(row.storeTime) }}</template>
         <template #action="{ row }">
           <t-button theme="primary" variant="text" size="small" @click="handleViewDetail(row)">
             <template #icon><t-icon name="browse" /></template>
@@ -222,7 +221,6 @@ const columns: PrimaryTableCol[] = [
   { colKey: 'tags', title: t('message.tags'), width: 120 },
   { colKey: 'keys', title: t('message.keys'), width: 120 },
   { colKey: 'bornTime', title: t('message.bornTime'), cell: 'bornTime', width: 180 },
-  { colKey: 'storeTime', title: t('message.storeTime'), cell: 'storeTime', width: 180 },
   { colKey: 'action', title: t('cluster.actions'), cell: 'action', width: 100, fixed: 'right' }
 ]
 
