@@ -71,8 +71,9 @@ public class ClusterService {
                 .maxTps(instance.getTpsLimit() != null ? instance.getTpsLimit().intValue() : null)
                 .topicCount(instance.getTopicNum() != null ? instance.getTopicNum().intValue() : 0)
                 .groupCount(instance.getGroupNum() != null ? instance.getGroupNum().intValue() : 0)
-                .createTime(convertTimestamp(instance.getExpiryTime()))
-                .updateTime(LocalDateTime.now())
+                .remark(instance.getRemark())
+                .createTime(null)  // InstanceItem doesn't have CreateTime; use DescribeInstance for detail
+                .updateTime(null)
                 .build();
     }
     
@@ -101,14 +102,14 @@ public class ClusterService {
     }
     
     /**
-     * Convert Unix timestamp (seconds) to LocalDateTime
+     * Convert Unix timestamp (milliseconds) to LocalDateTime
      */
-    private LocalDateTime convertTimestamp(Long timestamp) {
+    private LocalDateTime convertTimestampMillis(Long timestamp) {
         if (timestamp == null || timestamp == 0) {
             return null;
         }
         return LocalDateTime.ofInstant(
-                Instant.ofEpochSecond(timestamp),
+                Instant.ofEpochMilli(timestamp),
                 ZoneId.systemDefault()
         );
     }
@@ -117,34 +118,12 @@ public class ClusterService {
         log.info("Getting cluster details for: {}", clusterId);
         
         try {
-            // Create request for DescribeInstanceList API with filter
-            DescribeInstanceListRequest request = new DescribeInstanceListRequest();
+            DescribeInstanceRequest request = new DescribeInstanceRequest();
+            request.setInstanceId(clusterId);
             
-            // Filter by specific instance ID
-            Filter[] filters = new Filter[1];
-            filters[0] = new Filter();
-            filters[0].setName("InstanceId");
-            filters[0].setValues(new String[]{clusterId});
-            request.setFilters(filters);
+            DescribeInstanceResponse response = trocketClient.DescribeInstance(request);
             
-            // Call Tencent Cloud API
-            DescribeInstanceListResponse response = trocketClient.DescribeInstanceList(request);
-            
-            // Check if instance exists
-            if (response.getData() == null || response.getData().length == 0) {
-                log.error("Cluster not found: {}", clusterId);
-                throw new TencentCloudSDKException("Cluster not found: " + clusterId);
-            }
-            
-            // Get the first (and should be only) instance
-            InstanceItem instance = response.getData()[0];
-            
-            // Map to ClusterInfo with detailed information
-            ClusterInfo clusterInfo = mapToClusterInfoDetailed(instance);
-            
-            log.info("Successfully retrieved cluster details: {}", clusterId);
-            return clusterInfo;
-            
+            return mapDescribeInstanceToClusterInfo(response);
         } catch (TencentCloudSDKException e) {
             log.error("Failed to get cluster {} from Tencent Cloud API: {}", clusterId, e.getMessage(), e);
             throw e;
@@ -152,28 +131,22 @@ public class ClusterService {
     }
     
     /**
-     * Map Tencent Cloud InstanceItem to ClusterInfo with detailed fields
+     * Map DescribeInstanceResponse to ClusterInfo with full detail fields
      */
-    private ClusterInfo mapToClusterInfoDetailed(InstanceItem instance) {
+    private ClusterInfo mapDescribeInstanceToClusterInfo(DescribeInstanceResponse resp) {
         return ClusterInfo.builder()
-                .clusterId(instance.getInstanceId())
-                .clusterName(instance.getInstanceName())
-                .description(instance.getRemark())
+                .clusterId(resp.getInstanceId())
+                .clusterName(resp.getInstanceName())
+                .description(resp.getRemark())
                 .region(region)
-                .clusterType(instance.getVersion() != null ? instance.getVersion() : "5.x")
-                .status(mapInstanceStatus(instance.getInstanceStatus()))
-                .vpcId(null)  // Not available in InstanceItem
-                .subnetId(null)  // Not available in InstanceItem
-                .maxTps(instance.getTpsLimit() != null ? instance.getTpsLimit().intValue() : null)
-                .maxBandwidth(null)  // Not available in InstanceItem
-                .storageCapacity(null)  // Not available in InstanceItem
-                .usedStorage(null)  // Not available in InstanceItem
-                .publicEndpoint(buildEndpoint(instance.getInstanceId(), "public"))
-                .privateEndpoint(buildEndpoint(instance.getInstanceId(), "private"))
-                .topicCount(instance.getTopicNum() != null ? instance.getTopicNum().intValue() : 0)
-                .groupCount(instance.getGroupNum() != null ? instance.getGroupNum().intValue() : 0)
-                .createTime(convertTimestamp(instance.getExpiryTime()))
-                .updateTime(LocalDateTime.now())
+                .clusterType(resp.getInstanceType() != null ? resp.getInstanceType() : "5.x")
+                .status(mapInstanceStatus(resp.getInstanceStatus()))
+                .maxTps(resp.getTpsLimit() != null ? resp.getTpsLimit().intValue() : null)
+                .topicCount(resp.getTopicNum() != null ? resp.getTopicNum().intValue() : 0)
+                .groupCount(resp.getGroupNum() != null ? resp.getGroupNum().intValue() : 0)
+                .remark(resp.getRemark())
+                .createTime(convertTimestampMillis(resp.getCreatedTime()))
+                .updateTime(null)
                 .build();
     }
     

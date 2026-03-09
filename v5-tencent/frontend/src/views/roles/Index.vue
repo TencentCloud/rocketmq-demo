@@ -28,28 +28,24 @@
 
     <t-card v-if="!loading && roles.length > 0" class="table-card">
       <t-table :data="roles" :columns="columns" row-key="roleName" :loading="tableLoading">
-        <template #permissionType="{ row }">
-          <t-tag :theme="getPermissionTheme(row.permissionType)" variant="light">
-            {{ row.permissionType }}
+        <template #permissions="{ row }">
+          <t-space :size="4">
+            <t-tag v-for="perm in (row.permissions || [])" :key="perm" :theme="getPermissionTheme(perm)" variant="light" size="small">
+              {{ perm }}
+            </t-tag>
+          </t-space>
+        </template>
+        <template #enabled="{ row }">
+          <t-tag :theme="row.enabled ? 'success' : 'default'" variant="light">
+            {{ row.enabled ? t('common.enabled') : t('common.disabled') }}
           </t-tag>
         </template>
         <template #createTime="{ row }">{{ formatTime(row.createTime) }}</template>
         <template #action="{ row }">
-          <t-space :size="8">
-            <t-button theme="default" variant="outline" size="small" @click="handleEdit(row)">
-              <template #icon><t-icon name="edit" /></template>
-              {{ t('common.edit') }}
-            </t-button>
-            <t-popconfirm
-              :content="t('role.deleteConfirm')"
-              @confirm="handleDelete(row.roleName)"
-            >
-              <t-button theme="danger" variant="outline" size="small">
-                <template #icon><t-icon name="delete" /></template>
-                {{ t('common.delete') }}
-              </t-button>
-            </t-popconfirm>
-          </t-space>
+          <t-button theme="default" variant="outline" size="small" @click="handleEdit(row)">
+            <template #icon><t-icon name="edit" /></template>
+            {{ t('common.edit') }}
+          </t-button>
         </template>
       </t-table>
     </t-card>
@@ -169,20 +165,20 @@ const editFormRules: Record<string, FormRule[]> = {
 
 const columns: PrimaryTableCol[] = [
   { colKey: 'roleName', title: t('role.roleName'), width: 200 },
-  { colKey: 'permissionType', title: t('role.permissionType'), cell: 'permissionType', width: 180 },
+  { colKey: 'accessKey', title: 'Access Key', width: 180, ellipsis: true },
+  { colKey: 'permissions', title: t('role.permissionType'), cell: 'permissions', width: 180 },
+  { colKey: 'enabled', title: t('common.status'), cell: 'enabled', width: 100 },
   { colKey: 'createTime', title: t('role.createTime'), cell: 'createTime', width: 180 },
-  { colKey: 'remark', title: t('role.remark'), ellipsis: true },
-  { colKey: 'action', title: t('role.actions'), cell: 'action', width: 200, fixed: 'right' }
+  { colKey: 'description', title: t('role.remark'), ellipsis: true },
+  { colKey: 'action', title: t('role.actions'), cell: 'action', width: 120, fixed: 'right' }
 ]
 
-const getPermissionTheme = (type: string) => {
-  switch (type) {
+const getPermissionTheme = (perm: string) => {
+  switch (perm) {
     case 'PUB':
       return 'success'
     case 'SUB':
       return 'primary'
-    case 'PUB_SUB':
-      return 'warning'
     case 'DENY':
       return 'danger'
     default:
@@ -242,8 +238,8 @@ const handleCreate = async () => {
 const handleEdit = (role: RoleInfo) => {
   currentEditName.value = role.roleName
   editForm.value = {
-    permissionType: role.permissionType,
-    remark: role.remark
+    permissionType: role.permissions?.join(',') || '',
+    remark: role.description || ''
   }
   showEditDialog.value = true
 }
@@ -263,18 +259,6 @@ const handleUpdate = async () => {
     MessagePlugin.error('Failed to update role')
   } finally {
     updating.value = false
-  }
-}
-
-const handleDelete = async (roleName: string) => {
-  try {
-    const response = await roleApi.deleteRole(roleName, selectedClusterId.value)
-    if (response.success) {
-      MessagePlugin.success('Role deleted successfully')
-      loadRoles()
-    }
-  } catch (error) {
-    MessagePlugin.error('Failed to delete role')
   }
 }
 

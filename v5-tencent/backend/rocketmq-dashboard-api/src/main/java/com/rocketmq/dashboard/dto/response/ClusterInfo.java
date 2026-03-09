@@ -63,6 +63,9 @@ public class ClusterInfo {
     @Schema(description = "Number of groups")
     private Integer groupCount;
     
+    @Schema(description = "Remark")
+    private String remark;
+    
     @Schema(description = "Creation time")
     private LocalDateTime createTime;
     

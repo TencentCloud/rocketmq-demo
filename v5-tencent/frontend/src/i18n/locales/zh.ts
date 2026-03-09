@@ -122,7 +122,13 @@ export default {
     failedToCreateCluster: '创建集群失败',
     failedToUpdateCluster: '更新集群失败',
     failedToDeleteCluster: '删除集群失败',
-    failedToLoadRegions: '加载地域失败'
+    failedToLoadRegions: '加载地域失败',
+    clusterType: '集群类型',
+    maxTps: '最大 TPS',
+    topicCount: '主题数量',
+    groupCount: '消费者组数量',
+    basicInformation: '基本信息',
+    failedToLoadCluster: '加载集群详情失败'
   },
   topic: {
     title: '主题管理',

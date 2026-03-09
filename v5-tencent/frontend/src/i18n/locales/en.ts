@@ -127,7 +127,13 @@ export default {
     failedToCreateCluster: 'Failed to create cluster',
     failedToUpdateCluster: 'Failed to update cluster',
     failedToDeleteCluster: 'Failed to delete cluster',
-    failedToLoadRegions: 'Failed to load regions'
+    failedToLoadRegions: 'Failed to load regions',
+    clusterType: 'Cluster Type',
+    maxTps: 'Max TPS',
+    topicCount: 'Topic Count',
+    groupCount: 'Group Count',
+    basicInformation: 'Basic Information',
+    failedToLoadCluster: 'Failed to load cluster details'
   },
   topic: {
     title: 'Topic Management',

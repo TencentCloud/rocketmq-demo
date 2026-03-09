@@ -14,10 +14,16 @@ export interface RegionInfo {
 export interface ClusterInfo {
   clusterId: string
   clusterName: string
+  description?: string
   region: string
+  clusterType?: string
   status: string
-  createTime: string
+  maxTps?: number
+  topicCount?: number
+  groupCount?: number
   remark?: string
+  createTime?: string
+  updateTime?: string
 }
 
 export interface TopicInfo {
@@ -98,9 +104,12 @@ export interface MessageTraceInfo {
 
 export interface RoleInfo {
   roleName: string
-  permissionType: string
-  remark?: string
-  createTime: string
+  description?: string
+  accessKey?: string
+  permissions?: string[]
+  enabled?: boolean
+  createTime?: string
+  updateTime?: string
 }
 
 export interface DashboardOverview {

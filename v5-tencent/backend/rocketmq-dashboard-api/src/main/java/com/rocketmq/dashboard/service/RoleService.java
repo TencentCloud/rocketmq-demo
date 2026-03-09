@@ -111,10 +111,10 @@ public class RoleService {
     }
 
     private LocalDateTime convertToLocalDateTime(Long timestamp) {
-        if (timestamp == null) {
+        if (timestamp == null || timestamp == 0) {
             return null;
         }
-        return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault());
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
     }
     
     public RoleInfo createRole(String clusterId, CreateRoleRequest request) throws Exception {

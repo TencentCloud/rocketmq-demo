@@ -25,6 +25,15 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/clusters/:clusterId',
+    name: 'ClusterDetail',
+    component: () => import('@/views/clusters/Detail.vue'),
+    meta: {
+      title: 'Cluster Detail',
+      icon: 'server'
+    }
+  },
+  {
     path: '/topics',
     name: 'Topics',
     component: () => import('@/views/topics/Index.vue'),
