@@ -24,3 +24,10 @@ logs/
 # Environment
 .env
 .env.local
+
+# AI tool symlinks (each dev creates their own)
+.cursorrules
+.windsurfrules
+.clinerules
+CLAUDE.md
+.github/copilot-instructions.md
