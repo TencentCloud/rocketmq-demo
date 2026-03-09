@@ -1,46 +1,58 @@
 <template>
-  <aside class="sidebar">
+  <aside :class="['sidebar', { 'sidebar--collapsed': isCollapsed }]">
+    <!-- Logo 区域 -->
     <div class="sidebar-header">
-      <h1 class="sidebar-title">Tencent RocketMQ</h1>
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+          <span class="logo-badge">MQ</span>
+        </div>
+        <transition name="fade">
+          <div v-if="!isCollapsed" class="sidebar-logo-text">
+            <span class="logo-title">RocketMQ</span>
+            <span class="logo-subtitle">Dashboard</span>
+          </div>
+        </transition>
+      </div>
+      <button class="collapse-btn" @click="toggleCollapse" :title="isCollapsed ? '展开' : '收起'">
+        <t-icon :name="isCollapsed ? 'chevron-right' : 'chevron-left'" size="16px" />
+      </button>
     </div>
-    <t-menu v-model="activeMenu" theme="light" :collapsed="false" @change="handleMenuChange">
-      <t-menu-item value="dashboard" @click="navigateTo('/dashboard')">
-        <template #icon>
-          <t-icon name="dashboard" />
-        </template>
-        {{ t('sidebar.dashboard') }}
-      </t-menu-item>
-      <t-menu-item value="clusters" @click="navigateTo('/clusters')">
-        <template #icon>
-          <t-icon name="server" />
-        </template>
-        {{ t('sidebar.cluster') }}
-      </t-menu-item>
-      <t-menu-item value="topics" @click="navigateTo('/topics')">
-        <template #icon>
-          <t-icon name="layers" />
-        </template>
-        {{ t('sidebar.topic') }}
-      </t-menu-item>
-      <t-menu-item value="groups" @click="navigateTo('/groups')">
-        <template #icon>
-          <t-icon name="usergroup" />
-        </template>
-        {{ t('sidebar.consumer') }}
-      </t-menu-item>
-      <t-menu-item value="messages" @click="navigateTo('/messages')">
-        <template #icon>
-          <t-icon name="mail" />
-        </template>
-        {{ t('sidebar.message') }}
-      </t-menu-item>
-      <t-menu-item value="roles" @click="navigateTo('/roles')">
-        <template #icon>
-          <t-icon name="user" />
-        </template>
-        {{ t('sidebar.role') }}
-      </t-menu-item>
-    </t-menu>
+
+    <!-- 导航菜单 -->
+    <nav class="sidebar-nav">
+      <t-menu
+        v-model="activeMenu"
+        theme="light"
+        :collapsed="isCollapsed"
+        :width="isCollapsed ? '64px' : '240px'"
+        @change="handleMenuChange"
+      >
+        <t-menu-item value="dashboard" @click="navigateTo('/dashboard')">
+          <template #icon><t-icon name="dashboard" /></template>
+          {{ t('sidebar.dashboard') }}
+        </t-menu-item>
+        <t-menu-item value="clusters" @click="navigateTo('/clusters')">
+          <template #icon><t-icon name="server" /></template>
+          {{ t('sidebar.cluster') }}
+        </t-menu-item>
+        <t-menu-item value="topics" @click="navigateTo('/topics')">
+          <template #icon><t-icon name="layers" /></template>
+          {{ t('sidebar.topic') }}
+        </t-menu-item>
+        <t-menu-item value="groups" @click="navigateTo('/groups')">
+          <template #icon><t-icon name="usergroup" /></template>
+          {{ t('sidebar.consumer') }}
+        </t-menu-item>
+        <t-menu-item value="messages" @click="navigateTo('/messages')">
+          <template #icon><t-icon name="mail" /></template>
+          {{ t('sidebar.message') }}
+        </t-menu-item>
+        <t-menu-item value="roles" @click="navigateTo('/roles')">
+          <template #icon><t-icon name="user" /></template>
+          {{ t('sidebar.role') }}
+        </t-menu-item>
+      </t-menu>
+    </nav>
   </aside>
 </template>
 
@@ -52,7 +64,9 @@ import { useI18n } from 'vue-i18n'
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+
 const activeMenu = ref('dashboard')
+const isCollapsed = ref(false)
 
 watch(
   () => route.path,
@@ -70,134 +84,161 @@ const handleMenuChange = (value: string) => {
 const navigateTo = (path: string) => {
   router.push(path)
 }
+
+const toggleCollapse = () => {
+  isCollapsed.value = !isCollapsed.value
+}
 </script>
 
 <style scoped>
+/* ---- 侧边栏容器 ---- */
 .sidebar {
-  width: 260px;
+  width: 240px;
   height: 100vh;
-  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
-  border-right: 1px solid rgba(0, 82, 217, 0.08);
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+  background-color: var(--color-bg-aside);
+  border-right: 1px solid var(--color-border-default);
+  transition: width 0.25s ease;
   overflow: hidden;
-}
-
-.sidebar-header {
-  min-height: 68px;
-  height: 68px;
-  padding: 0 20px;
-  border-bottom: 1px solid rgba(0, 82, 217, 0.08);
-  background: linear-gradient(135deg, rgba(0, 82, 217, 0.02) 0%, rgba(0, 102, 255, 0.02) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
   flex-shrink: 0;
 }
 
-.sidebar-title {
-  font-size: 18px;
+.sidebar--collapsed {
+  width: 64px;
+}
+
+/* ---- Header 区域 ---- */
+.sidebar-header {
+  height: 64px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border-default);
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.sidebar-logo-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-badge {
+  font-size: 10px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  background: linear-gradient(135deg, #0052d9 0%, #0066ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  padding-top: 2px;
+  color: white;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
 }
 
-:deep(.t-menu),
-:deep(.t-default-menu) {
-  border: none;
-  flex: 1;
-  padding: 8px 16px;
-  width: 100% !important;
-  box-sizing: border-box;
-}
-
-:deep(.t-menu-item) {
-  margin: 4px 0;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-weight: 500;
-  font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
-  transition: all 0.2s ease;
-  position: relative;
+.sidebar-logo-text {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
-:deep(.t-menu-item::before) {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  background: linear-gradient(180deg, #0052d9 0%, #0066ff 100%);
-  border-radius: 0 2px 2px 0;
-  transition: height 0.2s ease;
+.logo-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+}
+
+.logo-subtitle {
+  font-size: 11px;
+  color: var(--color-text-placeholder);
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+.collapse-btn {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text-placeholder);
+  padding: 0;
+  transition: var(--transition-default);
+}
+
+.collapse-btn:hover {
+  background-color: var(--color-primary-light-1);
+  color: var(--color-primary);
+}
+
+/* ---- 导航区域 ---- */
+.sidebar-nav {
+  flex: 1;
+  overflow: hidden;
+  padding: 8px 0;
+}
+
+:deep(.t-default-menu),
+:deep(.t-menu) {
+  border: none !important;
+  background: transparent !important;
+  width: 100% !important;
+  padding: 0 8px;
+}
+
+:deep(.t-menu-item) {
+  border-radius: var(--radius-md);
+  margin: 2px 0;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: var(--transition-default);
 }
 
 :deep(.t-menu-item:hover) {
-  background: rgba(0, 82, 217, 0.06);
-  transform: translateX(2px);
-}
-
-:deep(.t-menu-item:hover::before) {
-  height: 60%;
+  background-color: var(--color-primary-light-1);
+  color: var(--color-primary);
 }
 
 :deep(.t-menu-item.t-is-active) {
-  background: linear-gradient(90deg, rgba(0, 82, 217, 0.08) 0%, rgba(0, 82, 217, 0.02) 100%);
-  color: #0052d9;
+  background-color: var(--color-primary-light-1);
+  color: var(--color-primary);
   font-weight: 600;
 }
 
-:deep(.t-menu-item.t-is-active::before) {
-  height: 80%;
-}
-
 :deep(.t-icon) {
-  font-size: 18px;
-  margin-right: 10px;
+  font-size: 17px;
 }
 
-:deep(.t-menu-item .t-icon) {
-  transition: all 0.2s ease;
+/* ---- Fade 过渡 ---- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
-:deep(.t-menu-item:hover .t-icon) {
-  transform: scale(1.1);
-}
-
-:deep(.t-menu-item.t-is-active .t-icon) {
-  color: #0052d9;
-}
-
-/* 响应式适配 - 与 Header 高度保持一致 */
-@media (min-width: 1920px) {
-  .sidebar-header {
-    min-height: 72px;
-    height: 72px;
-  }
-}
-
-@media (min-width: 2560px) {
-  .sidebar-header {
-    min-height: 80px;
-    height: 80px;
-  }
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateX(-4px);
 }
 </style>

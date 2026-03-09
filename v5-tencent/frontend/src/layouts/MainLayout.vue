@@ -20,6 +20,7 @@ import Header from '@/components/layout/Header.vue'
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--color-bg-page);
 }
 
 .layout-content {
@@ -27,12 +28,12 @@ import Header from '@/components/layout/Header.vue'
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .main-content {
   flex: 1;
   overflow-y: auto;
-  background-color: #f5f5f5;
-  padding: 0;
+  background-color: var(--color-bg-page);
 }
 </style>
