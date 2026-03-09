@@ -72,9 +72,7 @@
     <t-card v-if="!loading && messages.length > 0" class="result-card">
       <template #header>
         <div class="result-header">
-          <span
-            >Query Results ({{ messages.length }} message{{ messages.length > 1 ? 's' : '' }})</span
-          >
+          <span>{{ t('message.queryResults') }}（{{ messages.length }} {{ t('message.messages') }}）</span>
         </div>
       </template>
       <t-table :data="messages" :columns="columns" row-key="messageId" :loading="querying">
@@ -368,29 +366,30 @@ onMounted(async () => {
 <style scoped>
 .messages-page {
   height: 100%;
-  padding: 24px;
-  width: 100%;
+  padding: var(--gap-lg);
+  position: relative;
 }
 
-.filter-card,
-.result-card {
-  margin-top: 16px;
+.filter-card {
+  margin-bottom: var(--gap-md);
 }
 
 .result-header {
   font-weight: 600;
   font-size: 14px;
+  color: var(--color-text-primary);
 }
 
 .message-body {
-  background: #f5f5f5;
-  padding: 16px;
-  border-radius: 4px;
+  background: #f9fafb;
+  padding: var(--gap-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-default);
   overflow: auto;
   max-height: 400px;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -398,36 +397,26 @@ onMounted(async () => {
 .trace-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--gap-xs);
 }
 
 .trace-action {
   font-weight: 600;
   font-size: 14px;
+  color: var(--color-text-primary);
 }
 
 .trace-time,
 .trace-host {
   font-size: 12px;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 h3 {
-  margin: 16px 0;
-  font-size: 16px;
+  margin: var(--gap-md) 0 var(--gap-sm);
+  font-size: 15px;
   font-weight: 600;
-}
-
-/* 响应式适配 */
-@media (min-width: 1920px) {
-  .messages-page {
-    padding: 32px;
-  }
-}
-
-@media (min-width: 2560px) {
-  .messages-page {
-    padding: 40px;
-  }
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
 }
 </style>

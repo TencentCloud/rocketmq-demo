@@ -347,26 +347,12 @@ onMounted(async () => {
 <style scoped>
 .clusters-page {
   height: 100%;
-  padding: 24px;
-  width: 100%;
+  padding: var(--gap-lg);
+  position: relative;
 }
 
 .table-card {
-  margin-top: 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
-}
-
-/* 响应式适配 */
-@media (min-width: 1920px) {
-  .clusters-page {
-    padding: 32px;
-  }
-}
-
-@media (min-width: 2560px) {
-  .clusters-page {
-    padding: 40px;
-  }
 }
 </style>

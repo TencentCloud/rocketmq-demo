@@ -35,13 +35,19 @@
         </template>
         <template #createTime="{ row }">{{ formatTime(row.createTime) }}</template>
         <template #action="{ row }">
-          <t-space>
-            <t-link theme="primary" @click="handleEdit(row)">Edit</t-link>
+          <t-space :size="8">
+            <t-button theme="default" variant="outline" size="small" @click="handleEdit(row)">
+              <template #icon><t-icon name="edit" /></template>
+              {{ t('common.edit') }}
+            </t-button>
             <t-popconfirm
-              content="Are you sure you want to delete this role?"
+              :content="t('role.deleteConfirm')"
               @confirm="handleDelete(row.roleName)"
             >
-              <t-link theme="danger">Delete</t-link>
+              <t-button theme="danger" variant="outline" size="small">
+                <template #icon><t-icon name="delete" /></template>
+                {{ t('common.delete') }}
+              </t-button>
             </t-popconfirm>
           </t-space>
         </template>
@@ -285,27 +291,12 @@ onMounted(async () => {
 <style scoped>
 .roles-page {
   height: 100%;
-  padding: 24px;
-  max-width: 1600px;
-  margin: 0 auto;
+  padding: var(--gap-lg);
+  position: relative;
 }
 
 .table-card {
-  margin-top: 16px;
-}
-
-/* 响应式适配 */
-@media (min-width: 1920px) {
-  .roles-page {
-    padding: 32px;
-    max-width: 1800px;
-  }
-}
-
-@media (min-width: 2560px) {
-  .roles-page {
-    padding: 40px;
-    max-width: 2000px;
-  }
+  border-radius: var(--radius-xl);
+  overflow: hidden;
 }
 </style>

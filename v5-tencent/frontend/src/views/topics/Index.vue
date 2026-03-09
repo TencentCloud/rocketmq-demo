@@ -475,32 +475,20 @@ onMounted(async () => {
 <style scoped>
 .topics-page {
   height: 100%;
-  padding: 24px;
-  width: 100%;
+  padding: var(--gap-lg);
+  position: relative;
 }
 
 .table-card {
-  margin-top: 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
 }
 
 h3 {
-  margin: 16px 0;
-  font-size: 16px;
+  margin: var(--gap-md) 0 var(--gap-sm);
+  font-size: 15px;
   font-weight: 600;
-}
-
-/* 响应式适配 */
-@media (min-width: 1920px) {
-  .topics-page {
-    padding: 32px;
-  }
-}
-
-@media (min-width: 2560px) {
-  .topics-page {
-    padding: 40px;
-  }
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
 }
 </style>
