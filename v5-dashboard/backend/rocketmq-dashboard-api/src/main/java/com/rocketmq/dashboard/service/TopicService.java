@@ -1,0 +1,243 @@
+package com.rocketmq.dashboard.service;
+
+import com.rocketmq.dashboard.dto.request.CreateTopicRequest;
+import com.rocketmq.dashboard.dto.request.UpdateTopicRequest;
+import com.rocketmq.dashboard.dto.response.ProducerInfo;
+import com.rocketmq.dashboard.dto.response.TopicInfo;
+import com.tencentcloudapi.common.exception.TencentCloudSDKException;
+import com.tencentcloudapi.trocket.v20230308.TrocketClient;
+import com.tencentcloudapi.trocket.v20230308.models.CreateTopicResponse;
+import com.tencentcloudapi.trocket.v20230308.models.DeleteTopicRequest;
+import com.tencentcloudapi.trocket.v20230308.models.ModifyTopicResponse;
+import com.tencentcloudapi.trocket.v20230308.models.DeleteTopicResponse;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListRequest;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListResponse;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicListResponse;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicRequest;
+import com.tencentcloudapi.trocket.v20230308.models.Filter;
+import com.tencentcloudapi.trocket.v20230308.models.DescribeTopicResponse;
+import com.tencentcloudapi.trocket.v20230308.models.TopicItem;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+public class TopicService {
+
+    private final TrocketClient trocketClient;
+
+    public TopicService(TrocketClient trocketClient) {
+        this.trocketClient = trocketClient;
+    }
+
+    public List<TopicInfo> listTopics(String clusterId, String topicName) throws TencentCloudSDKException {
+        log.info("Listing topics for cluster: {}, topicName filter: {}", clusterId, topicName);
+
+        try {
+            // Create request for DescribeTopicList API
+            DescribeTopicListRequest request = new DescribeTopicListRequest();
+            request.setInstanceId(clusterId);
+            request.setOffset(0L);
+            request.setLimit(100L); // Maximum reasonable limit
+
+            // Add filter if topicName is provided
+            if (topicName != null && !topicName.trim().isEmpty()) {
+                Filter[] filters = new Filter[1];
+                filters[0] = new Filter();
+                filters[0].setName("TopicName");
+                filters[0].setValues(new String[]{topicName});
+                request.setFilters(filters);
+                log.info("Applied filter for topic name: {}", topicName);
+            }
+
+            // Call Tencent Cloud API
+            DescribeTopicListResponse response = trocketClient.DescribeTopicList(request);
+
+            // Map response to TopicInfo list
+            List<TopicInfo> topics = new ArrayList<>();
+            if (response.getData() != null) {
+                topics = Arrays.stream(response.getData())
+                        .map(this::mapToTopicInfo)
+                        .collect(Collectors.toList());
+            }
+
+            log.info("Found {} topics", topics.size());
+            return topics;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to list topics from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private TopicInfo mapToTopicInfo(TopicItem topicItem) {
+        return TopicInfo.builder()
+                .topicName(topicItem.getTopic())
+                .clusterId(topicItem.getInstanceId())
+                .topicType(mapTopicType(topicItem.getTopicType()))
+                .description(topicItem.getRemark())
+                .queueNum(topicItem.getQueueNum() != null ? topicItem.getQueueNum().intValue() : null)
+                .retentionHours(topicItem.getMsgTTL() != null ? topicItem.getMsgTTL().intValue() : null)
+                .maxMessageSize(4194304L)
+                .totalMessages(null)
+                .todayMessages(null)
+                .tps(null)
+                .producerCount(null)
+                .consumerCount(null)
+                .createTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build();
+    }
+
+    private TopicInfo mapDescribeTopicToTopicInfo(DescribeTopicResponse response) {
+        return TopicInfo.builder()
+                .topicName(response.getTopic())
+                .clusterId(response.getInstanceId())
+                .topicType(mapTopicType(response.getTopicType()))
+                .description(response.getRemark())
+                .queueNum(null)
+                .retentionHours(response.getMsgTTL() != null ? response.getMsgTTL().intValue() : null)
+                .maxMessageSize(4194304L)
+                .totalMessages(null)
+                .todayMessages(null)
+                .tps(null)
+                .producerCount(null)
+                .consumerCount(response.getSubscriptionCount() != null ? response.getSubscriptionCount().intValue() : null)
+                .createTime(timestampToLocalDateTime(response.getCreatedTime()))
+                .updateTime(timestampToLocalDateTime(response.getLastUpdateTime()))
+                .build();
+    }
+
+    private LocalDateTime timestampToLocalDateTime(Long timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(timestamp), java.time.ZoneId.systemDefault());
+    }
+
+    private String mapTopicType(String tencentType) {
+        if (tencentType == null) {
+            return "Normal";
+        }
+
+        switch (tencentType.toUpperCase()) {
+            case "NORMAL":
+                return "Normal";
+            case "FIFO":
+                return "PartitionedOrder";
+            case "DELAY":
+                return "DelayScheduled";
+            case "TRANSACTION":
+                return "Transaction";
+            case "GLOBAL_ORDER":
+                return "GlobalOrder";
+            default:
+                log.warn("Unknown topic type: {}", tencentType);
+                return tencentType;
+        }
+    }
+
+    public TopicInfo getTopic(String clusterId, String topicName) throws TencentCloudSDKException {
+        log.info("Getting topic: {} in cluster: {}", topicName, clusterId);
+
+        try {
+            DescribeTopicRequest request = new DescribeTopicRequest();
+            request.setInstanceId(clusterId);
+            request.setTopic(topicName);
+
+            DescribeTopicResponse response = trocketClient.DescribeTopic(request);
+
+            if (response == null || response.getInstanceId() == null || response.getTopic() == null) {
+                log.warn("Topic not found: {} in cluster: {}", topicName, clusterId);
+                throw new TencentCloudSDKException("TopicNotFound", "Topic '" + topicName + "' not found in cluster '" + clusterId + "'");
+            }
+
+            TopicInfo topicInfo = mapDescribeTopicToTopicInfo(response);
+
+            log.info("Successfully retrieved topic: {}", topicName);
+            return topicInfo;
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to get topic from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public TopicInfo createTopic(CreateTopicRequest request) throws TencentCloudSDKException {
+        log.info("Creating topic: {} in cluster: {}", request.getTopicName(), request.getClusterId());
+
+        try {
+            com.tencentcloudapi.trocket.v20230308.models.CreateTopicRequest sdkRequest =
+                    new com.tencentcloudapi.trocket.v20230308.models.CreateTopicRequest();
+            sdkRequest.setInstanceId(request.getClusterId());
+            sdkRequest.setTopic(request.getTopicName());
+            sdkRequest.setQueueNum(request.getQueueNum() != null ? Long.valueOf(request.getQueueNum()) : 8L);
+            sdkRequest.setRemark(request.getDescription());
+            sdkRequest.setTopicType(request.getTopicType() != null ? request.getTopicType() : "NORMAL");
+            sdkRequest.setMsgTTL(request.getRetentionHours() != null ? Long.valueOf(request.getRetentionHours()) : 72L);
+
+            CreateTopicResponse response = trocketClient.CreateTopic(sdkRequest);
+
+            return getTopic(request.getClusterId(), request.getTopicName());
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to create topic from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public TopicInfo updateTopic(String clusterId, String topicName, UpdateTopicRequest request) throws TencentCloudSDKException {
+        log.info("Updating topic: {} in cluster: {}", topicName, clusterId);
+
+        try {
+            com.tencentcloudapi.trocket.v20230308.models.ModifyTopicRequest sdkRequest =
+                    new com.tencentcloudapi.trocket.v20230308.models.ModifyTopicRequest();
+            sdkRequest.setInstanceId(clusterId);
+            sdkRequest.setTopic(topicName);
+
+            if (request.getQueueNum() != null) {
+                sdkRequest.setQueueNum(Long.valueOf(request.getQueueNum()));
+            }
+            if (request.getDescription() != null) {
+                sdkRequest.setRemark(request.getDescription());
+            }
+            if (request.getRetentionHours() != null) {
+                sdkRequest.setMsgTTL(Long.valueOf(request.getRetentionHours()));
+            }
+
+            ModifyTopicResponse response = trocketClient.ModifyTopic(sdkRequest);
+
+            return getTopic(clusterId, topicName);
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to update topic from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public void deleteTopic(String clusterId, String topicName) throws TencentCloudSDKException {
+        log.info("Deleting topic: {} from cluster: {}", topicName, clusterId);
+
+        try {
+            DeleteTopicRequest request = new DeleteTopicRequest();
+            request.setInstanceId(clusterId);
+            request.setTopic(topicName);
+
+            DeleteTopicResponse response = trocketClient.DeleteTopic(request);
+
+            log.info("Topic deleted successfully: {}", topicName);
+        } catch (TencentCloudSDKException e) {
+            log.error("Failed to delete topic from Tencent Cloud API: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public List<ProducerInfo> getProducers(String clusterId, String topicName) throws Exception {
+        log.info("Getting producers for topic: {} in cluster: {}", topicName, clusterId);
+
+        log.warn("Producer list API not available in Tencent Cloud SDK. Returning empty list.");
+        return new ArrayList<>();
+    }
+}

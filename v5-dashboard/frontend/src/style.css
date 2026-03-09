@@ -1,0 +1,116 @@
+/* =============================================
+   全局基础样式 & 设计 Token
+   =============================================
+   这里定义所有设计变量，供整个应用使用。
+   TDesign 组件的全局覆写统一在 App.vue 中。
+*/
+
+:root {
+  /* ---- 颜色 token ---- */
+  --color-primary: #0052d9;
+  --color-primary-hover: #0047c0;
+  --color-primary-light-1: rgba(0, 82, 217, 0.08);
+  --color-primary-light-2: rgba(0, 82, 217, 0.04);
+  --color-primary-border: rgba(0, 82, 217, 0.15);
+
+  --color-bg-page: #f3f4f6;
+  --color-bg-container: #ffffff;
+  --color-bg-aside: #ffffff;
+
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #4b5563;
+  --color-text-placeholder: #9ca3af;
+  --color-text-disabled: #d1d5db;
+
+  --color-border-default: #e5e7eb;
+  --color-border-light: #f3f4f6;
+
+  --color-success: #00a870;
+  --color-warning: #e37318;
+  --color-danger: #d54941;
+
+  /* ---- 间距 token ---- */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 16px;
+  --gap-lg: 24px;
+  --gap-xl: 32px;
+
+  /* ---- 圆角 token ---- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* ---- 字体 token ---- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* ---- 阴影 token ---- */
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 12px rgba(0, 82, 217, 0.10);
+  --shadow-header: 0 1px 0 var(--color-border-default);
+  --shadow-sidebar: 1px 0 0 var(--color-border-default);
+
+  /* ---- 动效 token ---- */
+  --transition-default: all 0.2s ease;
+  --transition-spring: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---- 基础重置 ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ---- 原生元素规范化 ---- */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Scrollbar 美化 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
