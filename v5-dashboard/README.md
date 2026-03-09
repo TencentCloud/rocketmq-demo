@@ -10,19 +10,19 @@
 
 **仪表盘首页**
 
-![仪表盘首页](images/SCR-20260309-lswv.png)
+![仪表盘首页](wiki/images/SCR-20260309-lswv.png)
 
 **主题管理**
 
-![主题管理](images/SCR-20260309-magl.png)
+![主题管理](wiki/images/SCR-20260309-magl.png)
 
 **消费者组详情**
 
-![消费者组详情](images/SCR-20260309-lvty.png)
+![消费者组详情](wiki/images/SCR-20260309-lvty.png)
 
 **消息详情**
 
-![消息详情](images/SCR-20260309-makm.png)
+![消息详情](wiki/images/SCR-20260309-makm.png)
 
 ---
 
