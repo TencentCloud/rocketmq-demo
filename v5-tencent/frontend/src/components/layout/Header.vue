@@ -5,33 +5,22 @@
     </div>
     <div class="header-right">
       <LanguageSwitcher />
-      <t-button theme="default" variant="text" @click="handleSettings">
-        <template #icon>
-          <t-icon name="setting" />
-        </template>
-        {{ t('header.configuration') }}
-      </t-button>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from '../common/LanguageSwitcher.vue'
 
 const route = useRoute()
-const router = useRouter()
 const { t } = useI18n()
 
 const title = computed(() => {
   return (route.meta.title as string) || t('header.dashboard')
 })
-
-const handleSettings = () => {
-  router.push('/config')
-}
 </script>
 
 <style scoped>

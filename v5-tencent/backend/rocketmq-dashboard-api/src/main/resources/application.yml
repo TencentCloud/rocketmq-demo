@@ -5,6 +5,11 @@ spring:
   application:
     name: rocketmq-dashboard
 
+# Tencent Cloud credentials configuration
+# Configure via one of the following methods:
+#   1. Set values directly below
+#   2. Environment variables: TENCENT_CLOUD_SECRET_ID, TENCENT_CLOUD_SECRET_KEY, TENCENT_CLOUD_REGION
+#   3. JVM -D parameters: -Dtencent.cloud.secret-id=xxx -Dtencent.cloud.secret-key=xxx -Dtencent.cloud.region=ap-guangzhou
 tencent:
   cloud:
     secret-id: ${TENCENT_CLOUD_SECRET_ID:}
@@ -26,4 +31,3 @@ logging:
     com.tencentcloudapi: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-

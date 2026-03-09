@@ -7,15 +7,6 @@ const routes: RouteRecordRaw[] = [
     redirect: '/dashboard'
   },
   {
-    path: '/config',
-    name: 'Config',
-    component: () => import('@/views/config/Index.vue'),
-    meta: {
-      title: 'Configuration',
-      icon: 'setting'
-    }
-  },
-  {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('@/views/Dashboard.vue'),
@@ -79,7 +70,7 @@ const router = createRouter({
 router.beforeEach((to, _from, next) => {
   const title = to.meta.title as string
   if (title) {
-    document.title = `${title} - RocketMQ Dashboard`
+    document.title = `${title} - Tencent RocketMQ Dashboard`
   }
 
   next()

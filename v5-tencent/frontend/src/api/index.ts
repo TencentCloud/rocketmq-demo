@@ -1,4 +1,3 @@
-export { configApi } from './config'
 export { clusterApi } from './cluster'
 export { topicApi } from './topic'
 export { groupApi } from './group'

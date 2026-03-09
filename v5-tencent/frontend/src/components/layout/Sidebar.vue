@@ -1,7 +1,7 @@
 <template>
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h1 class="sidebar-title">RocketMQ</h1>
+      <h1 class="sidebar-title">Tencent RocketMQ</h1>
     </div>
     <t-menu v-model="activeMenu" theme="light" :collapsed="false" @change="handleMenuChange">
       <t-menu-item value="dashboard" @click="navigateTo('/dashboard')">
@@ -98,7 +98,7 @@ const navigateTo = (path: string) => {
 }
 
 .sidebar-title {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
   background: linear-gradient(135deg, #0052d9 0%, #0066ff 100%);

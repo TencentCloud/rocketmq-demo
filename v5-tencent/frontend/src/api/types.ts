@@ -5,12 +5,6 @@ export interface ApiResponse<T = unknown> {
   success: boolean
 }
 
-export interface CredentialsRequest {
-  secretId: string
-  secretKey: string
-  region: string
-}
-
 export interface RegionInfo {
   regionId: string
   regionName: string
