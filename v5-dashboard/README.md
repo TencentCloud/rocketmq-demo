@@ -183,8 +183,55 @@ docker run -d -p 8080:8080 \
 
 ---
 
+## AI 辅助开发
+
+项目根目录的 [`AGENTS.md`](./AGENTS.md) 是 AI 编码工具的约束文档，包含项目结构、技术栈、编码规范、API 模式等完整上下文。
+
+**各工具适配方式：**
+
+| AI 工具 | 约束文件名 | 自动读取 | 适配方式 |
+|---------|-----------|---------|---------|
+| OpenCode | `AGENTS.md` | ✅ 自动 | 无需操作 |
+| Claude Code | `CLAUDE.md` | ✅ 自动 | 需创建软链接 |
+| Cursor | `.cursorrules` | ✅ 自动 | 需创建软链接 |
+| Windsurf | `.windsurfrules` | ✅ 自动 | 需创建软链接 |
+| GitHub Copilot | `.github/copilot-instructions.md` | ✅ 自动 | 需创建软链接 |
+| Cline | `.clinerules` | ✅ 自动 | 需创建软链接 |
+| Aider | `.aider.conf.yml` | ❌ | 手动在 prompt 中引用 |
+
+如果你使用的工具不直接读取 `AGENTS.md`，在项目根目录（`v5-dashboard/`）执行对应的软链接命令：
+
+```bash
+# Claude Code
+ln -sf AGENTS.md CLAUDE.md
+
+# Cursor
+ln -sf AGENTS.md .cursorrules
+
+# Windsurf
+ln -sf AGENTS.md .windsurfrules
+
+# GitHub Copilot
+mkdir -p .github && ln -sf ../AGENTS.md .github/copilot-instructions.md
+
+# Cline
+ln -sf AGENTS.md .clinerules
+```
+
+> 软链接已加入 `.gitignore`，不会提交到仓库，各开发者按需创建即可。
+
+**用途：**
+- 确保 AI 生成的代码符合项目既有风格（命名、格式、模式）
+- 提供前后端完整的技术约束，避免 AI 引入不一致的依赖或写法
+- 新成员可直接阅读了解项目全貌
+
+**维护：** 当项目结构、依赖版本或编码规范发生变化时，请同步更新 `AGENTS.md`。
+
+---
+
 ## 文档
 
+- [AI 开发约束](./AGENTS.md)
 - [API 文档](../docs/API.md)
 - [部署指南](../docs/DEPLOYMENT.md)
 - [测试指南](../docs/TESTING.md)
