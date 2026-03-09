@@ -58,18 +58,6 @@
               <t-input v-model="queryForm.messageId" :placeholder="t('message.enterMessageId')" clearable />
             </t-form-item>
           </t-col>
-          <t-col :span="24">
-            <t-form-item label=" " label-width="120px">
-              <t-space>
-                <t-button theme="primary" @click="handleQuery" :loading="querying">
-                  <template #icon><t-icon name="search" /></template>{{ t('message.query') }}
-                </t-button>
-                <t-button theme="default" @click="handleReset">
-                  <template #icon><t-icon name="refresh" /></template>{{ t('message.reset') }}
-                </t-button>
-              </t-space>
-            </t-form-item>
-          </t-col>
         </t-row>
 
         <!-- BY_TIME -->
@@ -85,33 +73,21 @@
               />
             </t-form-item>
           </t-col>
-          <t-col :span="4">
+          <t-col :span="7">
             <t-form-item :label="t('message.msgKey')" name="msgKey">
               <t-input v-model="queryForm.msgKey" :placeholder="t('message.msgKeyPlaceholder')" clearable />
             </t-form-item>
           </t-col>
-          <t-col :span="4">
+          <t-col :span="7">
             <t-form-item :label="t('message.tagFilter')" name="tag">
               <t-input v-model="queryForm.tag" :placeholder="t('message.tagPlaceholder')" clearable />
-            </t-form-item>
-          </t-col>
-          <t-col :span="6">
-            <t-form-item label=" " label-width="120px">
-              <t-space>
-                <t-button theme="primary" @click="handleQuery" :loading="querying">
-                  <template #icon><t-icon name="search" /></template>{{ t('message.query') }}
-                </t-button>
-                <t-button theme="default" @click="handleReset">
-                  <template #icon><t-icon name="refresh" /></template>{{ t('message.reset') }}
-                </t-button>
-              </t-space>
             </t-form-item>
           </t-col>
         </t-row>
 
         <!-- RECENT -->
         <t-row v-if="queryForm.queryType === 'RECENT'" :gutter="16">
-          <t-col :span="9">
+          <t-col :span="10">
             <t-form-item :label="t('message.recentNum')" name="recentNum">
               <t-input-number
                 v-model="queryForm.recentNum"
@@ -122,12 +98,16 @@
               />
             </t-form-item>
           </t-col>
-          <t-col :span="4">
+          <t-col :span="7">
             <t-form-item :label="t('message.tagFilter')" name="tag">
               <t-input v-model="queryForm.tag" :placeholder="t('message.tagPlaceholder')" clearable />
             </t-form-item>
           </t-col>
-          <t-col :span="11">
+        </t-row>
+
+        <!-- Query / Reset buttons -->
+        <t-row :gutter="16">
+          <t-col :span="24">
             <t-form-item label=" " label-width="120px">
               <t-space>
                 <t-button theme="primary" @click="handleQuery" :loading="querying">
