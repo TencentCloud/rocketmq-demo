@@ -1,6 +1,8 @@
 <template>
   <div v-if="visible" class="loading-overlay">
-    <t-loading size="large" text="Loading..." />
+    <div class="loading-content">
+      <t-loading size="large" />
+    </div>
   </div>
 </template>
 
@@ -12,15 +14,14 @@ defineProps<{
 
 <style scoped>
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 100;
+  border-radius: inherit;
 }
 </style>

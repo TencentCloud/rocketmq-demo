@@ -32,27 +32,27 @@ const currentLanguageLabel = computed(() => {
 
 const handleLanguageChange = (data: { value: string }) => {
   locale.value = data.value
-  // 保存到 localStorage
   localStorage.setItem('locale', data.value)
 }
 </script>
 
 <style scoped>
 :deep(.t-button--variant-text) {
-  border-radius: 6px;
-  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  padding: 4px 10px;
+  font-size: 13px;
   font-weight: 500;
-  transition: all 0.2s ease;
-  color: #0052d9;
+  transition: var(--transition-default);
+  color: var(--color-text-secondary);
+  height: 32px;
 }
 
 :deep(.t-button--variant-text:hover) {
-  background: rgba(0, 82, 217, 0.08);
-  transform: translateY(-1px);
+  background-color: var(--color-primary-light-1);
+  color: var(--color-primary);
 }
 
 :deep(.t-button--variant-text .t-icon) {
-  font-size: 18px;
-  margin-right: 6px;
+  font-size: 16px;
 }
 </style>

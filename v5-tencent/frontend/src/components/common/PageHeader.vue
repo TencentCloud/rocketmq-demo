@@ -21,33 +21,41 @@ defineProps<{
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-  padding: 16px 24px;
-  background-color: #fff;
-  border-radius: 4px;
+  align-items: center;
+  padding: var(--gap-md) var(--gap-lg);
+  background-color: var(--color-bg-container);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  margin-bottom: var(--gap-md);
 }
 
 .header-left {
   flex: 1;
+  min-width: 0;
 }
 
 .page-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  color: #000;
-  margin: 0 0 8px 0;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.4;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
 }
 
 .page-description {
-  font-size: 14px;
-  color: #666;
-  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 4px 0 0 0;
+  line-height: 1.5;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gap-sm);
+  flex-shrink: 0;
+  margin-left: var(--gap-md);
 }
 </style>
