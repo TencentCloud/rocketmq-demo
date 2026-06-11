@@ -16,13 +16,12 @@
  */
 package com.tencent.demo.springcloud_stream.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.tencent.demo.springcloud_stream.config.CustomChannelBinder;
+import java.util.Map;
+
 import org.apache.rocketmq.common.message.MessageConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
@@ -36,22 +35,23 @@ public class StreamController {
     private final Logger logger = LoggerFactory.getLogger(StreamController.class);
 
 
-    @Autowired
-    private CustomChannelBinder channelBinder;
+    private final StreamBridge streamBridge;
+
+    public StreamController(StreamBridge streamBridge) {
+        this.streamBridge = streamBridge;
+    }
 
     /**
      * 测试发布简单消息
      */
     @GetMapping("test-simple")
     public String testSimpleStream() {
-        Message<JSONObject> message = MessageBuilder.withPayload(JSON.parseObject("{\"key\":\"value\" }"))
+        Message<Map<String, String>> message = MessageBuilder.withPayload(Map.of("key", "value"))
+                .setHeader(MessageConst.PROPERTY_TAGS, "TAG1") // 设置消息tag
+                .setHeader(MessageConst.PROPERTY_KEYS, "mykey") // 设置消息业务key
+                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
                 .build();
-        channelBinder.sendChannel().send(
-                MessageBuilder.withPayload(message)
-                        .setHeader(MessageConst.PROPERTY_TAGS, "TAG1") // 设置消息tag
-                        .setHeader(MessageConst.PROPERTY_KEYS, "mykey") // 设置消息业务key
-                        .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
-                        .build());
+        streamBridge.send("topicSend-out-0", message);
         logger.info("Send: 通过stream发送消息，messageBody = {}", message);
         return "success";
     }
@@ -64,13 +64,13 @@ public class StreamController {
     public String testDelayStream() {
         // 设定消息在10秒之后被发送，也可以通过设置消息延迟级别，根据业务进行选择
         long delayTime = System.currentTimeMillis() + 10000;
-        Message<String> message = org.springframework.integration.support.MessageBuilder.withPayload("this is new delay message.")
+        Message<String> message = MessageBuilder.withPayload("this is new delay message.")
                 // 设置延迟级别实现延迟消息 级别支持: 1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h, 1 = 1s, 2 = 5s 依次类推
 //                .setHeader(MessageConst.PROPERTY_DELAY_TIME_LEVEL, 3)
                 // 设置定时消息需要指定之后某一时间的时间戳
-                .setHeader("__STARTDELIVERTIME", String.valueOf(delayTime))
+                .setHeader(MessageConst.PROPERTY_TIMER_DELIVER_MS, String.valueOf(delayTime))
                 .build();
-        channelBinder.sendChannel().send(message);
+        streamBridge.send("topicSend-out-0", message);
         return "success";
     }
 
@@ -84,7 +84,7 @@ public class StreamController {
         for (int i = 0; i < 100; i++) {
             Message<String> message = MessageBuilder.withPayload("this is new order message " + i)
                     .build();
-            channelBinder.sendChannel().send(message);
+            streamBridge.send("topicSend-out-0", message);
         }
         return "success";
     }

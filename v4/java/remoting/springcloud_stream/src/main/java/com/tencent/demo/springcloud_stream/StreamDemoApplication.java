@@ -16,16 +16,13 @@
  */
 package com.tencent.demo.springcloud_stream;
 
-import com.tencent.demo.springcloud_stream.config.CustomChannelBinder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.stream.annotation.EnableBinding;
 
 /**
  * Description: RocketMqDemo
  */
 @SpringBootApplication
-@EnableBinding({CustomChannelBinder.class})
 public class StreamDemoApplication {
 
     public static void main(String[] args) {
