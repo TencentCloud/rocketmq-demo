@@ -1,5 +1,7 @@
 spring:
   cloud:
+    function:
+      definition: topicTag1;topicTag2
     stream:
       rocketmq:
         binder:
@@ -14,28 +16,28 @@ spring:
           # producer group
           group: producerGroup
         bindings:
-          # channel名称, 与spring.cloud.stream.bindings下的channel名称对应
-          Topic-TAG1-Input:
+          # binding名称, 与spring.cloud.stream.bindings下的binding名称对应
+          topicTag1-in-0:
             consumer:
               # 订阅的tag类型，根据消费者实际情况进行配置（默认是订阅所有消息）
               subscription: TAG1
-          # channel名称
-          Topic-TAG2-Input:
+          # binding名称
+          topicTag2-in-0:
             consumer:
               subscription: TAG2
       bindings:
-        # channel名称
-        Topic-send-Output:
+        # binding名称，生产者通过 StreamBridge 发送到 topicSend-out-0
+        topicSend-out-0:
           # 指定topic, 对应创建的topic名称
           destination: TopicTest
           content-type: application/json
-        # channel名称
-        Topic-TAG1-Input:
+        # binding名称，消费者函数 topicTag1 的输入 binding
+        topicTag1-in-0:
           destination: TopicTest
           content-type: application/json
           group: consumer-group1
-        # channel名称
-        Topic-TAG2-Input:
+        # binding名称，消费者函数 topicTag2 的输入 binding
+        topicTag2-in-0:
           destination: TopicTest
           content-type: application/json
           group: consumer-group2
