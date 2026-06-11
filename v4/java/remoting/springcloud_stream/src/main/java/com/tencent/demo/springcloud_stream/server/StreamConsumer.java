@@ -16,36 +16,39 @@
  */
 package com.tencent.demo.springcloud_stream.server;
 
+import java.util.function.Consumer;
+
 import com.tencent.demo.springcloud_stream.StreamDemoApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
 
 /**
  * 消费消息
  */
-@Service
+@Configuration
 public class StreamConsumer {
     private final Logger logger = LoggerFactory.getLogger(StreamDemoApplication.class);
 
     /**
-     * 监听channel (配置中的channel 名称)
+     * 监听 topicTag1-in-0 binding (配置中的 binding 名称)
      *
-     * @param messageBody 消息内容
+     * @return 消费函数
      */
-    @StreamListener("Topic-TAG1-Input")
-    public void receive(String messageBody) {
-        logger.info("Receive1: 通过stream收到消息，messageBody = {}", messageBody);
+    @Bean
+    public Consumer<Message<String>> topicTag1() {
+        return message -> logger.info("Receive1: 通过stream收到消息，messageBody = {}", message.getPayload());
     }
 
     /**
-     * 监听channel (配置中的channel 名称)
+     * 监听 topicTag2-in-0 binding (配置中的 binding 名称)
      *
-     * @param messageBody 消息内容
+     * @return 消费函数
      */
-    @StreamListener("Topic-TAG2-Input")
-    public void receive2(String messageBody) {
-        logger.info("Receive2: 通过stream收到消息，messageBody = {}", messageBody);
+    @Bean
+    public Consumer<Message<String>> topicTag2() {
+        return message -> logger.info("Receive2: 通过stream收到消息，messageBody = {}", message.getPayload());
     }
 }
