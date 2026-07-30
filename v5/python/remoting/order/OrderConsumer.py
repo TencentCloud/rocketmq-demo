@@ -18,9 +18,9 @@ def callback(msg):
 
 
 # 初始化消费者，并设置消费者组信息
-consumer = PushConsumer('rocketmq-xxx|namespace_python%group22')
+consumer = PushConsumer('OrderConsumerGroup')
 # 设置服务地址
-consumer.set_name_server_address('rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876')
+consumer.set_name_server_address('rmq-xxxx.rocketmq.gz.qcloud.tencenttdmq.com:8080')
 # 设置权限（角色名和密钥）
 consumer.set_session_credentials(
     'eyJrZXlJZC......',
@@ -28,7 +28,7 @@ consumer.set_session_credentials(
     ''
 )
 # 订阅topic
-consumer.subscribe('rocketmq-xxx|namespace_python%topic2', callback)
+consumer.subscribe('topic2', callback)
 print(' [Consumer] Waiting for messages.')
 # 启动消费者
 consumer.start()
