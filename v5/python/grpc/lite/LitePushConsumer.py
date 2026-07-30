@@ -37,41 +37,45 @@ if __name__ == '__main__':
 
     # 控制台创建的「轻量消息」类型的一级 Topic 名称
     bind_topic = "parentTopic"
+    # 同一个消费组，控制台创建时需选择「Lite Topic 消费」模式并绑定到正确的 Topic
+    consumer_group = "ConsumerGroup"
 
-    # ---- 消费组 A ----
-    # 控制台创建时需选择「Lite Topic 消费」模式并绑定到正确的 Topic
-    consumer_group_a = "ConsumerGroupA"
-    consumer_a = LitePushConsumer(
-        config, consumer_group_a, bind_topic, LiteTopicMessageListener()
+    # 核心特性：同一消费组下，不同客户端可以各自订阅不同的 lite topic
+    # 这是 Lite Topic 与普通 Topic 最大的区别——普通 Topic 要求同一 Group 下订阅关系一致
+
+    # 客户端 1：仅订阅 lite-test-0
+    client1 = LitePushConsumer(
+        config, consumer_group, bind_topic, LiteTopicMessageListener()
     )
 
-    # ---- 消费组 B ----
-    consumer_group_b = "ConsumerGroupB"
-    consumer_b = LitePushConsumer(
-        config, consumer_group_b, bind_topic, LiteTopicMessageListener()
+    # 客户端 2：仅订阅 lite-test-1
+    client2 = LitePushConsumer(
+        config, consumer_group, bind_topic, LiteTopicMessageListener()
     )
 
-    consumers = [consumer_a, consumer_b]
+    # 客户端 3：订阅 lite-test-2 和 lite-test-3
+    client3 = LitePushConsumer(
+        config, consumer_group, bind_topic, LiteTopicMessageListener()
+    )
+
+    consumers = [client1, client2, client3]
 
     try:
-        # 启动消费组 A，订阅 lite-test-0 ~ lite-test-2
-        consumer_a.startup()
-        consumer_a.subscribe_lite("lite-test-0")
-        consumer_a.subscribe_lite("lite-test-1")
-        consumer_a.subscribe_lite("lite-test-2")
-        print(f"[{consumer_group_a}] started, subscribed: [lite-test-0, lite-test-1, lite-test-2]")
+        client1.startup()
+        client1.subscribe_lite("lite-test-0")
+        print(f"[{consumer_group}] client1 started, subscribed: [lite-test-0]")
 
-        # 启动消费组 B，订阅 lite-test-3 ~ lite-test-5
-        consumer_b.startup()
-        consumer_b.subscribe_lite("lite-test-3")
-        consumer_b.subscribe_lite("lite-test-4")
-        consumer_b.subscribe_lite("lite-test-5")
-        print(f"[{consumer_group_b}] started, subscribed: [lite-test-3, lite-test-4, lite-test-5]")
+        client2.startup()
+        client2.subscribe_lite("lite-test-1")
+        print(f"[{consumer_group}] client2 started, subscribed: [lite-test-1]")
 
-        # 也可以继续订阅更多 lite topic
-        # consumer_b.subscribe_lite("lite-test-6")
+        client3.startup()
+        client3.subscribe_lite("lite-test-2")
+        client3.subscribe_lite("lite-test-3")
+        print(f"[{consumer_group}] client3 started, subscribed: [lite-test-2, lite-test-3]")
 
-        print("\n[Main] All consumers started. Press Enter to stop.")
+        print("\n[Main] Same group, different subscriptions — each client consumes its own lite topic(s).")
+        print("[Main] This is NOT possible with normal topics. Press Enter to stop.")
         input("Please Enter to Stop the Application.\r\n")
     except Exception as e:
         print(f"Startup raise exception: {e}")
