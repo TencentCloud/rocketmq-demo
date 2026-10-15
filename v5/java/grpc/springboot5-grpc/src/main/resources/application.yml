@@ -1,0 +1,49 @@
+server:
+  port: 8083
+
+# rocketmq-v5-client-spring-boot-starter 2.3.6 配置（gRPC 协议）
+rocketmq:
+  # 生产者配置，对应 starter 的 RocketMQProperties.Producer
+  producer:
+    # 腾讯云控制台提供的接入地址
+    endpoints: rmq-xxx.rocketmq.xxxtencenttdmq.com:8080
+    # 角色密钥（控制台「角色管理」中复制）
+    access-key: yourAccessKey
+    # 已授权的角色名称
+    secret-key: yourSecretKey
+    # starter 默认 ssl-enabled=true；与 Java 原生示例（enableSsl(false)）一致，访问腾讯云 8080 接入点时关闭 SSL
+    ssl-enabled: false
+    # 可选：预取路由的 Topic，多个用英文逗号分隔；填写的 Topic 需已在控制台创建
+    topic: yourNormalTopic
+    # 发送失败时的内部重试次数（不是消费重试）
+    max-attempts: 3
+  # Push 消费者公共配置：@RocketMQMessageListener 的 endpoints/accessKey/secretKey 默认读取这里的值
+  # （即注解默认值 ${rocketmq.push-consumer.endpoints:} 等）；ssl 只能在注解上用 sslEnabled = false 关闭
+  push-consumer:
+    endpoints: rmq-xxx.rocketmq.xxxtencenttdmq.com:8080
+    access-key: yourAccessKey
+    secret-key: yourSecretKey
+
+# 自定义配置，根据业务填写：Topic 和消费组都需先在腾讯云控制台创建
+demo:
+  rocketmq:
+    # 普通消息：Topic 类型选「普通」
+    normal-topic: yourNormalTopic
+    normal-consumer-group: yourNormalConsumerGroup
+    # Tag 消息：Topic 类型选「普通」，消费者按 tag 过滤
+    tag-topic: yourTagTopic
+    tag-consumer-group: yourTagConsumerGroup
+    tag-expression: "TagA||TagB"
+    # 顺序消息：Topic 类型选「顺序」，消费组需开启顺序投递
+    fifo-topic: yourFifoTopic
+    fifo-consumer-group: yourFifoConsumerGroup
+    message-group: yourMessageGroup
+    # 定时/延迟消息：Topic 类型选「定时/延时」
+    delay-topic: yourDelayTopic
+    delay-consumer-group: yourDelayConsumerGroup
+    # 事务消息：Topic 类型选「事务」
+    transaction-topic: yourTransactionTopic
+    transaction-consumer-group: yourTransactionConsumerGroup
+    # 重试消息：Topic 类型选「普通」，最大重试次数在消费组的重试策略中配置
+    retry-topic: yourRetryTopic
+    retry-consumer-group: yourRetryConsumerGroup
