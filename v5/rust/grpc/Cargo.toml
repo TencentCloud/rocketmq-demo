@@ -8,3 +8,6 @@ edition = "2021"
 [dependencies]
 rocketmq = "5.0.0"
 tokio = "1.35.1"
+# rocketmq 5.0.0 使用了 time::OffsetDateTime::now_local()，但未声明 time 的 local-offset feature，
+# 依赖解析到 slog-term 2.9.2 及以上时会编译失败，这里显式开启。
+time = { version = "0.3", features = ["local-offset"] }
