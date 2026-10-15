@@ -11,6 +11,7 @@
     <modules>
         <module>rocketmqclient</module>
         <module>springboot5</module>
+        <module>springboot5-grpc</module>
     </modules>
 
     <properties>
