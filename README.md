@@ -46,15 +46,23 @@ rocketmq-demo/
 
 ## gRPC 协议
 
-| 特性    | Java 原生 | SpringBoot | CPP | Go | Rust | Node.js | C# |
-|:------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 普通消息  | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 重试消息  | ✅ | ❌ | ✅ | ✅ | | ❌ | ❌ |
-| 有序消息  | ✅ | ❌ | ✅ | ✅ | | ❌ | ❌ |
-| 事务消息  | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| 广播消息  | ✅ | ❌ | ❌ | ❌ | | ❌ | ❌ |
-| Tag 消息 | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Lite Topic | ✅ | ❌ | ❌ | ✅ | ✅¹ | ✅ | ✅ |
+| 特性    | Java 原生 | SpringBoot | CPP | Go | Rust | Python | Node.js | C# |
+|:------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 普通消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 重试消息  | ✅ | ✅ | ✅ | ✅ | ✅² | ✅ | ✅ | ✅ |
+| 有序消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 事务消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 定时/延迟消息 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 广播消息  | ➖ | ➖ | ➖ | ➖ | ➖ | ➖ | ➖ | ➖ |
+| Tag 消息 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Lite Topic | ✅ | ➖ | ➖ | ✅ | ✅¹ | ✅ | ✅ | ✅ |
+
+> ➖ 表示对应 SDK 不支持。
+>
+> - **广播消息：** 5.x gRPC SDK 没有广播消费模式，需要广播效果时可让每个消费者使用不同的消费组；如需原生广播模式请使用 `remoting/` 示例。
+> - **重试消息：** Push 消费返回 FAILURE 即触发重试，最大重试次数由控制台消费组的重试策略决定，超过后进入死信。
+> - **² Rust：** crates.io `rocketmq` 5.0.0 没有 PushConsumer，重试用 SimpleConsumer 不 ack、等不可见时间到期后重投来演示。
+> - **SpringBoot：** gRPC 示例在 `v5/java/grpc/springboot5-grpc/`，基于 `rocketmq-v5-client-spring-boot-starter` 2.3.6；该 starter 内置的 `rocketmq-client-java` 5.0.7 没有 Lite Topic API。
 
 ### Lite Topic 示例
 
@@ -129,7 +137,26 @@ String secretKey = "角色密钥";    // 控制台 > 角色管理
 String endpoints = "rmq-xxx.rocketmq.xx.tencenttdmq.com:8080";  // 控制台 > 接入点（gRPC 端口 8080）
 ```
 
-**SpringBoot（v4/remoting/springboot、v5/remoting/springboot、v5/grpc/springboot5）**
+**SpringBoot gRPC（v5/grpc/springboot5-grpc）**
+
+基于 `rocketmq-v5-client-spring-boot-starter`（gRPC 协议），修改 `src/main/resources/application.yml`：
+
+```yaml
+rocketmq:
+  producer:
+    endpoints: rmq-xxx.rocketmq.xx.tencenttdmq.com:8080  # 控制台 > 接入点（gRPC 端口 8080）
+    access-key: 角色密钥
+    secret-key: 角色名称
+    ssl-enabled: false
+  push-consumer:
+    endpoints: rmq-xxx.rocketmq.xx.tencenttdmq.com:8080
+    access-key: 角色密钥
+    secret-key: 角色名称
+```
+
+> **提示：** 消费者的 SSL 开关只能在 `@RocketMQMessageListener(sslEnabled = false)` 上设置。各场景的 Topic、消费组见该模块 README。
+
+**SpringBoot Remoting（v4/remoting/springboot、v5/remoting/springboot、v5/grpc/springboot5）**
 
 修改 `src/main/resources/application.yml`：
 
