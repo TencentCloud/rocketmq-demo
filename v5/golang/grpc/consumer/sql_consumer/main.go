@@ -66,8 +66,8 @@ func main() {
 			AccessSecret: SecretKey,
 		},
 	},
-		rmq_client.WithAwaitDuration(awaitDuration),
-		rmq_client.WithSubscriptionExpressions(map[string]*rmq_client.FilterExpression{
+		rmq_client.WithSimpleAwaitDuration(awaitDuration),
+		rmq_client.WithSimpleSubscriptionExpressions(map[string]*rmq_client.FilterExpression{
 			Topic: rmq_client.NewFilterExpressionWithType(
 				"a IS NOT NULL AND c IS NOT NULL AND a = 'b' AND c = 'd'", rmq_client.SQL92),
 		}),
