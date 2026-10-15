@@ -16,7 +16,7 @@ rocketmq-demo/
 │   ├── cpp/     # 待完善
 │   ├── python/
 │   ├── nodejs/
-│   ├── rust/
+│   ├── rust/    # grpc-lite/ 为 Lite Topic 示例（依赖未发布 SDK）
 │   └── csharp/
 ├── v5-dashboard/  # 腾讯云 RocketMQ Dashboard（可视化管理控制台）
 └── mqtt/        # MQTT 协议示例
@@ -54,6 +54,26 @@ rocketmq-demo/
 | 事务消息  | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | 广播消息  | ✅ | ❌ | ❌ | ❌ | | ❌ | ❌ |
 | Tag 消息 | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Lite Topic | ✅ | ❌ | ❌ | ✅ | ✅¹ | ✅ | ✅ |
+
+### Lite Topic 示例
+
+Lite Topic 需要在控制台创建「轻量消息」类型的一级 Topic，以及「Lite Topic 消费」模式并绑定该 Topic 的消费组。
+生产者发送时通过 `liteTopic` 指定二级 Topic（无需提前创建），消费者通过 `subscribeLite` 动态订阅。
+
+| 语言 | 示例目录 | SDK 最低版本 | 包含示例 |
+|:------|:------|:------|:------|
+| Java | `v5/java/grpc/rocketmqclient/.../rocketmq5/lite/` | `rocketmq-client-java` 5.2.2 | Producer、LitePushConsumer、LiteSimpleConsumer |
+| Go | `v5/golang/grpc/producer/lite/`、`v5/golang/grpc/consumer/lite_push_consumer/` | `rocketmq-clients/golang/v5` v5.1.4 | Producer、LitePushConsumer |
+| Python | `v5/python/grpc/lite/` | `rocketmq-python-client` 5.1.2 | Producer、LitePushConsumer、LiteSimpleConsumer |
+| Node.js | `v5/nodejs/grpc/lite/` | `rocketmq-client-nodejs` 1.1.0 | Producer、LitePushConsumer、LiteSimpleConsumer |
+| C# | `v5/csharp/grpc/rocketmq5_csharp_demo/` | `RocketMQ.Client` 5.2.1 | Producer、LitePushConsumer |
+| Rust¹ | `v5/rust/grpc-lite/` | 未发布，git 依赖 `apache/rocketmq-clients@a3d1de8b` | Producer、LitePushConsumer |
+
+> **¹ Rust 说明：** crates.io 上已发布的 `rocketmq` 5.0.0 不支持 Lite Topic，`v5/rust/grpc-lite/` 通过 git 地址依赖
+> rocketmq-clients master 分支的固定 commit，属于未发布代码，接口可能变化，生产使用前请自行评估。详见该目录 README。
+>
+> **CPP 说明：** CPP SDK（包括 master 分支）暂未实现 Lite Topic。
 
 ## Remoting 协议（兼容 4.x SDK）
 
