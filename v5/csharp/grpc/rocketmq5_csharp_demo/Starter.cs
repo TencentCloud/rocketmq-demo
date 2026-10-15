@@ -9,6 +9,9 @@ namespace examples
         {
            ProducerNormalMessageDemo.QuickStart().Wait();
            SimpleConsumerExample.QuickStart().Wait();
+           // Lite Topic 示例
+           // ProducerLiteMessageDemo.QuickStart().Wait();
+           // LitePushConsumerExample.QuickStart().Wait();
         }
     }
 }
