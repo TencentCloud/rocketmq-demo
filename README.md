@@ -88,11 +88,16 @@ Lite Topic 需要在控制台创建「轻量消息」类型的一级 Topic，以
 | 特性    | Java 原生 | SpringBoot | CPP | Go | Python | C# |
 |:------|:---:|:---:|:---:|:---:|:---:|:---:|
 | 普通消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 重试消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 有序消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 事务消息  | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| 广播消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Tag 消息 | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ |
+| 重试消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ➖³ |
+| 有序消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 事务消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ➖³ |
+| 定时/延迟消息 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 广播消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Tag 消息 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+> **³ C#：** Remoting 示例使用 `NewLife.RocketMQ` 3.2.2026.801。该版本虽有消费重试和事务 API，但实现有缺陷：
+> 消费失败会在本地反复重拉，多 broker 时 `SendMessageBack` 会发错 broker 且失败被掩盖；事务提交和回查在多 broker 下不可用。
+> 因此不提供这两类示例，如需使用请选择 gRPC 协议的 C# 示例。任意时间定时使用腾讯云 `__STARTDELIVERTIME` 属性。
 
 ---
 
@@ -101,11 +106,14 @@ Lite Topic 需要在控制台创建「轻量消息」类型的一级 Topic，以
 | 特性    | Java 原生 | SpringBoot | Spring Cloud Stream | CPP | Go | Python | C# |
 |:------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 普通消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 重试消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 有序消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 事务消息  | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| 广播消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Tag 消息 | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ |
+| 重试消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖³ |
+| 有序消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 事务消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ➖³ |
+| 定时/延迟消息 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 广播消息  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Tag 消息 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+> ➖ 表示对应 SDK 不支持或不可用，C# 说明同上。
 
 ---
 
@@ -123,8 +131,8 @@ Lite Topic 需要在控制台创建「轻量消息」类型的一级 Topic，以
 
 ```java
 public static final String NAMESERVER = "腾讯云控制台 > 接入点 > 复制接入地址";  // 格式：rmq-xxx.rocketmq.xx.tencenttdmq.com:9876
-public static final String ACCESS_KEY = "角色名称";   // 控制台 > 角色管理
-public static final String SECRET_KEY = "角色密钥";   // 控制台 > 角色管理
+public static final String ACCESS_KEY = "角色密钥";   // 控制台 > 角色管理
+public static final String SECRET_KEY = "角色名称";   // 控制台 > 角色管理
 ```
 
 **Java 原生 SDK（v5/grpc）**
@@ -132,8 +140,8 @@ public static final String SECRET_KEY = "角色密钥";   // 控制台 > 角色�
 每个 Producer/Consumer 文件顶部均有以下配置，按注释填写：
 
 ```java
-String accessKey = "角色名称";    // 控制台 > 角色管理
-String secretKey = "角色密钥";    // 控制台 > 角色管理
+String accessKey = "角色密钥";    // 控制台 > 角色管理
+String secretKey = "角色名称";    // 控制台 > 角色管理
 String endpoints = "rmq-xxx.rocketmq.xx.tencenttdmq.com:8080";  // 控制台 > 接入点（gRPC 端口 8080）
 ```
 
@@ -164,11 +172,11 @@ rocketmq:
 rocketmq:
   name-server: rmq-xxx.rocketmq.xx.tencenttdmq.com:9876  # v4/v5 remoting 端口 9876；v5 grpc 端口 8080
   producer:
-    access-key: 角色名称
-    secret-key: 角色密钥
+    access-key: 角色密钥
+    secret-key: 角色名称
   consumer:
-    access-key: 角色名称
-    secret-key: 角色密钥
+    access-key: 角色密钥
+    secret-key: 角色名称
 ```
 
 > **提示：** v5/grpc/springboot5 虽然在 v5/grpc 目录下，但 `rocketmq-spring-boot-starter` 内部仍使用 Remoting 协议，
@@ -185,10 +193,10 @@ spring:
       rocketmq:
         binder:
           name-server: rmq-xxx.rocketmq.xx.tencenttdmq.com:9876
-          access-key: 角色名称
-          secret-key: 角色密钥
+          access-key: 角色密钥
+          secret-key: 角色名称
 ```
 
-> **依赖说明：** Spring Cloud Stream 示例使用了 `com.alibaba.fastjson`，
-> 请确保 pom.xml 中包含 `fastjson` 依赖，或将消息体替换为 `String` 类型。
+> **提示：** 重试、事务、广播、顺序等场景的 binding 配置和接口见该模块 README。binder 的 `max-reconsume-times` 默认是 0（失败即进死信），
+> 需要服务端重试时请显式配置。
 

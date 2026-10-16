@@ -16,7 +16,10 @@
  */
 package com.tencent.demo.springboot.controller;
 
+import com.tencent.demo.springboot.producer.BroadcastProducer;
 import com.tencent.demo.springboot.producer.MessageProducer;
+import com.tencent.demo.springboot.producer.RetryProducer;
+import com.tencent.demo.springboot.producer.TransactionProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +32,15 @@ public class SendMessageController {
 
     @Autowired
     private MessageProducer sendMessage;
+
+    @Autowired
+    private TransactionProducer transactionProducer;
+
+    @Autowired
+    private RetryProducer retryProducer;
+
+    @Autowired
+    private BroadcastProducer broadcastProducer;
 
     /**
      * 发送同步消息
@@ -98,6 +110,37 @@ public class SendMessageController {
         sendMessage.syncSendOrderly("This is a new message2.", "TAG1", "orderId-001");
         sendMessage.syncSendOrderly("This is a new message3.", "TAG2", "orderId-001");
         sendMessage.syncSendOrderly("This is a new message4.", "TAG2", "orderId-001");
+        return "success";
+    }
+
+    /**
+     * 发送事务消息，本地事务依次模拟 COMMIT、ROLLBACK、UNKNOWN（UNKNOWN 等待回查）
+     */
+    @GetMapping("/transactionSend")
+    public String transactionSend() {
+        for (int i = 0; i < 3; i++) {
+            transactionProducer.sendMessageInTransaction("This is a transaction message" + i + ".",
+                "txId-" + System.currentTimeMillis() + "-" + i);
+        }
+        return "success";
+    }
+
+    /**
+     * 发送消息给重试消费者，消费者模拟消费失败触发重试
+     */
+    @GetMapping("/retrySend")
+    public String retrySend() {
+        retryProducer.syncSend("This is a retry message.", "retryKey-" + System.currentTimeMillis());
+        return "success";
+    }
+
+    /**
+     * 发送消息给广播消费者，同一消费组的每个实例都会收到
+     */
+    @GetMapping("/broadcastSend")
+    public String broadcastSend() {
+        broadcastProducer.syncSend("This is a broadcast message1.", "broadcastKey-1");
+        broadcastProducer.syncSend("This is a broadcast message2.", "broadcastKey-2");
         return "success";
     }
 }
