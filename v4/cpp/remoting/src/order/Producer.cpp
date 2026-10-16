@@ -53,7 +53,7 @@ int main() {
             std::cout << "SendResult:" << sendResult.getSendStatus() << ", Message ID: " << sendResult.getMsgId()
                       << "MessageQueue:" << sendResult.getMessageQueue().toString() << std::endl;
             this_thread::sleep_for(chrono::seconds(1));
-        } catch (MQException e) {
+        } catch (MQException &e) {
             std::cout << "ErrorCode: " << e.GetError() << " Exception:" << e.what() << std::endl;
         }
     }

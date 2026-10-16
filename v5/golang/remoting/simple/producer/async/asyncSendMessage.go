@@ -28,7 +28,7 @@ func main() {
 		Resolver: nameserverReslover,
 	}
 	// 创建消息生产者
-	p, _ := rocketmq.NewProducer(
+	p, err := rocketmq.NewProducer(
 		// 设置服务地址
 		producer.WithNsResolver(nameserverReslover),
 		// 设置acl权限
@@ -47,9 +47,13 @@ func main() {
 		// 设置trace, 用于发送消息时记录消息轨迹,如果不需要，不设置即可
 		producer.WithTrace(traceCfg),
 	)
+	if err != nil {
+		fmt.Printf("init producer error: %s\n", err.Error())
+		os.Exit(1)
+	}
 
 	// 启动消息生产者
-	err := p.Start()
+	err = p.Start()
 	if err != nil {
 		fmt.Printf("start producer error: %s", err.Error())
 		os.Exit(1)

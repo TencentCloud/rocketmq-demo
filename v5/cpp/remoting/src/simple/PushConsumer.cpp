@@ -50,7 +50,8 @@ int simplePushConsumer() {
     // 设置实例名称
     consumer->setInstanceName("CppClient" + to_string(time));
     consumer->setConsumeMessageBatchMaxSize(1);
-    consumer->setMaxReconsumeTimes(3000);
+    // 设置最大重试次数（不设置时默认16次），超过后消息进入死信队列 %DLQ%消费组名称
+    consumer->setMaxReconsumeTimes(16);
 
     auto start = std::chrono::system_clock::now();
 
