@@ -10,7 +10,7 @@ var mq = new Producer
     Topic = "TopicTest1", //对于非通用版集群，需要拼接完整的topic，如 MQ_INSTxxx_aaa%TopicTest
     NameServerAddress = "127.0.0.1:9876",// 腾讯云页面填写
     Log = XTrace.Log,
-    AclOptions = new AclOptions
+    CloudProvider = new AclProvider
     {
         AccessKey = "AKID**********************0123456789",
         SecretKey = "sk0123456789********************",
@@ -35,11 +35,10 @@ var consumer = new Consumer
     NameServerAddress = "127.0.0.1:9876",
 
     FromLastOffset = true,
-    SkipOverStoredMsgCount = 0,
     BatchSize = 20,
 
     Log = XTrace.Log,
-    AclOptions = new AclOptions
+    CloudProvider = new AclProvider
     {
         AccessKey = "AKID**********************0123456789",
         SecretKey = "sk0123456789********************",
@@ -62,3 +61,13 @@ consumer.Start();
 
 //等2s，测试用，真实的场景不需要
 Thread.Sleep(200000);
+
+// 其他场景示例（见同目录下的 *Demo.cs），按需取消注释运行：
+// rocketmq_csharp_demo.TagDemo.RunProducer();
+// rocketmq_csharp_demo.TagDemo.RunConsumer();
+// rocketmq_csharp_demo.BroadcastDemo.RunProducer();
+// rocketmq_csharp_demo.BroadcastDemo.RunConsumer();
+// rocketmq_csharp_demo.OrderMessageDemo.RunProducer();
+// rocketmq_csharp_demo.OrderMessageDemo.RunConsumer();
+// rocketmq_csharp_demo.DelayMessageDemo.Run();
+// rocketmq_csharp_demo.TimerMessageDemo.Run();

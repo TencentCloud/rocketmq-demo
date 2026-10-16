@@ -42,6 +42,8 @@ func main() {
 		// 设置命名空间名称
 		consumer.WithNamespace("rocketmq-xxx|namespace_go"),
 
+		// 开启顺序消费：同一队列的消息按顺序串行消费，配合顺序类型的topic和按key选队列的生产者使用
+		consumer.WithConsumerOrder(true),
 		// 设置trace, 用于发送消息时记录消息轨迹,如果不需要，不设置即可
 		consumer.WithTrace(traceCfg),
 	)

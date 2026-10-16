@@ -39,6 +39,8 @@ func main() {
 		// 设置命名空间名称
 		consumer.WithNamespace("rocketmq-xxx|namespace_go"),
 		consumer.WithConsumerModel(consumer.Clustering),
+		// 设置最大重试次数（不设置时默认16次），超过后消息进入死信队列 %DLQ%消费组名称
+		consumer.WithMaxReconsumeTimes(5),
 
 		// 设置trace, 用于发送消息时记录消息轨迹,如果不需要，不设置即可
 		consumer.WithTrace(traceCfg),
@@ -56,18 +58,16 @@ func main() {
 		msgs ...*primitive.MessageExt) (consumer.ConsumeResult, error) {
 		fmt.Printf("subscribe callback len: %d \n", len(msgs))
 
-		concurrentCtx, _ := primitive.GetConcurrentlyCtx(ctx)
-		concurrentCtx.DelayLevelWhenNextConsume = delayLevel // only run when return consumer.ConsumeRetryLater
+		// 设置下次重试的延迟级别，仅在返回 consumer.ConsumeRetryLater 时生效
+		if concurrentCtx, ok := primitive.GetConcurrentlyCtx(ctx); ok {
+			concurrentCtx.DelayLevelWhenNextConsume = delayLevel
+		}
 
 		for _, msg := range msgs {
-			// 设置重试5次后
-			if msg.ReconsumeTimes > 5 {
-				fmt.Printf("msg ReconsumeTimes > 5. msg: %v", msg)
-				return consumer.ConsumeSuccess, nil
-			} else {
-				fmt.Printf("subscribe callback: %v \n", msg)
-			}
+			// ReconsumeTimes 表示已重试次数，首次投递为0
+			fmt.Printf("subscribe callback: msgId=%s, reconsumeTimes=%d, body=%s\n", msg.MsgId, msg.ReconsumeTimes, string(msg.Body))
 		}
+		// 模拟消费失败：返回 ConsumeRetryLater 触发重试，重试次数超过 WithMaxReconsumeTimes 后进入死信队列
 		return consumer.ConsumeRetryLater, nil
 	})
 	if err != nil {

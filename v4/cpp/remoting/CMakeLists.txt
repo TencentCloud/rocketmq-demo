@@ -36,6 +36,11 @@ add_executable(orderProducer src/order/Producer.cpp)
 add_executable(transactionProducer src/transaction/TransactionProducer.cpp)
 add_executable(transactionConsumer src/transaction/TransactionConsumer.cpp)
 
+add_executable(tagProducer src/tag/TagProducer.cpp)
+add_executable(tagConsumer src/tag/TagConsumer.cpp)
+
+add_executable(retryConsumer src/retry/RetryConsumer.cpp)
+
 
 # 将库链接到项目中
 target_link_libraries(syncSendMessage rocketmq.so)
@@ -58,3 +63,8 @@ target_link_libraries(orderProducer rocketmq.so)
 
 target_link_libraries(transactionProducer rocketmq.so)
 target_link_libraries(transactionConsumer rocketmq.so)
+
+target_link_libraries(tagProducer rocketmq.so)
+target_link_libraries(tagConsumer rocketmq.so)
+
+target_link_libraries(retryConsumer rocketmq.so)
