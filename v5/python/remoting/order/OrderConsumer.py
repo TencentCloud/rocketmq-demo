@@ -18,7 +18,8 @@ def callback(msg):
 
 
 # 初始化消费者，并设置消费者组信息
-consumer = PushConsumer('OrderConsumerGroup')
+# orderly=True 表示顺序消费，同一队列的消息串行消费
+consumer = PushConsumer('OrderConsumerGroup', orderly=True)
 # 设置服务地址
 consumer.set_name_server_address('rmq-xxxx.rocketmq.gz.qcloud.tencenttdmq.com:8080')
 # 设置权限（角色名和密钥）

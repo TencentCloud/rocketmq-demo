@@ -20,12 +20,11 @@ int main() {
 
 
 /**
- * 初始化消息生产者
- * @return 消息生产者
+ * 初始化并启动消息生产者
+ * DefaultMQProducer 内部持有裸指针且未禁用拷贝，不要按值返回或拷贝，这里通过引用传入调用方创建的对象
+ * @param producer 消息生产者
  */
-DefaultMQProducer initProducer() {
-    // 初始化消息生产者，并设置生产者组名称
-    DefaultMQProducer producer("group");
+void initProducer(DefaultMQProducer &producer) {
     // 设置服务地址
     producer.setNamesrvAddr("endpoint");
     // 设置用户权限
@@ -37,7 +36,6 @@ DefaultMQProducer initProducer() {
     producer.setNameSpace("namespace");
     // 请确保参数设置完成在启动之前
     producer.start();
-    return producer;
 }
 
 
@@ -53,8 +51,9 @@ class MySendCallback : public SendCallback {
 
 void asyncSendMessage() {
     std::cout << "=======Before sending messages=======" << std::endl;
-    // 初始化消息生产者
-    DefaultMQProducer producer = initProducer();
+    // 初始化消息生产者，并设置生产者组名称
+    DefaultMQProducer producer("group");
+    initProducer(producer);
     // 记录时间
     auto start = std::chrono::system_clock::now();
     int count = 10;
@@ -70,7 +69,7 @@ void asyncSendMessage() {
             // 异步发送消息
             producer.send(msg, new MySendCallback());
             this_thread::sleep_for(chrono::seconds(1));
-        } catch (MQException e) {
+        } catch (MQException &e) {
             std::cout << "ErrorCode: " << e.GetError() << " Exception:" << e.what() << std::endl;
         }
     }

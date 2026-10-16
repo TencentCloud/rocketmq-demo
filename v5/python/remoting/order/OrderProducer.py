@@ -5,7 +5,8 @@ from rocketmq.client import Producer, Message
 """
 
 # 初始化生产者，并设置生产组信息
-producer = Producer('OrderProducerGroup')
+# orderly=True 表示顺序生产者，配合 send_orderly_with_sharding_key 按业务 key 选择队列
+producer = Producer('OrderProducerGroup', orderly=True)
 # 设置服务地址
 producer.set_name_server_address('rmq-xxxx.rocketmq.gz.qcloud.tencenttdmq.com:8080')
 # 设置权限（角色名和密钥）
@@ -23,7 +24,7 @@ for i in range(10):
     # 消息内容
     msg.set_body('This is a new message' + str(i) + '.')
 
-    # 发送同步消息
-    ret = producer.send_sync(msg)
+    # 按业务 key（如订单号）发送顺序消息，相同 key 的消息进入同一队列，保证顺序
+    ret = producer.send_orderly_with_sharding_key(msg, 'order-' + str(i % 3))
     print(ret.status, ret.msg_id, ret.offset)
 producer.shutdown()
