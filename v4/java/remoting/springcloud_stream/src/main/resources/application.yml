@@ -1,7 +1,8 @@
 spring:
   cloud:
     function:
-      definition: topicTag1;topicTag2
+      # 消费函数名称，每个函数对应一个 <函数名>-in-0 binding；不需要的场景可以从这里去掉，避免去创建对应的 Topic 和消费组
+      definition: topicTag1;topicTag2;retryConsumer;txConsumer;broadcastConsumer;orderlyConsumer
     stream:
       rocketmq:
         binder:
@@ -25,6 +26,42 @@ spring:
           topicTag2-in-0:
             consumer:
               subscription: TAG2
+          # 重试消息：RocketMQ 服务端重试配置（仅集群模式生效）
+          retryConsumer-in-0:
+            consumer:
+              push:
+                # 最大重试次数，超过后进入死信队列 %DLQ%retry-consumer-group
+                # 注意：binder 默认值是 0（首次失败直接进死信），-1 表示 RocketMQ 默认的 16 次，需要重试时必须显式配置
+                max-reconsume-times: 3
+                # 下次重试的延迟级别，0 表示由服务端按重试次数递增（首次 10s、然后 30s、1m ...），-1 表示不重试直接进死信
+                delay-level-when-next-consume: 0
+          # 事务消息：生产者使用 TransactionMQProducer
+          txProducer-out-0:
+            producer:
+              # 事务生产者组，服务端按生产者组回查本地事务状态，建议与普通生产者组分开
+              group: tx-producer-group
+              # 生产者类型：Normal（默认）/ Trans（事务）
+              producer-type: Trans
+              # 事务监听器的 Spring Bean 名称（实现 org.apache.rocketmq.client.producer.TransactionListener）
+              transaction-listener: streamTransactionListener
+          # 广播消息：消费模式设为广播，同一消费组的每个实例都收到全部消息（默认 CLUSTERING 集群模式）
+          broadcastConsumer-in-0:
+            consumer:
+              message-model: BROADCASTING
+          # 顺序消息：生产者按业务 key 选择队列
+          orderlyProducer-out-0:
+            producer:
+              # 队列选择器的 Spring Bean 名称（实现 org.apache.rocketmq.client.producer.MessageQueueSelector）
+              message-queue-selector: orderMessageQueueSelector
+          # 顺序消息：消费者使用顺序监听（MessageListenerOrderly）
+          orderlyConsumer-in-0:
+            consumer:
+              push:
+                orderly: true
+                # 顺序消费失败后暂停当前队列的时间（毫秒），之后在客户端本地重试
+                suspend-current-queue-time-millis: 1000
+                # 顺序消费最大重试次数，超过后进入死信队列；binder 默认 0（首次失败就进死信），-1 表示无限重试
+                max-reconsume-times: 3
       bindings:
         # binding名称，生产者通过 StreamBridge 发送到 topicSend-out-0
         topicSend-out-0:
@@ -41,3 +78,35 @@ spring:
           destination: TopicTest
           content-type: application/json
           group: consumer-group2
+        # 重试消息：生产者（Topic 类型：普通）
+        retryProducer-out-0:
+          destination: TopicRetry
+        # 重试消息：消费者
+        retryConsumer-in-0:
+          destination: TopicRetry
+          group: retry-consumer-group
+          consumer:
+            # Spring Cloud Stream 本地重试次数（默认 3）：在同一消费线程内立即重放，消息不回到服务端，也不增加 reconsumeTimes。
+            # 全部失败后才返回 RECONSUME_LATER 触发 RocketMQ 服务端重试；这里设为 1 关闭本地重试，只演示服务端重试。
+            max-attempts: 1
+        # 事务消息：生产者（Topic 类型：事务）
+        txProducer-out-0:
+          destination: TopicTransaction
+        # 事务消息：消费者
+        txConsumer-in-0:
+          destination: TopicTransaction
+          group: tx-consumer-group
+        # 广播消息：生产者（Topic 类型：普通）
+        broadcastProducer-out-0:
+          destination: TopicBroadcast
+        # 广播消息：消费者
+        broadcastConsumer-in-0:
+          destination: TopicBroadcast
+          group: broadcast-consumer-group
+        # 顺序消息：生产者（Topic 类型：顺序，全局顺序或局部顺序）
+        orderlyProducer-out-0:
+          destination: TopicOrderly
+        # 顺序消息：消费者
+        orderlyConsumer-in-0:
+          destination: TopicOrderly
+          group: orderly-consumer-group

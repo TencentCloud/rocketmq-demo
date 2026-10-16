@@ -8,7 +8,7 @@ rocketmq:
   # 生产者配置
   producer:
     # 生产者组名
-    group: group111
+    group: producer_group
     # 角色密钥
     access-key: eyJrZXlJZC....
     # 已授权的角色名称
@@ -33,3 +33,19 @@ rocketmq:
     group: group222
     topic: testdev1
     subExpression: TAG2
+  # 顺序消息示例：Topic 类型为顺序消息，消费组不要与并发消费者共用
+  order:
+    group: group_order
+    topic: topic_order
+  # 重试消息示例：Topic 类型为普通消息
+  retry:
+    group: group_retry
+    topic: topic_retry
+  # 事务消息示例：Topic 类型为事务消息；事务生产者使用 rocketmq.producer.group
+  transaction:
+    group: group_transaction
+    topic: topic_transaction
+  # 广播消息示例：Topic 类型为普通消息
+  broadcast:
+    group: group_broadcast
+    topic: topic_broadcast

@@ -41,6 +41,10 @@ public class MessageProducer {
     @Value("${rocketmq.namespace}%${rocketmq.producer1.topic}")
     private String topic;
 
+    // 顺序消息使用独立的顺序类型 Topic，格式：namespace全称%topic名称
+    @Value("${rocketmq.namespace}%${rocketmq.order.topic}")
+    private String orderTopic;
+
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
@@ -136,7 +140,7 @@ public class MessageProducer {
                     setHeader(RocketMQHeaders.KEYS, "KEY_" + i).build());
         }
         SendResult sendResult = rocketMQTemplate.syncSend(destination, messageList, 60000);
-        System.out.printf("DelaySend to topic %s sendResult=%s %n", topic, sendResult);
+        System.out.printf("BatchSend to topic %s sendResult=%s %n", topic, sendResult);
     }
 
     /**
@@ -148,12 +152,12 @@ public class MessageProducer {
      */
     public void syncSendOrderly(String message, String tags,String hashKey) {
         // springboot不支持使用header传递tags，根据要求，需要在topic后进行拼接 formats: `topicName:tags`，不拼接标识无tag
-        String destination = StringUtils.isBlank(tags) ? topic : topic + ":" + tags;
+        String destination = StringUtils.isBlank(tags) ? orderTopic : orderTopic + ":" + tags;
         // object消息类型
         SendResult sendResult = rocketMQTemplate.syncSendOrderly(destination,
             MessageBuilder.withPayload(message)
                 .setHeader(MessageConst.PROPERTY_KEYS, "yourKey")   // 指定业务key
-                .build(),hashKey);
-        System.out.printf("syncSend1 to topic %s sendResult=%s %n", topic, sendResult);
+                .build(), hashKey);
+        System.out.printf("syncSendOrderly to topic %s sendResult=%s %n", orderTopic, sendResult);
     }
 }
