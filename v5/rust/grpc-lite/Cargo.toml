@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 # crates.io 上已发布的 rocketmq 5.0.0 不支持 Lite Topic，这里依赖 apache/rocketmq-clients 未发布的 master 代码。
-# 必须锁定 rev，避免上游 master 变更导致示例编译失败；待支持 Lite Topic 的版本发布后改为 crates.io 版本。
-rocketmq = { git = "https://github.com/apache/rocketmq-clients.git", rev = "a3d1de8babcd25f47fd57e04c567ed9dae69103b" }
+# 跟踪 master 分支，实际使用的 commit 由提交到仓库的 Cargo.lock 锁定；更新方式见 README。
+# 待支持 Lite Topic 的版本发布后改为 crates.io 版本。
+rocketmq = { git = "https://github.com/apache/rocketmq-clients.git", branch = "master" }
 tokio = { version = "1", features = ["full"] }
