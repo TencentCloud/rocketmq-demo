@@ -48,12 +48,12 @@ public class ClientCreater {
     /**
      * accessKey  对应角色密钥
      */
-    public static final String ACCESS_KEY = "ak";
+    public static final String ACCESS_KEY = "AKID**********************0123456789";
 
     /**
      * secretKey  对应角色名称
      */
-    public static final String SECRET_KEY = "sk";
+    public static final String SECRET_KEY = "sk0123456789********************";
 
     /**
      * 创建消息生产者

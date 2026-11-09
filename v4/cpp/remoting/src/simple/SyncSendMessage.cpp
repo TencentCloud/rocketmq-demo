@@ -28,8 +28,8 @@ void initProducer(DefaultMQProducer &producer) {
     producer.setNamesrvAddr("endpoint");
     // 设置用户权限
     producer.setSessionCredentials(
-            "AK",
-            "SK",
+            "AKID**********************0123456789",
+            "sk0123456789********************",
             "");
     // 设置命名空间
     producer.setNameSpace("namespace");

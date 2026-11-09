@@ -50,8 +50,8 @@ producer = TransactionMQProducer('transaction_group', check_callback)
 producer.set_name_server_address('rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876')
 # 设置权限（角色名和密钥），在控制台【角色管理】中创建角色并获取密钥
 producer.set_session_credentials(
-    'eyJrZXlJZC......',
-    'admin',
+    'AKID**********************0123456789',
+    'sk0123456789********************',
     ''
 )
 # 启动生产者

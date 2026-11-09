@@ -9,9 +9,9 @@ spring:
           # 服务地址全称
           name-server: rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876
           # 角色名称
-          secret-key: admin
+          secret-key: sk0123456789********************
           # 角色密钥
-          access-key: eyJrZXlJZ...
+          access-key: AKID**********************0123456789
           # namespace全称
           namespace: rocketmq-xxx|namespace1
           # producer group

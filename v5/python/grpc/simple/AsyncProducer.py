@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # 设置接入点（gRPC 地址）
     endpoints = "rmq-xxxx.rocketmq.gz.qcloud.tencenttdmq.com:8080"
     # 设置权限（AK/SK）
-    credentials = Credentials("ak", "sk")
+    credentials = Credentials("AKID**********************0123456789", "sk0123456789********************")
     # 如果有命名空间，通过第三个参数指定
     # config = ClientConfiguration(endpoints, credentials, "namespace")
     config = ClientConfiguration(endpoints, credentials)

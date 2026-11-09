@@ -54,8 +54,8 @@ static const std::string topic = "xxx";
 // 填写腾讯云提供的接入地址
 static const std::string access_point = "rmq-xxx.rocketmq.xxxtencenttdmq.com:8081";
 // 添加配置的ak和sk
-static const std::string access_key = "xxx";
-static const std::string access_secret = "xxx";
+static const std::string access_key = "AKID**********************0123456789";
+static const std::string access_secret = "sk0123456789********************";
 static const uint32_t total = 32;
 static const int32_t message_body_size = 128;
 

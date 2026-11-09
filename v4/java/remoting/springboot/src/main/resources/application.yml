@@ -10,16 +10,16 @@ rocketmq:
     # 生产者组名
     group: producer_group
     # 角色密钥
-    access-key: eyJrZXlJZC....
+    access-key: AKID**********************0123456789
     # 已授权的角色名称
-    secret-key: admin
+    secret-key: sk0123456789********************
     enable-msg-trace: true
   # 消费者公共配置
   consumer:
     # 角色密钥
-    access-key: eyJrZXlJZC....
+    access-key: AKID**********************0123456789
     # 已授权的角色名称
-    secret-key: admin
+    secret-key: sk0123456789********************
 
   # 自定义配置，根据业务进行配置
   namespace: rocketmq-xxx|namespace1

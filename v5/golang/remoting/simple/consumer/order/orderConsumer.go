@@ -36,8 +36,8 @@ func main() {
 		consumer.WithNsResolver(nameserverReslover),
 		// 设置acl权限
 		consumer.WithCredentials(primitive.Credentials{
-			SecretKey: "admin",
-			AccessKey: "eyJrZXlJZC......",
+			SecretKey: "sk0123456789********************",
+			AccessKey: "AKID**********************0123456789",
 		}),
 		// 设置命名空间名称
 		consumer.WithNamespace("rocketmq-xxx|namespace_go"),

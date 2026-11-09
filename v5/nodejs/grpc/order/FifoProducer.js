@@ -4,8 +4,8 @@ import { Producer } from 'rocketmq-client-nodejs';
 const endpoints = 'rmq-xxx.rocketmq.gz.qcloud.tencenttdmq.com:8080';
 // 添加配置的ak和sk
 const sessionCredentials = {
-  accessKey: 'yourAccessKey',
-  accessSecret: 'yourSecretKey',
+  accessKey: 'AKID**********************0123456789',
+  accessSecret: 'sk0123456789********************',
 };
 // 控制台创建的「顺序消息」类型的 Topic 名称；消费组需开启顺序投递才能按顺序消费
 const fifoTopic = 'yourFifoTopic';

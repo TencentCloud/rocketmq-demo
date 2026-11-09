@@ -4,8 +4,8 @@ import { ConsumeResult, PushConsumer } from 'rocketmq-client-nodejs';
 const endpoints = 'rmq-xxx.rocketmq.gz.qcloud.tencenttdmq.com:8080';
 // 添加配置的ak和sk
 const sessionCredentials = {
-  accessKey: 'yourAccessKey',
-  accessSecret: 'yourSecretKey',
+  accessKey: 'AKID**********************0123456789',
+  accessSecret: 'sk0123456789********************',
 };
 // 控制台创建的消费组。最大重试次数由消费组的重试策略决定（控制台消费组配置），
 // 超过最大重试次数仍消费失败的消息会进入死信队列

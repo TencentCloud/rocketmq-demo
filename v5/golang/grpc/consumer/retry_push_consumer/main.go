@@ -40,9 +40,9 @@ const (
 	// Endpoint 填写腾讯云提供的接入地址（控制台实例详情页获取）
 	Endpoint = "rmq-xxx.rocketmq.xxxtencenttdmq.com:8080"
 	// AccessKey 控制台「角色管理」中创建角色后获取的 ak
-	AccessKey = "yourAccessKey"
+	AccessKey = "AKID**********************0123456789"
 	// SecretKey 控制台「角色管理」中创建角色后获取的 sk
-	SecretKey = "yourSecretKey"
+	SecretKey = "sk0123456789********************"
 	// successAttempt 第几次投递时返回 SUCCESS，用于演示前几次失败触发重试
 	successAttempt = 3
 )

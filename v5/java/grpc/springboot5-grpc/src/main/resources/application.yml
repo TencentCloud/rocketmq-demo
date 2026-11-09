@@ -8,9 +8,9 @@ rocketmq:
     # 腾讯云控制台提供的接入地址
     endpoints: rmq-xxx.rocketmq.xxxtencenttdmq.com:8080
     # 角色密钥（控制台「角色管理」中复制）
-    access-key: yourAccessKey
+    access-key: AKID**********************0123456789
     # 已授权的角色名称
-    secret-key: yourSecretKey
+    secret-key: sk0123456789********************
     # starter 默认 ssl-enabled=true；与 Java 原生示例（enableSsl(false)）一致，访问腾讯云 8080 接入点时关闭 SSL
     ssl-enabled: false
     # 可选：预取路由的 Topic，多个用英文逗号分隔；填写的 Topic 需已在控制台创建
@@ -21,8 +21,8 @@ rocketmq:
   # （即注解默认值 ${rocketmq.push-consumer.endpoints:} 等）；ssl 只能在注解上用 sslEnabled = false 关闭
   push-consumer:
     endpoints: rmq-xxx.rocketmq.xxxtencenttdmq.com:8080
-    access-key: yourAccessKey
-    secret-key: yourSecretKey
+    access-key: AKID**********************0123456789
+    secret-key: sk0123456789********************
 
 # 自定义配置，根据业务填写：Topic 和消费组都需先在腾讯云控制台创建
 demo:

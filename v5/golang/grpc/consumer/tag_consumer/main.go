@@ -37,9 +37,9 @@ const (
 	// Endpoint 填写腾讯云提供的接入地址（控制台实例详情页获取）
 	Endpoint = "rmq-xxx.rocketmq.xxxtencenttdmq.com:8080"
 	// AccessKey 控制台「角色管理」中创建角色后获取的 ak
-	AccessKey = "yourAccessKey"
+	AccessKey = "AKID**********************0123456789"
 	// SecretKey 控制台「角色管理」中创建角色后获取的 sk
-	SecretKey = "yourSecretKey"
+	SecretKey = "sk0123456789********************"
 	// TagExpression tag 过滤表达式：多个 tag 用 || 分隔，* 表示订阅全部
 	// 同一消费组内所有消费者的订阅关系（Topic + tag 表达式）必须保持一致
 	TagExpression = "TagA||TagB"

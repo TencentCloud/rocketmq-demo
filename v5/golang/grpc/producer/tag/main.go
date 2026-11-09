@@ -35,9 +35,9 @@ const (
 	// Endpoint 填写腾讯云提供的接入地址（控制台实例详情页获取）
 	Endpoint = "rmq-xxx.rocketmq.xxxtencenttdmq.com:8080"
 	// AccessKey 控制台「角色管理」中创建角色后获取的 ak
-	AccessKey = "yourAccessKey"
+	AccessKey = "AKID**********************0123456789"
 	// SecretKey 控制台「角色管理」中创建角色后获取的 sk
-	SecretKey = "yourSecretKey"
+	SecretKey = "sk0123456789********************"
 )
 
 // tags 轮流发送的 tag，配合 consumer/tag_consumer（订阅 TagA||TagB）使用，TagC 的消息不会被其消费

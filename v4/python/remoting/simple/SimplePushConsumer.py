@@ -19,8 +19,8 @@ consumer = PushConsumer('rocketmq-xxx|namespace_python%group11')
 consumer.set_name_server_address('rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876')
 # 设置权限（角色名和密钥）
 consumer.set_session_credentials(
-    'eyJrZXlJZC......',
-    'admin',
+    'AKID**********************0123456789',
+    'sk0123456789********************',
     ''
 )
 # 订阅topic

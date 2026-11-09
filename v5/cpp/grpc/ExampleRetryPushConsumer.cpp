@@ -34,8 +34,8 @@ static const std::string topic = "xxx";
 // 填写腾讯云提供的接入地址（控制台实例详情页获取）
 static const std::string access_point = "rmq-xxx.rocketmq.xxxtencenttdmq.com:8081";
 // 添加配置的ak和sk（控制台「角色管理」中创建角色后获取）
-static const std::string access_key = "xxx";
-static const std::string access_secret = "xxx";
+static const std::string access_key = "AKID**********************0123456789";
+static const std::string access_secret = "sk0123456789********************";
 // 控制台创建的消费组，并订阅上面的 Topic；最大重试次数在该消费组的重试策略中配置
 static const std::string group = "group-xxx";
 // 第几次投递时返回 SUCCESS，用于演示前几次失败触发重试

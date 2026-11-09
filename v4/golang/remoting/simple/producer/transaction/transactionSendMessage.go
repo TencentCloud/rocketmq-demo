@@ -88,8 +88,8 @@ func main() {
 		producer.WithNsResolver(nameserverReslover),
 		// 设置acl权限
 		producer.WithCredentials(primitive.Credentials{
-			SecretKey: "admin",
-			AccessKey: "eyJrZXlJZC......",
+			SecretKey: "sk0123456789********************",
+			AccessKey: "AKID**********************0123456789",
 		}),
 		// 设置生产组
 		producer.WithGroupName(groupName),

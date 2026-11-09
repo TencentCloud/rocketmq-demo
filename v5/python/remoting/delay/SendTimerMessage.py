@@ -8,8 +8,8 @@ producer = Producer('ProducerGroup')
 producer.set_name_server_address('rmq-xxxx.rocketmq.gz.qcloud.tencenttdmq.com:8080')
 # 设置权限（角色名和密钥）
 producer.set_session_credentials(
-    'eyJrZXlJZC......',
-    'admin',
+    'AKID**********************0123456789',
+    'sk0123456789********************',
     ''
 )
 # 启动生产者

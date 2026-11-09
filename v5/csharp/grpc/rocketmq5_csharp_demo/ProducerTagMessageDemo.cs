@@ -13,8 +13,8 @@ namespace examples
             // Enable the switch if you use .NET Core 3.1 and want to disable TLS/SSL.
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             // 控制台「访问管理」中角色的 AccessKey / SecretKey
-            const string accessKey = "yourAccessKey";
-            const string secretKey = "yourSecretKey";
+            const string accessKey = "AKID**********************0123456789";
+            const string secretKey = "sk0123456789********************";
 
             // Credential provider is optional for client configuration.
             var credentialsProvider = new StaticSessionCredentialsProvider(accessKey, secretKey);

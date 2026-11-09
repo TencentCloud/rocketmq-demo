@@ -131,8 +131,8 @@ Lite Topic 需要在控制台创建「轻量消息」类型的一级 Topic，以
 
 ```java
 public static final String NAMESERVER = "腾讯云控制台 > 接入点 > 复制接入地址";  // 格式：rmq-xxx.rocketmq.xx.tencenttdmq.com:9876
-public static final String ACCESS_KEY = "角色密钥";   // 控制台 > 角色管理
-public static final String SECRET_KEY = "角色名称";   // 控制台 > 角色管理
+public static final String ACCESS_KEY = "AKID**********************0123456789";   // 控制台 > 角色管理
+public static final String SECRET_KEY = "sk0123456789********************";   // 控制台 > 角色管理
 ```
 
 **Java 原生 SDK（v5/grpc）**
@@ -140,8 +140,8 @@ public static final String SECRET_KEY = "角色名称";   // 控制台 > 角色�
 每个 Producer/Consumer 文件顶部均有以下配置，按注释填写：
 
 ```java
-String accessKey = "角色密钥";    // 控制台 > 角色管理
-String secretKey = "角色名称";    // 控制台 > 角色管理
+String accessKey = "AKID**********************0123456789";    // 控制台 > 角色管理
+String secretKey = "sk0123456789********************";    // 控制台 > 角色管理
 String endpoints = "rmq-xxx.rocketmq.xx.tencenttdmq.com:8080";  // 控制台 > 接入点（gRPC 端口 8080）
 ```
 
@@ -153,13 +153,13 @@ String endpoints = "rmq-xxx.rocketmq.xx.tencenttdmq.com:8080";  // 控制台 > �
 rocketmq:
   producer:
     endpoints: rmq-xxx.rocketmq.xx.tencenttdmq.com:8080  # 控制台 > 接入点（gRPC 端口 8080）
-    access-key: 角色密钥
-    secret-key: 角色名称
+    access-key: AKID**********************0123456789
+    secret-key: sk0123456789********************
     ssl-enabled: false
   push-consumer:
     endpoints: rmq-xxx.rocketmq.xx.tencenttdmq.com:8080
-    access-key: 角色密钥
-    secret-key: 角色名称
+    access-key: AKID**********************0123456789
+    secret-key: sk0123456789********************
 ```
 
 > **提示：** 消费者的 SSL 开关只能在 `@RocketMQMessageListener(sslEnabled = false)` 上设置。各场景的 Topic、消费组见该模块 README。
@@ -172,11 +172,11 @@ rocketmq:
 rocketmq:
   name-server: rmq-xxx.rocketmq.xx.tencenttdmq.com:9876  # v4/v5 remoting 端口 9876；v5 grpc 端口 8080
   producer:
-    access-key: 角色密钥
-    secret-key: 角色名称
+    access-key: AKID**********************0123456789
+    secret-key: sk0123456789********************
   consumer:
-    access-key: 角色密钥
-    secret-key: 角色名称
+    access-key: AKID**********************0123456789
+    secret-key: sk0123456789********************
 ```
 
 > **提示：** v5/grpc/springboot5 虽然在 v5/grpc 目录下，但 `rocketmq-spring-boot-starter` 内部仍使用 Remoting 协议，
@@ -193,8 +193,8 @@ spring:
       rocketmq:
         binder:
           name-server: rmq-xxx.rocketmq.xx.tencenttdmq.com:9876
-          access-key: 角色密钥
-          secret-key: 角色名称
+          access-key: AKID**********************0123456789
+          secret-key: sk0123456789********************
 ```
 
 > **提示：** 重试、事务、广播、顺序等场景的 binding 配置和接口见该模块 README。binder 的 `max-reconsume-times` 默认是 0（失败即进死信），

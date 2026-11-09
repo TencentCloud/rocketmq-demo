@@ -37,9 +37,9 @@ const (
 	// Endpoint 填写腾讯云提供的接入地址
 	Endpoint = "xxxxxx"
 	// AccessKey 添加配置的ak
-	AccessKey = "yourAccessKey"
+	AccessKey = "AKID**********************0123456789"
 	// SecretKey 添加配置的sk
-	SecretKey = "yourSecretKey"
+	SecretKey = "sk0123456789********************"
 )
 
 var (

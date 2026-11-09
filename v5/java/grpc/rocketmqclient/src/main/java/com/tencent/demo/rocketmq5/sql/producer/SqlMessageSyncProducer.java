@@ -40,8 +40,8 @@ public class SqlMessageSyncProducer {
         final ClientServiceProvider provider = ClientServiceProvider.loadService();
 
         // 添加配置的ak和sk
-        String accessKey = "yourAccessKey"; //ak
-        String secretKey = "yourSecretKey"; //sk
+        String accessKey = "AKID**********************0123456789"; //ak
+        String secretKey = "sk0123456789********************"; //sk
         SessionCredentialsProvider sessionCredentialsProvider =
             new StaticSessionCredentialsProvider(accessKey, secretKey);
 

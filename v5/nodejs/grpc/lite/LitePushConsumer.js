@@ -9,8 +9,8 @@ import {
 const endpoints = 'rmq-xxx.rocketmq.gz.qcloud.tencenttdmq.com:8080';
 // 添加配置的ak和sk
 const sessionCredentials = {
-  accessKey: 'yourAccessKey',
-  accessSecret: 'yourSecretKey',
+  accessKey: 'AKID**********************0123456789',
+  accessSecret: 'sk0123456789********************',
 };
 // 控制台创建的消费组，需选择「Lite Topic 消费」模式并绑定到下面的一级 Topic
 const consumerGroup = 'yourConsumerGroup';

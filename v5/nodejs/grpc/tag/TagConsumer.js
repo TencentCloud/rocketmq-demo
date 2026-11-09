@@ -4,8 +4,8 @@ import { ConsumeResult, PushConsumer } from 'rocketmq-client-nodejs';
 const endpoints = 'rmq-xxx.rocketmq.gz.qcloud.tencenttdmq.com:8080';
 // 添加配置的ak和sk
 const sessionCredentials = {
-  accessKey: 'yourAccessKey',
-  accessSecret: 'yourSecretKey',
+  accessKey: 'AKID**********************0123456789',
+  accessSecret: 'sk0123456789********************',
 };
 // 控制台创建的消费组。同一消费组内所有消费者的订阅关系（Topic + tag 表达式）必须一致
 const consumerGroup = 'yourConsumerGroup';

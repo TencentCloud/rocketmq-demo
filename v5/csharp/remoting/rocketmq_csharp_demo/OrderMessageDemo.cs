@@ -27,8 +27,8 @@ namespace rocketmq_csharp_demo
                 // 腾讯云控制台「角色管理」中的角色名称 / 角色密钥
                 CloudProvider = new AclProvider
                 {
-                    AccessKey = "yourAccessKey",
-                    SecretKey = "yourSecretKey",
+                    AccessKey = "AKID**********************0123456789",
+                    SecretKey = "sk0123456789********************",
                 },
             };
 
@@ -94,8 +94,8 @@ namespace rocketmq_csharp_demo
                 Log = XTrace.Log,
                 CloudProvider = new AclProvider
                 {
-                    AccessKey = "yourAccessKey",
-                    SecretKey = "yourSecretKey",
+                    AccessKey = "AKID**********************0123456789",
+                    SecretKey = "sk0123456789********************",
                 },
             };
 

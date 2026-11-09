@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # 设置接入点（gRPC 地址）
     endpoints = "rmq-xxxx.rocketmq.gz.qcloud.tencenttdmq.com:8080"
     # 设置权限（AK/SK）
-    credentials = Credentials("ak", "sk")
+    credentials = Credentials("AKID**********************0123456789", "sk0123456789********************")
     config = ClientConfiguration(endpoints, credentials)
 
     # 控制台创建的「轻量消息」类型的一级 Topic 名称

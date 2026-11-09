@@ -30,8 +30,8 @@ int main() {
     consumer->setNamesrvAddr("endpoint");
     // 设置用户权限
     consumer->setSessionCredentials(
-            "AK",
-            "SK",
+            "AKID**********************0123456789",
+            "sk0123456789********************",
             "");
     // 设置命名空间
     consumer->setNameSpace("namespace");
