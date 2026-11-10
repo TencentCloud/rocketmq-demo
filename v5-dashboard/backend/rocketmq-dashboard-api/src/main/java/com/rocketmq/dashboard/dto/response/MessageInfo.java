@@ -49,7 +49,7 @@ public class MessageInfo {
     @Schema(description = "Born timestamp")
     private Long bornTimestamp;
     
-    @Schema(description = "Born host", example = "192.168.1.100:12345")
+    @Schema(description = "Born host", example = "host.example.com:12345")
     private String bornHost;
     
     @Schema(description = "Store host", example = "broker-a:10911")

@@ -45,7 +45,7 @@ public class MessageTraceInfo {
     @Schema(description = "Store host", example = "broker-a:10911")
     private String storeHost;
     
-    @Schema(description = "Client host", example = "192.168.1.100:12345")
+    @Schema(description = "Client host", example = "host.example.com:12345")
     private String clientHost;
     
     @Schema(description = "Cost time in milliseconds")

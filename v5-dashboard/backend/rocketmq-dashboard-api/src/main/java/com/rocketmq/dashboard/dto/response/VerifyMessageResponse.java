@@ -28,7 +28,7 @@ public class VerifyMessageResponse {
     @Schema(description = "Consume timestamp")
     private Long consumeTimestamp;
     
-    @Schema(description = "Client host", example = "192.168.1.100:12345")
+    @Schema(description = "Client host", example = "host.example.com:12345")
     private String clientHost;
     
     @Schema(description = "Detailed message")

@@ -17,7 +17,7 @@ namespace examples
 
             // Credential provider is optional for client configuration.
             var credentialsProvider = new StaticSessionCredentialsProvider(accessKey, secretKey);
-            const string endpoints = "127.0.0.1:8080";
+            const string endpoints = "rmq-xxx.rocketmq.gz.qcloud.tencenttdmq.com:8080";
             var clientConfig = new ClientConfig.Builder()
                 .SetEndpoints(endpoints)
                 .SetCredentialsProvider(credentialsProvider)
