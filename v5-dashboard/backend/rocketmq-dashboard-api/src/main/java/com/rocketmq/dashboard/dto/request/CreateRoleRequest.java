@@ -19,10 +19,10 @@ public class CreateRoleRequest {
     @Schema(description = "Role description", example = "Role for production access")
     private String description;
     
-    @Schema(description = "Access key for this role", example = "AKID-xxxxx")
+    @Schema(description = "Access key for this role", example = "AKID**********************0123456789")
     private String accessKey;
     
-    @Schema(description = "Secret key for this role", example = "SecretKey-xxxxx")
+    @Schema(description = "Secret key for this role", example = "sk0123456789********************")
     private String secretKey;
     
     @Schema(description = "Permissions: PUB (publish), SUB (subscribe), PUB_SUB (both)", 

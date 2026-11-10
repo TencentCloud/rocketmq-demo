@@ -57,24 +57,24 @@
 ```yaml
 tencent:
   cloud:
-    secret-id: AKIDxxxxxxxx
-    secret-key: xxxxxxxxxxxxxxxx
+    secret-id: AKID**********************0123456789
+    secret-key: sk0123456789********************
     region: ap-guangzhou
 ```
 
 **方式二：环境变量（推荐生产环境）**
 
 ```bash
-export TENCENT_CLOUD_SECRET_ID=AKIDxxxxxxxx
-export TENCENT_CLOUD_SECRET_KEY=xxxxxxxxxxxxxxxx
+export TENCENT_CLOUD_SECRET_ID=AKID**********************0123456789
+export TENCENT_CLOUD_SECRET_KEY=sk0123456789********************
 export TENCENT_CLOUD_REGION=ap-guangzhou
 ```
 
 **方式三：JVM -D 参数**
 
 ```bash
-java -Dtencent.cloud.secret-id=AKIDxxxxxxxx \
-     -Dtencent.cloud.secret-key=xxxxxxxxxxxxxxxx \
+java -Dtencent.cloud.secret-id=AKID**********************0123456789 \
+     -Dtencent.cloud.secret-key=sk0123456789******************** \
      -Dtencent.cloud.region=ap-guangzhou \
      -jar rocketmq-dashboard-api-1.0.0-SNAPSHOT.jar
 ```
@@ -175,8 +175,8 @@ v5-tencent/
 ```bash
 docker build -t rocketmq-dashboard .
 docker run -d -p 8080:8080 \
-  -e TENCENT_CLOUD_SECRET_ID=AKIDxxxxxxxx \
-  -e TENCENT_CLOUD_SECRET_KEY=xxxxxxxxxxxxxxxx \
+  -e TENCENT_CLOUD_SECRET_ID=AKID**********************0123456789 \
+  -e TENCENT_CLOUD_SECRET_KEY=sk0123456789******************** \
   -e TENCENT_CLOUD_REGION=ap-guangzhou \
   rocketmq-dashboard
 ```

@@ -8,7 +8,7 @@ using NewLife.RocketMQ;
 var mq = new Producer
 {
     Topic = "TopicTest1", //对于非通用版集群，需要拼接完整的topic，如 MQ_INSTxxx_aaa%TopicTest
-    NameServerAddress = "127.0.0.1:9876",// 腾讯云页面填写
+    NameServerAddress = "rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876",// 腾讯云页面填写
     Log = XTrace.Log,
     CloudProvider = new AclProvider
     {
@@ -32,7 +32,7 @@ var consumer = new Consumer
 {
     Topic = "TopicTest1",//对于非通用版集群，需要拼接完整的topic，如 MQ_INSTxxx_aaa%TopicTest
     Group = "test", //对于非通用版集群，需要拼接完整的topic，如 MQ_INSTxxx_aaa%TopicTest
-    NameServerAddress = "127.0.0.1:9876",
+    NameServerAddress = "rocketmq-xxx.rocketmq.ap-bj.public.tencenttdmq.com:9876",
 
     FromLastOffset = true,
     BatchSize = 20,

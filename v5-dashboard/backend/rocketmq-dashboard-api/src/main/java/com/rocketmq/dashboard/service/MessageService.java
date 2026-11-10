@@ -296,7 +296,7 @@ public class MessageService {
                 .messageId(request.getMessageId())
                 .consumeStatus("CONSUMED")
                 .consumeTimestamp(System.currentTimeMillis() - 5000)
-                .clientHost("20.157.203.89:23456")
+                .clientHost("host.example.com:23456")
                 .message("Message has been successfully consumed by consumer group")
                 .build();
 

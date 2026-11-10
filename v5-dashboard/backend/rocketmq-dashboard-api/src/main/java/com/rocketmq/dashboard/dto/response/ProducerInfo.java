@@ -18,10 +18,10 @@ public class ProducerInfo {
     @Schema(description = "Producer ID", example = "producer-001")
     private String producerId;
     
-    @Schema(description = "Client ID", example = "client-192.168.1.100@12345")
+    @Schema(description = "Client ID", example = "client-host.example.com@12345")
     private String clientId;
     
-    @Schema(description = "Client address", example = "192.168.1.100:12345")
+    @Schema(description = "Client address", example = "host.example.com:12345")
     private String clientAddress;
     
     @Schema(description = "Connection status: ONLINE, OFFLINE", example = "ONLINE")

@@ -43,7 +43,7 @@ public class ClientCreater {
     /**
      * nameserver地址
      */
-    public static final String NAMESERVER = "腾讯云页面提供的接入点";
+    public static final String NAMESERVER = "rmq-xxx.rocketmq.xx.tencenttdmq.com:9876";
 
     /**
      * accessKey  对应角色密钥

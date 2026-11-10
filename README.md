@@ -130,7 +130,7 @@ Lite Topic 需要在控制台创建「轻量消息」类型的一级 Topic，以
 修改 `common/ClientCreater.java` 中的三个常量：
 
 ```java
-public static final String NAMESERVER = "腾讯云控制台 > 接入点 > 复制接入地址";  // 格式：rmq-xxx.rocketmq.xx.tencenttdmq.com:9876
+public static final String NAMESERVER = "rmq-xxx.rocketmq.xx.tencenttdmq.com:9876";  // 控制台 > 接入点 > 复制接入地址
 public static final String ACCESS_KEY = "AKID**********************0123456789";   // 控制台 > 角色管理
 public static final String SECRET_KEY = "sk0123456789********************";   // 控制台 > 角色管理
 ```

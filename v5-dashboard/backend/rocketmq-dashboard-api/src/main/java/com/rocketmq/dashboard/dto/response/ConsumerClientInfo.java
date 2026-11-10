@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 @Schema(description = "Consumer client information")
 public class ConsumerClientInfo {
     
-    @Schema(description = "Client ID", example = "client-192.168.1.100@12345")
+    @Schema(description = "Client ID", example = "client-host.example.com@12345")
     private String clientId;
     
-    @Schema(description = "Client address", example = "192.168.1.100:12345")
+    @Schema(description = "Client address", example = "host.example.com:12345")
     private String clientAddress;
     
     @Schema(description = "Client language", example = "JAVA")
